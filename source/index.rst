@@ -1,5 +1,5 @@
 CSCI 5576/4476 - High Performance Scientific Computing
-=======================
+======================================================
 
 Prof James Wright (he/him)
 
