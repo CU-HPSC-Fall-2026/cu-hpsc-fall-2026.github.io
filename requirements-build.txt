@@ -1,0 +1,5 @@
+sphinx>7.3
+furo>=2023.8.19
+sphinxcontrib-bibtex==2.6.3
+nbsphinx
+sphinx-autobuild
