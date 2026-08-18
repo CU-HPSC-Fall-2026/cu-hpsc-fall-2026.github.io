@@ -24,9 +24,7 @@ Resources
 Zulip
 -------------------------------------------------------------------------------------
 
-**TBD**
-
-The `course Zulip <https://csci-2656-fall-2025.zulipchat.com/join/xmhljqfgt24xxl5z6rgd7eox>`_ server is the best location to ask questions and receive timely replies from myself and students in the course.
+The `course Zulip <https://cu-hpsc-fall-2026.zulipchat.com/join/x27pyu5tc5vwvkjsdvinf47v/>`_ server is the best location to ask questions and receive timely replies from myself and students in the course.
 Please join the course Zulip server as soon as is convenient.
 You may use a pseudonym but must use your CU email address when signing up for the Zulip server.
 
@@ -34,19 +32,17 @@ You may use a pseudonym but must use your CU email address when signing up for t
 Course Outcomes
 -------------------------------------------------------------------------------------
 
-**TBD**
+* Understand how high-level code maps onto hardware constructs
 
-* Understand the fundamentals of numerical algorithms to solve continuous problems, especially in the context of science and engineering problems
+* Develop code to implement parallel computation algorithms using OpenMP and MPI
 
-* Develop code to implement numerical algorithms
+* Measure the accuracy and performance of HPC codes
 
-* Measure the accuracy and performance of these numerical algorithms
-
-* Recognize and explain conditions that degrade performance or accuracy of numerical algorithms
+* Recognize and explain conditions that degrade performance of HPC codes
 
 * Anticipate and explain challenges and performance to scaling numerical algorithms to larger problems
 
-* Evaluate open source packages and communities related to numerical algorithms
+* Evaluate open source packages and communities related to scientific high-performance computing
 
 
 Ungrading
@@ -76,47 +72,42 @@ Deadlines and Extensions
 
 None of the assignments in the course are graded, so missing an assignment means missing an opportunity for receiving feedback and understanding your progress towards your course goals.
 Submitting assignments by the course deadlines help the course staff deliver written feedback promptly.
-If something comes up and you need an extension on an assessment, please let me know as soon as feasible via email at jeremy.thompson@colorado.edu.
+If something comes up and you need an extension on an assessment, please let me know as soon as feasible via email at jawr8143@colorado.edu.
 
 
 Honor Code
 -------------------------------------------------------------------------------------
 
-All students enrolled in a University of Colorado Boulder course are responsible for knowing and adhering to the `Honor Code <https://www.colorado.edu/sccr/students/honor-code-and-student-code-conduct>`_.
-Violations of the Honor Code may include but are not limited to: plagiarism (including use of paper writing services or technology [such as essay bots]), cheating, fabrication, lying, bribery, threat, unauthorized access to academic materials, clicker fraud, submitting the same or similar work in more than one course without permission from all course instructors involved, and aiding academic dishonesty.
-Understanding the course's syllabus is a vital part of adhering to the Honor Code.
-
-All incidents of academic misconduct will be reported to Student Conduct & Conflict Resolution: StudentConduct@colorado.edu.
-Students found responsible for violating the Honor Code will be assigned resolution outcomes from Student Conduct & Conflict Resolution and will be subject to academic sanctions from the faculty member.
-Visit `Honor Code <https://www.colorado.edu/sccr/students/honor-code-and-student-code-conduct>`_ for more information on the academic integrity policy.
+All students enrolled in a University of Colorado Boulder course are responsible for knowing and adhering to the `Honor Code <https://www.colorado.edu/sccr/students/honor-code-and-student-code-conduct>`_. Violations of the Honor Code may include but are not limited to: plagiarism (including use of paper writing services or technology [such as essay bots]), cheating, fabrication, lying, bribery, threat, unauthorized access to academic materials, clicker fraud, submitting the same or similar work in more than one course without permission from all course instructors involved, and aiding academic dishonesty. Understanding the course's syllabus is a vital part of adhering to the Honor Code.
+All incidents of academic misconduct will be reported to Student Conduct & Conflict Resolution: `StudentConduct@colorado.edu <mailto:StudentConduct@colorado.edu>`_. Students found responsible for violating the Honor Code will be assigned resolution outcomes from Student Conduct & Conflict Resolution and will be subject to academic sanctions from the faculty member. Visit `Honor Code <https://www.colorado.edu/sccr/students/honor-code-and-student-code-conduct>`_ for more information on the academic integrity policy. 
 
 
 Accommodation for Disabilities, Temporary Medical Conditions, and Medical Isolation
 -------------------------------------------------------------------------------------
 
-If you qualify for accommodations because of a disability, please submit your accommodation letter from Disability Services to your faculty member in a timely manner so that your needs can be addressed.
-Disability Services determines accommodations based on documented disabilities in the academic environment.
-Information on requesting accommodations is located on the `Disability Services website <https://www.colorado.edu/disabilityservices>`_.
-Contact Disability Services at 303-492-8671 or DSinfo@colorado.edu for further assistance.
-If you have a temporary medical condition, see `Temporary Medical Conditions <https://www.colorado.edu/disabilityservices/students/temporary-medical-conditions>`_ on the Disability Services website.
+If you qualify for accommodations because of a disability, please submit your accommodation letter from Disability Services to your faculty member in a timely manner so that your needs can be addressed.  Disability Services determines accommodations based on documented disabilities in the academic environment.  Information on requesting accommodations is located on the `Disability Services website <https://www.colorado.edu/disabilityservices/>`_. Contact Disability Services at 303-492-8671 or DSinfo@colorado.edu  for further assistance.  If you have a temporary medical condition, see `Temporary Medical Conditions <https://www.colorado.edu/disabilityservices/students/temporary-medical-conditions>`_ on the Disability Services website.
 
-If you have a temporary illness, injury or required medical isolation for which you require adjustment, please let me know as soon as feasible about any accommodations via email at jeremy.thompson@colorado.edu.
+If you have a temporary illness, injury or required medical isolation for which you require adjustment, please let me know as soon as feasible about any accommodations via email at jawr8143@colorado.edu.
 
 
 Accommodation for Religious Obligations
 -------------------------------------------------------------------------------------
 
+Instructional faculty members must make every reasonable effort to accommodate all students who have conflicts with scheduled exams, assignment deadlines or required attendance due to a religious observance. Whenever possible, students must notify the instructional faculty member at least two weeks in advance of the expected exam, assignment deadline, or attendance conflict to request an accommodation for religious observance. If the start date of the course is less than two weeks before the date of requested accommodation, students must notify the instructional faculty member on the start date of the course. See the `Student Academic Accommodations for Religious Observances Policy <https://www.colorado.edu/compliance/student-academic-accommodations-religious-observances-policy>`_ for more information.
+
+In this class, please let me know as soon as feasible about any accommodations via email at jawr8143@colorado.edu.
+
 Campus policy requires faculty to provide reasonable accommodations for students who, because of religious obligations, have conflicts with scheduled exams, assignments, or required attendance.
 Please communicate the need for a religious accommodation in a timely manner.
-In this class, please let me know as soon as feasible about any accommodations needed via email at jeremy.thompson@colorado.edu.
+In this class, please let me know as soon as feasible about any accommodations needed via email at jawr8143@colorado.edu.
 See the `campus policy regarding religious observances <https://www.colorado.edu/compliance/policies/observance-religious-holidays-absences-classes-or-exams>`_ for full details.
 
 
-Preferred Student Names and Pronouns
+Student Names and Pronouns
 -------------------------------------------------------------------------------------
-
-CU Boulder recognizes that students' legal information does not always align with how they identify.
-If you wish to have your preferred name (rather than your legal name) and/or your preferred pronouns appear on your instructors’ class rosters and in Canvas, visit the `Registrar’s website <https://www.colorado.edu/registrar/students/records/info/preferred>`_ for instructions on how to change your personal information in university systems.
+Student Names and Pronouns
+CU Boulder recognizes that students' legal information does not always align with how they identify. 
+If you wish to have a name other than your legal name appear on your instructors’ class rosters and in Canvas, or if you wish to choose pronouns to appear on your instructors’ class rosters and in Canvas, visit the `Registrar’s website <https://www.colorado.edu/registrar/students/records/info/preferred>`_  for instructions on how to change your personal information in university systems.
 
 
 Classroom Behavior
@@ -130,26 +121,19 @@ Additional classroom behavior information
 
 * `Student Classroom and Course-Related Behavior Policy <https://www.colorado.edu/compliance/policies/student-classroom-course-related-behavior>`_
 
-* `Student Code of Conduct <https://www.colorado.edu/sccr/media/230>`_
+* `Student Code of Conduct <https://www.colorado.edu/sccr/students/honor-code-and-student-code-conduct>`_
 
-* `Office of Institutional Equity and Compliance <https://www.colorado.edu/oiec>`_
-
-
-Diversity, Equity and Inclusion
--------------------------------------------------------------------------------------
-
-The College of Engineering and Applied Science at the University of Colorado Boulder is committed to fostering a diverse, inclusive and academically excellent community.
-
-The college’s diversity and inclusion plan dovetails with the CU Boulder Inclusion, Diversity and Excellence in Academics (IDEA) Plan and is informed by the university's longstanding efforts to create a place where everyone feels a sense of belonging and where everyone can succeed.
-As a university and college community we affirm that making excellence inclusive is an active, intentional process that engages students, faculty and staff across the curriculum and community and in our offices, labs and meeting spaces.
-Moreover, our plan addresses the Chancellor’s three strategic imperatives: shape tomorrow’s leaders, innovate and positively impact humanity.
-
-As laid out in the Dean’s Strategic Vision, we aim to be the premier destination for every engineering student in the state of Colorado while attracting outstanding students from across the country and world by increasing and supporting communities traditionally underrepresented in engineering and applied sciences to thrive in our college.
-In doing so, we will drive and support economic growth in Colorado, foster collaborative industry partnerships that prepare students to work in diverse teams and succeed in the global marketplace and to produce ethical, resilient and creative engineers who will become leaders in their fields.
+* `Office of Institutional Equity and Compliance <https://www.colorado.edu/oiec/>`_
 
 
 Sexual Misconduct, Discrimination, Harassment and/or Related Retaliation
 -------------------------------------------------------------------------------------
+
+CU Boulder is committed to fostering a productive and welcoming learning, working, and living environment. University policy prohibits `protected-class <https://www.colorado.edu/oiec/policies/protected-class-nondiscrimination-policy/protected-class-definitions>`_ discrimination and harassment, sexual misconduct (harassment, exploitation, and assault), intimate partner abuse (dating or domestic violence), stalking, and related retaliation by or against members of our community on- or off-campus. Denial of an approved accommodation for disability, religious observance, or pregnancy or pregnancy related medical conditions may be discriminatory.
+
+The `Office of Institutional Equity and Compliance (OIEC) <https://www.colorado.edu/oiec/>`_ addresses these concerns, and individuals who have been subjected to misconduct can contact OIEC at 303-492-2127 or email OIEC@colorado.edu. Information about university policies, `OIEC reporting options <https://www.colorado.edu/oiec/reporting-resolutions/making-report>`_, and `OIEC support resources <https://www.colorado.edu/oiec/support-resources>`_ including confidential services can be found on the `OIEC website <https://www.colorado.edu/oiec/>`_.
+
+Faculty and graduate instructors are required to inform OIEC when someone discloses misconduct regardless of when or where it occurred. This is to ensure that those impacted receive outreach from OIEC about resolution options and support resources. To learn more about reporting and support options for a variety of concerns, visit the `Don’t Ignore It page <https://www.colorado.edu/dontignoreit/>`_.
 
 CU Boulder is committed to fostering an inclusive and welcoming learning, working, and living environment.
 University policy prohibits `protected-class <https://www.colorado.edu/oiec/policies/protected-class-nondiscrimination-policy/protected-class-definitions>`_ discrimination and harassment, sexual misconduct (harassment, exploitation, and assault), intimate partner abuse (dating or domestic violence), stalking, and related retaliation by or against members of our community on- and off-campus.
@@ -166,9 +150,6 @@ Mental Health and Wellness
 
 The University of Colorado Boulder is committed to the well-being of all students.
 If you are struggling with personal stressors, mental health or substance use concerns that are impacting academic or daily life, please contact `Counseling and Psychiatric Services (CAPS) <https://www.colorado.edu/counseling>`_, located in C4C, or call (303) 492-2277, 24/7.
-
-Free and unlimited telehealth is also available through `AcademicLiveCare <https://www.colorado.edu/health/academiclivecare>`_.
-The AcademicLiveCare site also provides information about additional wellness services on campus that are available to students.
 
 
 Acceptable Use of AI in This Class
