@@ -49,7 +49,7 @@ Ungrading
 -------------------------------------------------------------------------------------
 
 This course will use 'ungrading'.
-You will keep a learning journal with `SMART <https://en.wikipedia.org/wiki/SMART_criteria>`_ goals.
+You will keep a learning journal to keep track of goals and notes about what you are learning and what you want to learn.
 You will regularly update this journal with notes about your progress towards these goals.
 You can update, close, or add goals throughout the semester but should have at least 3 goals at all times.
 Learning is non-monotonic, so it is perfectly normal to encounter difficulties or struggles.
