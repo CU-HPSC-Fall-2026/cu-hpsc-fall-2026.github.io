@@ -8,6 +8,8 @@ Prof `James Wright <https://jameswright.xyz>`_ (he/they)
 
 jawr8143@colorado.edu
 
+Office hours by appointment or during labs
+
 
 Overview
 -------------------------------------------------------------------------------------
@@ -66,6 +68,19 @@ This project allow you to explore the course content in the context of professio
 At the end of the semester we will have a 1-on-1 meeting to discuss your final course grade.
 You will propose a grade and we will your goals and progress towards these goals.
 
+Labs and Assignments
+-------------------------------------------------------------------------------------
+
+The labs and assignments will be turned in using GitHub, with cloning an assignemnt repository and pushing completed work. 
+
+Labs are done using your own laptop, `Coding CSEL Hub <https://coding.csel.io/>`_ or `Research Computing <https://www.colorado.edu/rc/>`_ (requires `requesting an account <https://curc.readthedocs.io/en/latest/getting_started/logging-in.html#getting-a-curc-account>`_). If you're running Windows and doing things locally, I suggest setting up `WSL <https://learn.microsoft.com/en-us/windows/wsl/install>`_.
+
+Community Contribution
+-------------------------------------------------------------------------------------
+
+Over the course of the semester, you will follow the development activities of an active open source project of your choosing. This should be a project with an active developer community from multiple institutions that discuss their rationale in public, such as a mailing list and/or GitHub/GitLab issues and pull requests. You will write and present about the performance and capability needs of key stakeholders, the way project resources are allocated, their metrics for success, and any notable achievements made over the course of the semester.
+
+You will also make a contribution to be merged by the project. Adding new examples and/or improving documentation are extremely valuable contributions, but you may also add features or improve implementations. Please respect the time of project maintainers and reviewers by learning about the project and its expectations and process, communicating in advance if appropriate, and leaving plenty of time for multiple rounds of review and revision.
 
 Deadlines and Extensions
 -------------------------------------------------------------------------------------
