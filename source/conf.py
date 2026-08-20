@@ -6,8 +6,8 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'CSCI 5576/4476'
-copyright = '2026, James R Wright'
+project = 'CSCI 5576/4576'
+copyright = '2026, James Wright'
 author = 'James R Wright'
 
 # -- General configuration ---------------------------------------------------
