@@ -1,0 +1,646 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Quizzes" href="../quizzes.html"><link rel="prev" title="CSCI 5576/4576 - High Performance Scientific Computing" href="20260820-CPU_Basics.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>What is Scientific High-Performance Computing?</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">CSCI 5576/4576</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">CSCI 5576/4576</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../syllabus.html">Course Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ungrading.html">Ungrading</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../notebooks.html">Class Notes</a><input aria-label="Toggle navigation of Class Notes" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="20260820-CPU_Basics.html">CSCI 5576/4576 - High Performance Scientific Computing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260820-CPU_Basics.html#How-does-a-computer-work?">How does a computer work?</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">What is Scientific High-Performance Computing?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Who-uses-compuational-science-and-why?">Who uses compuational science and why?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#What-about-the-%22high-performance%22-part?">What about the “high performance” part?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Review-of-last-weeks-CPU-Basics...">Review of last weeks CPU Basics…</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Vectorization">Vectorization</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../quizzes.html">Quizzes</a><input aria-label="Toggle navigation of Quizzes" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../homework.html">Homework</a><input aria-label="Toggle navigation of Homework" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/notebooks/20260825-HPC_in_Science_and_Vectorization.ipynb.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="What-is-Scientific-High-Performance-Computing?">
+<h1>What is Scientific High-Performance Computing?<a class="headerlink" href="#What-is-Scientific-High-Performance-Computing?" title="Link to this heading">¶</a></h1>
+<p>Scientific computing is the combination of three different areas</p>
+<ol class="arabic simple">
+<li><p>Domain Science</p></li>
+<li><p>Applied Math</p></li>
+<li><p>Computer Science</p></li>
+</ol>
+<ul class="simple">
+<li><p>The domain science defines what we’re trying to do; it’s the purpose and the ultimate driving force</p></li>
+<li><p>Applied math helps takes the models and theorems of the domain science and break it down into computable algorithms</p></li>
+<li><p>Computer science analyzes how to implement the resulting algorithms onto actual existing hardware (and evaluates which algorithms perform better on real-world hardware)</p></li>
+</ul>
+<div class="alert alert-block alert-danger"><p>True “mastery” of scientific computing requires at least “mediocrity” in all three areas; it is an interdisciplinary area by it’s nature.</p>
+</div><p>Generally you’ll be stronger in one area than the others, but it’s required to have an <em>understanding</em> of all sides.</p>
+<section id="A-short-little-history-trip-about-science.">
+<h2>A short little history trip about science.<a class="headerlink" href="#A-short-little-history-trip-about-science." title="Link to this heading">¶</a></h2>
+<p>Modern scientific research can be divided into three main “modes”: Experimental, theoretical, or computational</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Mode</p></th>
+<th class="head"><p>Definition</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Experimental</p></td>
+<td><p>Directly testing a hypothesis in the real world via observations of a controlled situtation</p></td>
+</tr>
+<tr class="row-odd"><td><p>Theoretical</p></td>
+<td><p>“Natural Philosophy”, conjecture about the physical world based on some model of the real world, often driven by heavily mathematical analysis</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>Computational</p></td>
+<td><p>Theoretical physics, but without closed form solutions; we do “experiments” based on “theory”</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="Why-computational-science?">
+<h2>Why computational science?<a class="headerlink" href="#Why-computational-science?" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Theory is limited because math is hard</p>
+<ul>
+<li><p>There comes a point where the math to solve certain problems is too hard</p></li>
+<li><p>Either provably impossible to obtain closed form solution, or practically too annoying/difficult</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>Experimental is limited because the real world is messy</p>
+<ul>
+<li><p>Measuring a physical system necessarily affects the system</p></li>
+<li><p>Experimental campaigns take significant time to prepare and execute</p></li>
+<li><p>Resulting data can often be somewhat limited; you <em>have</em> to know what you want to measure ahead of time</p></li>
+<li><p>Experimental is limited by what can be done physically</p></li>
+</ul>
+</li>
+</ul>
+<p>Computational research is a combination of theoretical and experimental</p>
+<ul class="simple">
+<li><p>We take the theoretical model, do some mathemagic (usually discretize) to make the model easier to work with, and run “complex” virtual experiments using the easier math</p></li>
+<li><p>Like theoretical, it is based on some underlying mathematical model of how the world works</p></li>
+<li><p>However, it can answer questions that are intractable to do in a pure mathematical sense</p></li>
+<li><p>Like experimental, we generally setup an “experiment”, run the experiment, then observe the action after the fact.</p></li>
+<li><p>However, the experiment is virtual and can be idealistic and perfectly “clean”</p></li>
+</ul>
+<section id="Computational-research-is-not-the-end-all-be-all:">
+<h3>Computational research is not the end-all-be-all:<a class="headerlink" href="#Computational-research-is-not-the-end-all-be-all:" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Theory allows for a far more “direct” understanding of the scientific models</p>
+<ul>
+<li><p>Instead of noticing “hey, this quantity is usually proportional to this other one”, we can make direct, explicit statements about the relationship</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>Experiments will always serve as a ground truth for computational (and theoretical) science</p>
+<ul>
+<li><p>It’s still dependent on a <em>model</em> of the world and is not perfect</p></li>
+<li><p>While much slower to setup and not as flexible, certain physical experiments are signficantly faster to run than computational ones</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="Who-uses-compuational-science-and-why?">
+<h1>Who uses compuational science and why?<a class="headerlink" href="#Who-uses-compuational-science-and-why?" title="Link to this heading">¶</a></h1>
+<ul class="simple">
+<li><p>Computational science has been around for a lot longer than digital/artificial computers</p>
+<ul>
+<li><p>Plenty of scientific discoveries done by painstaking hand calculations</p></li>
+<li><p>Example, the discovery of Neptune (1840s) was done by using Newton’s law of gravity, “guessing” the location of the unknown planet (to be named Neptune), computing how it would effect Uranus’s orbit, then checking it against observations</p></li>
+</ul>
+</li>
+</ul>
+<p>Some fields are <em>heavily</em> driven by computational work. Example, <strong>climate modeling</strong>.</p>
+<ul class="simple">
+<li><p>Theory is too hard</p>
+<ul>
+<li><p>The behavior of climate systems is far too complex to do purely theoretically</p></li>
+<li><p>Plenty of underlying theory to it, but can’t prove useful conclusions purely with math</p></li>
+</ul>
+</li>
+<li><p>Experiments are arguably harder</p>
+<ul>
+<li><p>Can do small scale experiments and data gathering to inform models</p></li>
+<li><p>Can’t exactly do a planet scale experiment without a few billion people becoming unwitting participants</p>
+<ul>
+<li><p>Some may argue we’ve already been doing some of that experimentation with green house gases….</p></li>
+</ul>
+</li>
+<li><p>The trends we seek to find are on the scale of decades or centuries</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Thus, computational is the primary tool used in this field to determine how things work.</strong></p>
+</section>
+<section id="What-about-the-%22high-performance%22-part?">
+<h1>What about the “high performance” part?<a class="headerlink" href="#What-about-the-%22high-performance%22-part?" title="Link to this heading">¶</a></h1>
+<p>So we’ve covered the “scientific” and “computing” part of “scientific high-performance computing”:</p>
+<ul class="simple">
+<li><p>The “science” part refers to the purpose of the computations</p>
+<ul>
+<li><p>To perform some kind of “virtual” scientific experiment</p></li>
+<li><p>Also includes quantitative analysis related to scientific results (which may or may not be generated from computational methods)</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>The “high performance” part comes in the desire to get results efficiently</p>
+<ul>
+<li><p>Everyone wants results yesterday</p></li>
+<li><p>Better efficiency can also result in novel scientific experiments as well</p>
+<ul>
+<li><p>Allows for finer resolution simulations, more experiments can be run, or even pushing experiments that were not possible before</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>Example: Anton</strong> Anton is a super computer built explicity for molecular dynamics research</p>
+<ul class="simple">
+<li><p>MD computation can be categorized as a N-body simulation</p>
+<ul>
+<li><p>Many dispersed “bodies” in space, which all have an effect on each other based on distance</p></li>
+<li><p>Heavily dependent on processor communication due to global nature of inter-atomic forces</p></li>
+</ul>
+</li>
+<li><p>Thus, latency becomes the bottleneck more than FLOPs or communication bandwidth</p></li>
+<li><p>Anton was built with custom hardware to tackle large-scale, low latency computation for pharmaceudical research</p></li>
+<li><p>Allowed running significantly longer and more accurate MD simulations than before</p></li>
+</ul>
+<ul class="simple">
+<li><p>As such, “high performance” does not have strict definition; it’s whatever gets the job done faster</p></li>
+</ul>
+<p>I’ll submit the following definition:</p>
+<div class="alert alert-block alert-success"><p>High performance computing (not necessarily scientific) generally refers to large-scale compututations (usually numerical in nature), occuring over multiple computers networked together, where the computations are <em>heavily coupled/syncronized</em>.</p>
+</div><ul class="simple">
+<li><p>The distinction of “heavily coupled” goes into discussion of how parallelizable algorithms are, which will be discussed later</p>
+<ul>
+<li><p>Briefly, programs who’s work is “embarassingly parallel” is not heavily coupled.</p></li>
+<li><p>Example, scaling of a website backend to handle multiple clients is <em>generally</em> embarassingly parallel.</p></li>
+<li><p>Kubernetes isn’t really HPC; in HPC parlance, it’s a job scheduler, not an HPC application</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Review-of-last-weeks-CPU-Basics...">
+<h1>Review of last weeks CPU Basics…<a class="headerlink" href="#Review-of-last-weeks-CPU-Basics..." title="Link to this heading">¶</a></h1>
+</section>
+<section id="Vectorization">
+<h1>Vectorization<a class="headerlink" href="#Vectorization" title="Link to this heading">¶</a></h1>
+<p>Currently, our instructions work on single (scalar) arguments, one at a time. How would hardware manufacturers make their hardware faster?</p>
+<p>Just crank the frequency!</p>
+<p><a class="reference external" href="https://github.com/karlrupp/microprocessor-trend-data">https://github.com/karlrupp/microprocessor-trend-data</a> <img alt="image.png" src="notebooks/attachment:72301e54-32bf-4cc8-a1fd-492c557bdc9d.png" /></p>
+<p>Denard scaling (related to the frequency) stopped working around 2005-2010, so we can’t just keep cranking the frequency.</p>
+<p><strong>What if we could do more work for every single clock cycle?</strong></p>
+<section id="Motivating-example">
+<h2>Motivating example<a class="headerlink" href="#Motivating-example" title="Link to this heading">¶</a></h2>
+<p>Take a look at the following C code:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">1000</span><span class="p">],</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="mi">1000</span><span class="p">],</span><span class="w"> </span><span class="n">c</span><span class="p">[</span><span class="mi">1000</span><span class="p">];</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">foo</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="mi">1000</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>What if instead of doing the additions one at a time, we could do them in chunks, all at one time?</p>
+<p>This works as <strong>vectorization</strong> or <strong>vector instructions</strong>.</p>
+<ul class="simple">
+<li><p>By requiring the CPU to do the exact same operation to multiple pieces, of data, we can spend less time in computation.</p></li>
+<li><p>This is also known as <strong>SIMD</strong> (Single Instruction, Multiple Data).</p></li>
+</ul>
+</section>
+<section id="How-do-we-%22turn-on%22-vector-instructions?">
+<h2>How do we “turn on” vector instructions?<a class="headerlink" href="#How-do-we-%22turn-on%22-vector-instructions?" title="Link to this heading">¶</a></h2>
+<p>Compiler flags! An example:</p>
+<p><code class="docutils literal notranslate"><span class="pre">-O3</span> <span class="pre">-march=native</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-O3</span></code> enables the conversion of for loops into vector instructions (among many other things)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-march=native</span></code> allows the compiler to limit compability to the CPU architecture that the compiler is running on.</p>
+<ul>
+<li><p>There are wide variety of vector instructions our there and a single CPU will almost never support all of them</p></li>
+<li><p>By default, <code class="docutils literal notranslate"><span class="pre">gcc</span></code> (and most compilers) will default to the lowest common standard, which often has very limited</p></li>
+</ul>
+</li>
+</ul>
+<p><a class="reference external" href="https://godbolt.org/z/6cE41bedv">https://godbolt.org/z/6cE41bedv</a></p>
+<section id="Intrinsics">
+<h3>Intrinsics<a class="headerlink" href="#Intrinsics" title="Link to this heading">¶</a></h3>
+<p>Compiler flags are what you will almost certainly want to use to enable this. However, if you need/want even more explicit control, you can use Intrinics, which are C function that map directly to assembly instructions.</p>
+<p>Examples can be seen on the <a class="reference external" href="https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html">Intel Intrinsics</a> website.</p>
+</section>
+<section id="Classes-of-vector-instructions">
+<h3>Classes of vector instructions<a class="headerlink" href="#Classes-of-vector-instructions" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Vector instructions, like normal instructions, can only operate on registers on the CPU.</p></li>
+<li><p>Thus, vector instructions require special registers which store more than a single scalar data byte.</p></li>
+<li><p>Most vector instructions can be split into how large their registers are (e.g. how much data they compute at once)</p>
+<ul>
+<li><p>Can also be described by their “lanes”, or the number of scalars they can work on simultaneously.</p></li>
+</ul>
+</li>
+</ul>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Instruction Set</p></th>
+<th class="head"><p>Register size (bits)</p></th>
+<th class="head"><p>Number of double precision Scalars</p></th>
+<th class="head"><p>Register names</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>SSE</p></td>
+<td><p>128</p></td>
+<td><p>2</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">xmm#</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>AVX/AVX2</p></td>
+<td><p>256</p></td>
+<td><p>4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ymm#</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>AVX-512</p></td>
+<td><p>512</p></td>
+<td><p>8</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">zmm#</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="Data-ordering">
+<h2>Data ordering<a class="headerlink" href="#Data-ordering" title="Link to this heading">¶</a></h2>
+<p>The multiple scalar values needed for a SIMD instruction can be packed into the SIMD register either one at a time, or all at once.</p>
+<p>The latter is much faster than the former, but the speedup <em>requires that the data in memory be stored in the packed order</em> as what is loaded into the SIMD register.</p>
+<p>The example above has the data for <code class="docutils literal notranslate"><span class="pre">a</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span></code>, and <code class="docutils literal notranslate"><span class="pre">c</span></code> arrays stored packed together, e.g.</p>
+<div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(a_0\)</span> | <span class="math notranslate nohighlight">\(a_1\)</span> | <span class="math notranslate nohighlight">\(\dots\)</span> | <span class="math notranslate nohighlight">\(a_{999}\)</span> | (other memory) | <span class="math notranslate nohighlight">\(b_0\)</span> | <span class="math notranslate nohighlight">\(\dots\)</span> | <span class="math notranslate nohighlight">\(b_{999}\)</span> | (other memory) | <span class="math notranslate nohighlight">\(c_0\)</span> | <span class="math notranslate nohighlight">\(\dots\)</span> | <span class="math notranslate nohighlight">\(c_{999}\)</span> |</div>
+</div>
+<p>Thus, when we want to do the computation, the arrays in memory are already stored in the order we want for the vectorization.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="n">abc</span><span class="p">[</span><span class="mi">3000</span><span class="p">];</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">foo_blocked</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="mi">1000</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">abc</span><span class="p">[</span><span class="mi">2000</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">abc</span><span class="p">[</span><span class="mi">0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">abc</span><span class="p">[</span><span class="mi">1000</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Contrast with interleaving the arrays together, e.g. a code like this:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="n">abc</span><span class="p">[</span><span class="mi">3000</span><span class="p">];</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">foo_other</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="mi">1000</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">abc</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">abc</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">abc</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>where the data layout now looks like this:</p>
+<div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(a_0\)</span> | <span class="math notranslate nohighlight">\(b_0\)</span> | <span class="math notranslate nohighlight">\(c_0\)</span> | <span class="math notranslate nohighlight">\(a_1\)</span> | <span class="math notranslate nohighlight">\(b_1\)</span> | <span class="math notranslate nohighlight">\(c_1\)</span> | <span class="math notranslate nohighlight">\(\dots\)</span> | <span class="math notranslate nohighlight">\(a_{999}\)</span> | <span class="math notranslate nohighlight">\(b_{999}\)</span> | <span class="math notranslate nohighlight">\(c_{999}\)</span> |</div>
+</div>
+<p>When this data is read into registers, it must now be rearranged, such that all the <code class="docutils literal notranslate"><span class="pre">a</span></code> elements are in one register, all the <code class="docutils literal notranslate"><span class="pre">b</span></code> elements are in a different register, and then for writing back to memory, the must be re-interleaved.</p>
+<p><a class="reference external" href="https://godbolt.org/z/s4zbvTsrz">https://godbolt.org/z/s4zbvTsrz</a></p>
+<div class="alert alert-block alert-info"><p>Note: Modern CPU SIMD instructions have special load instructions for handling the stided memory access demonstrated above. However, this requires that compilers know that the stride length is some compile-time constant and is generally much more costly to actually run and do. Also, this feature may not be available on GPUs.</p>
+</div></section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../quizzes.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Quizzes</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="20260820-CPU_Basics.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">CSCI 5576/4576 - High Performance Scientific Computing</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, James Wright
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">What is Scientific High-Performance Computing?</a><ul>
+<li><a class="reference internal" href="#A-short-little-history-trip-about-science.">A short little history trip about science.</a></li>
+<li><a class="reference internal" href="#Why-computational-science?">Why computational science?</a><ul>
+<li><a class="reference internal" href="#Computational-research-is-not-the-end-all-be-all:">Computational research is not the end-all-be-all:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Who-uses-compuational-science-and-why?">Who uses compuational science and why?</a></li>
+<li><a class="reference internal" href="#What-about-the-%22high-performance%22-part?">What about the “high performance” part?</a></li>
+<li><a class="reference internal" href="#Review-of-last-weeks-CPU-Basics...">Review of last weeks CPU Basics…</a></li>
+<li><a class="reference internal" href="#Vectorization">Vectorization</a><ul>
+<li><a class="reference internal" href="#Motivating-example">Motivating example</a></li>
+<li><a class="reference internal" href="#How-do-we-%22turn-on%22-vector-instructions?">How do we “turn on” vector instructions?</a><ul>
+<li><a class="reference internal" href="#Intrinsics">Intrinsics</a></li>
+<li><a class="reference internal" href="#Classes-of-vector-instructions">Classes of vector instructions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Data-ordering">Data ordering</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    </body>
+</html>
