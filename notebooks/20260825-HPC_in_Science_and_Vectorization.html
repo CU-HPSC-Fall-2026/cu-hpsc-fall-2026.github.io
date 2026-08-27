@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Quizzes" href="../quizzes.html"><link rel="prev" title="CSCI 5576/4576 - High Performance Scientific Computing" href="20260820-CPU_Basics.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="20260827 - CPUs Lie to You" href="20260827-CPUs_lie_to_you.html"><link rel="prev" title="20260820 - Introduction" href="20260820-CPU_Basics.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>What is Scientific High-Performance Computing?</title>
+        <title>20260825 - What is HPSC? And Vectorization</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -195,19 +195,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../syllabus.html">Course Syllabus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ungrading.html">Ungrading</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../notebooks.html">Class Notes</a><input aria-label="Toggle navigation of Class Notes" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="20260820-CPU_Basics.html">CSCI 5576/4576 - High Performance Scientific Computing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="20260820-CPU_Basics.html#How-does-a-computer-work?">How does a computer work?</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">What is Scientific High-Performance Computing?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Who-uses-compuational-science-and-why?">Who uses compuational science and why?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#What-about-the-%22high-performance%22-part?">What about the “high performance” part?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Review-of-last-weeks-CPU-Basics...">Review of last weeks CPU Basics…</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Vectorization">Vectorization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260820-CPU_Basics.html">20260820 - Introduction</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">20260825 - What is HPSC? And Vectorization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260827-CPUs_lie_to_you.html">20260827 - CPUs Lie to You</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../quizzes.html">Quizzes</a><input aria-label="Toggle navigation of Quizzes" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../homework.html">Homework</a><input aria-label="Toggle navigation of Homework" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../homework.html">Homework</a><input aria-label="Toggle navigation of Homework" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
 </ul>
@@ -248,8 +241,10 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="What-is-Scientific-High-Performance-Computing?">
-<h1>What is Scientific High-Performance Computing?<a class="headerlink" href="#What-is-Scientific-High-Performance-Computing?" title="Link to this heading">¶</a></h1>
+          <section id="20260825---What-is-HPSC?-And-Vectorization">
+<h1>20260825 - What is HPSC? And Vectorization<a class="headerlink" href="#20260825---What-is-HPSC?-And-Vectorization" title="Link to this heading">¶</a></h1>
+<section id="What-is-Scientific-High-Performance-Computing?">
+<h2>What is Scientific High-Performance Computing?<a class="headerlink" href="#What-is-Scientific-High-Performance-Computing?" title="Link to this heading">¶</a></h2>
 <p>Scientific computing is the combination of three different areas</p>
 <ol class="arabic simple">
 <li><p>Domain Science</p></li>
@@ -264,7 +259,7 @@
 <div class="alert alert-block alert-danger"><p>True “mastery” of scientific computing requires at least “mediocrity” in all three areas; it is an interdisciplinary area by it’s nature.</p>
 </div><p>Generally you’ll be stronger in one area than the others, but it’s required to have an <em>understanding</em> of all sides.</p>
 <section id="A-short-little-history-trip-about-science.">
-<h2>A short little history trip about science.<a class="headerlink" href="#A-short-little-history-trip-about-science." title="Link to this heading">¶</a></h2>
+<h3>A short little history trip about science.<a class="headerlink" href="#A-short-little-history-trip-about-science." title="Link to this heading">¶</a></h3>
 <p>Modern scientific research can be divided into three main “modes”: Experimental, theoretical, or computational</p>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
@@ -294,7 +289,7 @@
 </div>
 </section>
 <section id="Why-computational-science?">
-<h2>Why computational science?<a class="headerlink" href="#Why-computational-science?" title="Link to this heading">¶</a></h2>
+<h3>Why computational science?<a class="headerlink" href="#Why-computational-science?" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Theory is limited because math is hard</p>
 <ul>
@@ -322,7 +317,7 @@
 <li><p>However, the experiment is virtual and can be idealistic and perfectly “clean”</p></li>
 </ul>
 <section id="Computational-research-is-not-the-end-all-be-all:">
-<h3>Computational research is not the end-all-be-all:<a class="headerlink" href="#Computational-research-is-not-the-end-all-be-all:" title="Link to this heading">¶</a></h3>
+<h4>Computational research is not the end-all-be-all:<a class="headerlink" href="#Computational-research-is-not-the-end-all-be-all:" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p>Theory allows for a far more “direct” understanding of the scientific models</p>
 <ul>
@@ -340,9 +335,8 @@
 </ul>
 </section>
 </section>
-</section>
 <section id="Who-uses-compuational-science-and-why?">
-<h1>Who uses compuational science and why?<a class="headerlink" href="#Who-uses-compuational-science-and-why?" title="Link to this heading">¶</a></h1>
+<h3>Who uses compuational science and why?<a class="headerlink" href="#Who-uses-compuational-science-and-why?" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Computational science has been around for a lot longer than digital/artificial computers</p>
 <ul>
@@ -374,7 +368,7 @@
 <p><strong>Thus, computational is the primary tool used in this field to determine how things work.</strong></p>
 </section>
 <section id="What-about-the-%22high-performance%22-part?">
-<h1>What about the “high performance” part?<a class="headerlink" href="#What-about-the-%22high-performance%22-part?" title="Link to this heading">¶</a></h1>
+<h3>What about the “high performance” part?<a class="headerlink" href="#What-about-the-%22high-performance%22-part?" title="Link to this heading">¶</a></h3>
 <p>So we’ve covered the “scientific” and “computing” part of “scientific high-performance computing”:</p>
 <ul class="simple">
 <li><p>The “science” part refers to the purpose of the computations</p>
@@ -423,18 +417,19 @@
 </li>
 </ul>
 </section>
+</section>
 <section id="Review-of-last-weeks-CPU-Basics...">
-<h1>Review of last weeks CPU Basics…<a class="headerlink" href="#Review-of-last-weeks-CPU-Basics..." title="Link to this heading">¶</a></h1>
+<h2>Review of last weeks CPU Basics…<a class="headerlink" href="#Review-of-last-weeks-CPU-Basics..." title="Link to this heading">¶</a></h2>
 </section>
 <section id="Vectorization">
-<h1>Vectorization<a class="headerlink" href="#Vectorization" title="Link to this heading">¶</a></h1>
+<h2>Vectorization<a class="headerlink" href="#Vectorization" title="Link to this heading">¶</a></h2>
 <p>Currently, our instructions work on single (scalar) arguments, one at a time. How would hardware manufacturers make their hardware faster?</p>
 <p>Just crank the frequency!</p>
-<p><a class="reference external" href="https://github.com/karlrupp/microprocessor-trend-data">https://github.com/karlrupp/microprocessor-trend-data</a> <img alt="image.png" src="notebooks/attachment:72301e54-32bf-4cc8-a1fd-492c557bdc9d.png" /></p>
+<p><a class="reference external" href="https://github.com/karlrupp/microprocessor-trend-data">https://github.com/karlrupp/microprocessor-trend-data</a> <img alt="image.png" src="../_images/50-years-processor-trend.png" /></p>
 <p>Denard scaling (related to the frequency) stopped working around 2005-2010, so we can’t just keep cranking the frequency.</p>
 <p><strong>What if we could do more work for every single clock cycle?</strong></p>
 <section id="Motivating-example">
-<h2>Motivating example<a class="headerlink" href="#Motivating-example" title="Link to this heading">¶</a></h2>
+<h3>Motivating example<a class="headerlink" href="#Motivating-example" title="Link to this heading">¶</a></h3>
 <p>Take a look at the following C code:</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">1000</span><span class="p">],</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="mi">1000</span><span class="p">],</span><span class="w"> </span><span class="n">c</span><span class="p">[</span><span class="mi">1000</span><span class="p">];</span>
 
@@ -453,7 +448,7 @@
 </ul>
 </section>
 <section id="How-do-we-%22turn-on%22-vector-instructions?">
-<h2>How do we “turn on” vector instructions?<a class="headerlink" href="#How-do-we-%22turn-on%22-vector-instructions?" title="Link to this heading">¶</a></h2>
+<h3>How do we “turn on” vector instructions?<a class="headerlink" href="#How-do-we-%22turn-on%22-vector-instructions?" title="Link to this heading">¶</a></h3>
 <p>Compiler flags! An example:</p>
 <p><code class="docutils literal notranslate"><span class="pre">-O3</span> <span class="pre">-march=native</span></code></p>
 <ul class="simple">
@@ -467,12 +462,12 @@
 </ul>
 <p><a class="reference external" href="https://godbolt.org/z/6cE41bedv">https://godbolt.org/z/6cE41bedv</a></p>
 <section id="Intrinsics">
-<h3>Intrinsics<a class="headerlink" href="#Intrinsics" title="Link to this heading">¶</a></h3>
+<h4>Intrinsics<a class="headerlink" href="#Intrinsics" title="Link to this heading">¶</a></h4>
 <p>Compiler flags are what you will almost certainly want to use to enable this. However, if you need/want even more explicit control, you can use Intrinics, which are C function that map directly to assembly instructions.</p>
 <p>Examples can be seen on the <a class="reference external" href="https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html">Intel Intrinsics</a> website.</p>
 </section>
 <section id="Classes-of-vector-instructions">
-<h3>Classes of vector instructions<a class="headerlink" href="#Classes-of-vector-instructions" title="Link to this heading">¶</a></h3>
+<h4>Classes of vector instructions<a class="headerlink" href="#Classes-of-vector-instructions" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p>Vector instructions, like normal instructions, can only operate on registers on the CPU.</p></li>
 <li><p>Thus, vector instructions require special registers which store more than a single scalar data byte.</p></li>
@@ -510,10 +505,11 @@
 </tbody>
 </table>
 </div>
-</section>
+<div class="alert alert-block alert-info"><p>Note: The <code class="docutils literal notranslate"><span class="pre">xmm#</span></code> register is also used for scalar operations. Just because you see an <code class="docutils literal notranslate"><span class="pre">xmm#</span></code> register does not mean that it’s using vector instructions. Most CPU architectures on modern platforms have AVX/AVX2 compatability, so expect to see the <code class="docutils literal notranslate"><span class="pre">ymm#</span></code> registers used for this</p>
+</div></section>
 </section>
 <section id="Data-ordering">
-<h2>Data ordering<a class="headerlink" href="#Data-ordering" title="Link to this heading">¶</a></h2>
+<h3>Data ordering<a class="headerlink" href="#Data-ordering" title="Link to this heading">¶</a></h3>
 <p>The multiple scalar values needed for a SIMD instruction can be packed into the SIMD register either one at a time, or all at once.</p>
 <p>The latter is much faster than the former, but the speedup <em>requires that the data in memory be stored in the packed order</em> as what is loaded into the SIMD register.</p>
 <p>The example above has the data for <code class="docutils literal notranslate"><span class="pre">a</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span></code>, and <code class="docutils literal notranslate"><span class="pre">c</span></code> arrays stored packed together, e.g.</p>
@@ -549,18 +545,19 @@
 <div class="alert alert-block alert-info"><p>Note: Modern CPU SIMD instructions have special load instructions for handling the stided memory access demonstrated above. However, this requires that compilers know that the stride length is some compile-time constant and is generally much more costly to actually run and do. Also, this feature may not be available on GPUs.</p>
 </div></section>
 </section>
+</section>
 
         </article>
       </div>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../quizzes.html">
+          <a class="next-page" href="20260827-CPUs_lie_to_you.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Quizzes</div>
+                <div class="title">20260827 - CPUs Lie to You</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -571,7 +568,7 @@
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">CSCI 5576/4576 - High Performance Scientific Computing</div>
+                <div class="title">20260820 - Introduction</div>
                 
               </div>
             </a>
@@ -605,16 +602,17 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">What is Scientific High-Performance Computing?</a><ul>
+<li><a class="reference internal" href="#">20260825 - What is HPSC? And Vectorization</a><ul>
+<li><a class="reference internal" href="#What-is-Scientific-High-Performance-Computing?">What is Scientific High-Performance Computing?</a><ul>
 <li><a class="reference internal" href="#A-short-little-history-trip-about-science.">A short little history trip about science.</a></li>
 <li><a class="reference internal" href="#Why-computational-science?">Why computational science?</a><ul>
 <li><a class="reference internal" href="#Computational-research-is-not-the-end-all-be-all:">Computational research is not the end-all-be-all:</a></li>
 </ul>
 </li>
-</ul>
-</li>
 <li><a class="reference internal" href="#Who-uses-compuational-science-and-why?">Who uses compuational science and why?</a></li>
 <li><a class="reference internal" href="#What-about-the-%22high-performance%22-part?">What about the “high performance” part?</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#Review-of-last-weeks-CPU-Basics...">Review of last weeks CPU Basics…</a></li>
 <li><a class="reference internal" href="#Vectorization">Vectorization</a><ul>
 <li><a class="reference internal" href="#Motivating-example">Motivating example</a></li>
@@ -624,6 +622,8 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#Data-ordering">Data ordering</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

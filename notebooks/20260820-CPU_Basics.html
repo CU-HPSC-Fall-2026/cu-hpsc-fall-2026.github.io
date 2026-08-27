@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="What is Scientific High-Performance Computing?" href="20260825-HPC_in_Science_and_Vectorization.html"><link rel="prev" title="Class Notes" href="../notebooks.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="20260825 - What is HPSC? And Vectorization" href="20260825-HPC_in_Science_and_Vectorization.html"><link rel="prev" title="Class Notes" href="../notebooks.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>CSCI 5576/4576 - High Performance Scientific Computing</title>
+        <title>20260820 - Introduction</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -195,19 +195,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../syllabus.html">Course Syllabus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ungrading.html">Ungrading</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../notebooks.html">Class Notes</a><input aria-label="Toggle navigation of Class Notes" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">CSCI 5576/4576 - High Performance Scientific Computing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#How-does-a-computer-work?">How does a computer work?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="20260825-HPC_in_Science_and_Vectorization.html">What is Scientific High-Performance Computing?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="20260825-HPC_in_Science_and_Vectorization.html#Who-uses-compuational-science-and-why?">Who uses compuational science and why?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="20260825-HPC_in_Science_and_Vectorization.html#What-about-the-%22high-performance%22-part?">What about the “high performance” part?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="20260825-HPC_in_Science_and_Vectorization.html#Review-of-last-weeks-CPU-Basics...">Review of last weeks CPU Basics…</a></li>
-<li class="toctree-l2"><a class="reference internal" href="20260825-HPC_in_Science_and_Vectorization.html#Vectorization">Vectorization</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">20260820 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260825-HPC_in_Science_and_Vectorization.html">20260825 - What is HPSC? And Vectorization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260827-CPUs_lie_to_you.html">20260827 - CPUs Lie to You</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../quizzes.html">Quizzes</a><input aria-label="Toggle navigation of Quizzes" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../homework.html">Homework</a><input aria-label="Toggle navigation of Homework" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../homework.html">Homework</a><input aria-label="Toggle navigation of Homework" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
 </ul>
@@ -248,8 +241,11 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="CSCI-5576/4576---High-Performance-Scientific-Computing">
-<h1>CSCI 5576/4576 - High Performance Scientific Computing<a class="headerlink" href="#CSCI-5576/4576---High-Performance-Scientific-Computing" title="Link to this heading">¶</a></h1>
+          <section id="20260820---Introduction">
+<h1>20260820 - Introduction<a class="headerlink" href="#20260820---Introduction" title="Link to this heading">¶</a></h1>
+<section id="CSCI-5576/4576---High-Performance-Scientific-Computing">
+<h2>CSCI 5576/4576 - High Performance Scientific Computing<a class="headerlink" href="#CSCI-5576/4576---High-Performance-Scientific-Computing" title="Link to this heading">¶</a></h2>
+</section>
 <section id="Who-am-I?">
 <h2>Who am I?<a class="headerlink" href="#Who-am-I?" title="Link to this heading">¶</a></h2>
 <ul class="simple">
@@ -331,11 +327,10 @@
 <li><p>Labs</p></li>
 </ul>
 </section>
-</section>
 <section id="How-does-a-computer-work?">
-<h1>How does a computer work?<a class="headerlink" href="#How-does-a-computer-work?" title="Link to this heading">¶</a></h1>
+<h2>How does a computer work?<a class="headerlink" href="#How-does-a-computer-work?" title="Link to this heading">¶</a></h2>
 <section id="Von-Neumann-Architecture">
-<h2>Von Neumann Architecture<a class="headerlink" href="#Von-Neumann-Architecture" title="Link to this heading">¶</a></h2>
+<h3>Von Neumann Architecture<a class="headerlink" href="#Von-Neumann-Architecture" title="Link to this heading">¶</a></h3>
 <p><img alt="image" src="../_images/Von_Neumann_Architecture.svg" /></p>
 <p>Two core components:</p>
 <ul class="simple">
@@ -351,7 +346,7 @@
 <p>Instructions are “executed” once per-clock cycle</p>
 </section>
 <section id="Registers">
-<h2>Registers<a class="headerlink" href="#Registers" title="Link to this heading">¶</a></h2>
+<h3>Registers<a class="headerlink" href="#Registers" title="Link to this heading">¶</a></h3>
 <p>Data can only be operated on in <strong>registers</strong>: a handful of slots in the CPU that stores data</p>
 <div class="alert alert-block alert-info"><p>Analogy: If you’re working out a math problem on paper:</p>
 <div class="table-wrapper docutils container">
@@ -383,9 +378,9 @@
 <p>Competent humans will obviously not write down every intermediate step, but computers must take every step literally.</p>
 </section>
 <section id="Simple-Example-of-CPU:-Fibonacci-Sequence">
-<h2>Simple Example of CPU: Fibonacci Sequence<a class="headerlink" href="#Simple-Example-of-CPU:-Fibonacci-Sequence" title="Link to this heading">¶</a></h2>
+<h3>Simple Example of CPU: Fibonacci Sequence<a class="headerlink" href="#Simple-Example-of-CPU:-Fibonacci-Sequence" title="Link to this heading">¶</a></h3>
 <section id="A-Simple-CPU-set-of-instructions">
-<h3>A Simple CPU set of instructions<a class="headerlink" href="#A-Simple-CPU-set-of-instructions" title="Link to this heading">¶</a></h3>
+<h4>A Simple CPU set of instructions<a class="headerlink" href="#A-Simple-CPU-set-of-instructions" title="Link to this heading">¶</a></h4>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <thead>
@@ -451,7 +446,7 @@
 </div>
 </section>
 <section id="Fibonacci-Sequence">
-<h3>Fibonacci Sequence<a class="headerlink" href="#Fibonacci-Sequence" title="Link to this heading">¶</a></h3>
+<h4>Fibonacci Sequence<a class="headerlink" href="#Fibonacci-Sequence" title="Link to this heading">¶</a></h4>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[f_0 = 1\]</div>
@@ -470,7 +465,7 @@
 </div>
 </section>
 <section id="A-Program-for-Computing-the-Fibonacci-Sequence">
-<h3>A Program for Computing the Fibonacci Sequence<a class="headerlink" href="#A-Program-for-Computing-the-Fibonacci-Sequence" title="Link to this heading">¶</a></h3>
+<h4>A Program for Computing the Fibonacci Sequence<a class="headerlink" href="#A-Program-for-Computing-the-Fibonacci-Sequence" title="Link to this heading">¶</a></h4>
 <p>A program for computing the Fibonacci sequence using the 6 instructions described above. We use the registers in the following manner:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&#64;n</span></code> sets how many fibonacci numbers we want to set (we compute <code class="docutils literal notranslate"><span class="pre">&#64;n</span> <span class="pre">+1</span></code> Fibonacci numbers</p></li>
@@ -496,7 +491,7 @@
 </div>
 </section>
 <section id="Fibonacci-Walkthrough">
-<h3>Fibonacci Walkthrough<a class="headerlink" href="#Fibonacci-Walkthrough" title="Link to this heading">¶</a></h3>
+<h4>Fibonacci Walkthrough<a class="headerlink" href="#Fibonacci-Walkthrough" title="Link to this heading">¶</a></h4>
 <p>Below table goes through each instruction sequentially, showing how the registers and memory change with each instruction.</p>
 <p><strong>Initialization:</strong></p>
 <div class="table-wrapper docutils container">
@@ -930,7 +925,7 @@
 </section>
 </section>
 <section id="Mapping-real-code-to-CPU-instructions">
-<h2>Mapping real code to CPU instructions<a class="headerlink" href="#Mapping-real-code-to-CPU-instructions" title="Link to this heading">¶</a></h2>
+<h3>Mapping real code to CPU instructions<a class="headerlink" href="#Mapping-real-code-to-CPU-instructions" title="Link to this heading">¶</a></h3>
 <p>The above is interesting, but I can almost guarantee that nobody in this class will be hand writing up assembly (though <em>reading</em> assembly is a very useful skill). Instead, we program in some higher level language and then a compiler translates this down to assembly and machine code.</p>
 <p>Being able to generally map between high level code and the actual instructions run by the CPU is critical to understanding performance of your code and how to make it better.</p>
 <p>So here’s an example: we take two arrays, <code class="docutils literal notranslate"><span class="pre">in_1</span></code> and <code class="docutils literal notranslate"><span class="pre">in_2</span></code>, and do a vector addition into an output array <code class="docutils literal notranslate"><span class="pre">out</span></code>.</p>
@@ -984,7 +979,7 @@
 </pre></div>
 </div>
 <section id="Actual-Assembly">
-<h3>Actual Assembly<a class="headerlink" href="#Actual-Assembly" title="Link to this heading">¶</a></h3>
+<h4>Actual Assembly<a class="headerlink" href="#Actual-Assembly" title="Link to this heading">¶</a></h4>
 <p>How does our made up CPU instructions compare to the actual code generated by a compiler?</p>
 <p><a class="reference external" href="https://godbolt.org/z/xsb9K11KP">https://godbolt.org/z/xsb9K11KP</a></p>
 <div class="highlight-assembly notranslate"><div class="highlight"><pre><span></span>"foo":
@@ -1018,6 +1013,7 @@
 </section>
 </section>
 </section>
+</section>
 
         </article>
       </div>
@@ -1029,7 +1025,7 @@
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">What is Scientific High-Performance Computing?</div>
+                <div class="title">20260825 - What is HPSC? And Vectorization</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -1074,13 +1070,12 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">CSCI 5576/4576 - High Performance Scientific Computing</a><ul>
+<li><a class="reference internal" href="#">20260820 - Introduction</a><ul>
+<li><a class="reference internal" href="#CSCI-5576/4576---High-Performance-Scientific-Computing">CSCI 5576/4576 - High Performance Scientific Computing</a></li>
 <li><a class="reference internal" href="#Who-am-I?">Who am I?</a></li>
 <li><a class="reference internal" href="#Who-is-this-class-for?">Who is this class for?</a></li>
 <li><a class="reference internal" href="#What-does-this-course-cover?">What does this course cover?</a></li>
 <li><a class="reference internal" href="#Syllabus,-Ungrading,-and-Assignments">Syllabus, Ungrading, and Assignments</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#How-does-a-computer-work?">How does a computer work?</a><ul>
 <li><a class="reference internal" href="#Von-Neumann-Architecture">Von Neumann Architecture</a></li>
 <li><a class="reference internal" href="#Registers">Registers</a></li>
@@ -1093,6 +1088,8 @@
 </li>
 <li><a class="reference internal" href="#Mapping-real-code-to-CPU-instructions">Mapping real code to CPU instructions</a><ul>
 <li><a class="reference internal" href="#Actual-Assembly">Actual Assembly</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
