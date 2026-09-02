@@ -479,7 +479,7 @@
 </ul>
 </li>
 </ul>
-<p><img alt="image" src="../_images/pointwise_mult_stride_O3.png" /></p>
+<p><img alt="arithmetic intensity over time" src="../_images/dp_arithmetic_intensity.png" /></p>
 <div class="alert alert-block alert-danger"><p>The ratio here sells the story short, as it takes 8 bytes to store/transport a single double precision number. So the FLOPs/scalar is about 8x the number reported above</p>
 </div><ul class="simple">
 <li><p>Key point is this is <em>theoretical</em>, not measured; plenty of small things can get in the way of seeing these actual numbers</p>
@@ -512,13 +512,13 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<p><img alt="image" src="../_images/pointwise_mult_stride_O3.png" /></p>
+<p><img alt="mult work O2" src="../_images/pointwise_mult_work_O2.png" /></p>
 <ul class="simple">
 <li><p>At small array sizes, the extra computation slows the processing down</p></li>
 <li><p>At large array sizes (once it has to go to RAM), they have the exact same speed, even though “complicated” does 13x the FLOPs</p></li>
 </ul>
 <p>With vectorization, changes are just faster (though you can notice the cache steps more clearly with the “just mult” case)</p>
-<p><img alt="image" src="../_images/pointwise_mult_stride_O3.png" /></p>
+<p><img alt="mult work O3" src="../_images/pointwise_mult_work_O3.png" /></p>
 <section id="Issues-with-Multiblock">
 <h4>Issues with Multiblock<a class="headerlink" href="#Issues-with-Multiblock" title="Link to this heading">¶</a></h4>
 <ul class="simple">
@@ -621,7 +621,7 @@ max MB/second: 4561.466410
 <span class="p">}</span>
 </pre></div>
 </div>
-<p><img alt="image" src="../_images/pointwise_mult_stride_O3.png" /></p>
+<p><img alt="mult stride O2" src="../_images/pointwise_mult_stride_O2.png" /></p>
 <ul class="simple">
 <li><p>Even though we do the same work (and thus use the same amount of memory) regardless of stride, we’re still slower</p></li>
 <li><p>Why?</p></li>
@@ -637,7 +637,7 @@ max MB/second: 4561.466410
 </ul>
 <section id="Strides-with-Vectorization">
 <h4>Strides with Vectorization<a class="headerlink" href="#Strides-with-Vectorization" title="Link to this heading">¶</a></h4>
-<p><img alt="image" src="../_images/pointwise_mult_stride_O3.png" /></p>
+<p><img alt="mult stride O3" src="../_images/pointwise_mult_stride_O3.png" /></p>
 <p>Vectorization doesn’t make a difference; the rate of computation at the end is still limited by memory</p>
 <p><em>And now, for something completely different</em></p>
 </section>
