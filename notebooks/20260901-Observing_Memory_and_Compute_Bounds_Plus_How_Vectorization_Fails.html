@@ -1,0 +1,905 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Homework" href="../homework.html"><link rel="prev" title="20260827 - CPUs Lie to You" href="20260827-CPUs_lie_to_you.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>20260901 - Memory- and Compute-Bound Applications and How Vectorization Fails</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">CSCI 5576/4576</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">CSCI 5576/4576</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../syllabus.html">Course Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ungrading.html">Ungrading</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../notebooks.html">Class Notes</a><input aria-label="Toggle navigation of Class Notes" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="20260820-CPU_Basics.html">20260820 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260825-HPC_in_Science_and_Vectorization.html">20260825 - What is HPSC? And Vectorization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260827-CPUs_lie_to_you.html">20260827 - CPUs Lie to You</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">20260901 - Memory- and Compute-Bound Applications and How Vectorization Fails</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../homework.html">Homework</a><input aria-label="Toggle navigation of Homework" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/notebooks/20260901-Observing_Memory_and_Compute_Bounds_Plus_How_Vectorization_Fails.ipynb.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="20260901---Memory--and-Compute-Bound-Applications-and-How-Vectorization-Fails">
+<h1>20260901 - Memory- and Compute-Bound Applications and How Vectorization Fails<a class="headerlink" href="#20260901---Memory--and-Compute-Bound-Applications-and-How-Vectorization-Fails" title="Link to this heading">¶</a></h1>
+<section id="Memory--and-Compute-Bound-Applications">
+<h2>Memory- and Compute-Bound Applications<a class="headerlink" href="#Memory--and-Compute-Bound-Applications" title="Link to this heading">¶</a></h2>
+<p><strong>i.e. Lab 2 Overview</strong></p>
+<section id="Memory-bandwidth">
+<h3>Memory bandwidth<a class="headerlink" href="#Memory-bandwidth" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Using the stream program, I get the following results when I scale up memory:</p>
+<ul>
+<li><p>The multiblock timing system doesn’t have enough granularity for the really small sizes</p></li>
+<li><p>Stream autoscales how much work it averages over when dealing with small array values, which significantly helps the precision</p></li>
+</ul>
+</li>
+</ul>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Array Size</p></th>
+<th class="head"><p>Best MB/s for Triad</p></th>
+<th class="head"><p>Total Memory Required, KB</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>100</p></td>
+<td><p>58,579.7</p></td>
+<td><p>2.4</p></td>
+</tr>
+<tr class="row-odd"><td><p>200</p></td>
+<td><p>61,458.8</p></td>
+<td><p>4.8</p></td>
+</tr>
+<tr class="row-even"><td><p>400</p></td>
+<td><p>64,706.1</p></td>
+<td><p>9.6</p></td>
+</tr>
+<tr class="row-odd"><td><p>800</p></td>
+<td><p>64,585.7</p></td>
+<td><p>19.2</p></td>
+</tr>
+<tr class="row-even"><td><p>1,600</p></td>
+<td><p>65,040.6</p></td>
+<td><p>38.4</p></td>
+</tr>
+<tr class="row-odd"><td><p>3,200</p></td>
+<td><p>64,190.3</p></td>
+<td><p>76.8</p></td>
+</tr>
+<tr class="row-even"><td><p>6,400</p></td>
+<td><p>63,868.8</p></td>
+<td><p>153.6</p></td>
+</tr>
+<tr class="row-odd"><td><p>12,800</p></td>
+<td><p>60,603.8</p></td>
+<td><p>307.2</p></td>
+</tr>
+<tr class="row-even"><td><p>25,600</p></td>
+<td><p>60,026.2</p></td>
+<td><p>614.4</p></td>
+</tr>
+<tr class="row-odd"><td><p>51,200</p></td>
+<td><p>57,246.8</p></td>
+<td><p>1,228.8</p></td>
+</tr>
+<tr class="row-even"><td><p>102,400</p></td>
+<td><p>49,525.7</p></td>
+<td><p>2,457.6</p></td>
+</tr>
+<tr class="row-odd"><td><p>204,800</p></td>
+<td><p>47,607.2</p></td>
+<td><p>4,915.2</p></td>
+</tr>
+<tr class="row-even"><td><p>409,600</p></td>
+<td><p>32,205.2</p></td>
+<td><p>9,830.4</p></td>
+</tr>
+<tr class="row-odd"><td><p>819,200</p></td>
+<td><p>26,189.7</p></td>
+<td><p>19,660.8</p></td>
+</tr>
+<tr class="row-even"><td><p>1,638,400</p></td>
+<td><p>25,178.6</p></td>
+<td><p>39,321.6</p></td>
+</tr>
+<tr class="row-odd"><td><p>3,276,800</p></td>
+<td><p>24,541.3</p></td>
+<td><p>78,643.2</p></td>
+</tr>
+<tr class="row-even"><td><p>4,000,000</p></td>
+<td><p>24,080.7</p></td>
+<td><p>96,000.0</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>My cache sizes:</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Cache</p></th>
+<th class="head"><p>Size (KB)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>L1d</p></td>
+<td><p>48</p></td>
+</tr>
+<tr class="row-odd"><td><p>L2</p></td>
+<td><p>1,280</p></td>
+</tr>
+<tr class="row-even"><td><p>L3</p></td>
+<td><p>8,192</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Why doesn’t the bandwidth drops match up with the cache sizes?</p>
+<section id="Memory-bandwidth,-but-with-vectorization">
+<h4>Memory bandwidth, but with vectorization<a class="headerlink" href="#Memory-bandwidth,-but-with-vectorization" title="Link to this heading">¶</a></h4>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Array Size</p></th>
+<th class="head"><p>Best MB/s for Triad</p></th>
+<th class="head"><p>Total Memory Required, KB</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>100</p></td>
+<td><p>262,007.5</p></td>
+<td><p>2.4</p></td>
+</tr>
+<tr class="row-odd"><td><p>200</p></td>
+<td><p>217,603.3</p></td>
+<td><p>4.8</p></td>
+</tr>
+<tr class="row-even"><td><p>400</p></td>
+<td><p>237,637.6</p></td>
+<td><p>9.6</p></td>
+</tr>
+<tr class="row-odd"><td><p>800</p></td>
+<td><p>264,069.5</p></td>
+<td><p>19.2</p></td>
+</tr>
+<tr class="row-even"><td><p>1,600</p></td>
+<td><p>265,462.3</p></td>
+<td><p>38.4</p></td>
+</tr>
+<tr class="row-odd"><td><p>3,200</p></td>
+<td><p>106,297.0</p></td>
+<td><p>76.8</p></td>
+</tr>
+<tr class="row-even"><td><p>6,400</p></td>
+<td><p>106,409.7</p></td>
+<td><p>153.6</p></td>
+</tr>
+<tr class="row-odd"><td><p>12,800</p></td>
+<td><p>106,007.3</p></td>
+<td><p>307.2</p></td>
+</tr>
+<tr class="row-even"><td><p>25,600</p></td>
+<td><p>98,456.1</p></td>
+<td><p>614.4</p></td>
+</tr>
+<tr class="row-odd"><td><p>51,200</p></td>
+<td><p>88,063.5</p></td>
+<td><p>1,228.8</p></td>
+</tr>
+<tr class="row-even"><td><p>102,400</p></td>
+<td><p>53,615.9</p></td>
+<td><p>2,457.6</p></td>
+</tr>
+<tr class="row-odd"><td><p>204,800</p></td>
+<td><p>53,273.7</p></td>
+<td><p>4,915.2</p></td>
+</tr>
+<tr class="row-even"><td><p>409,600</p></td>
+<td><p>33,730.1</p></td>
+<td><p>9,830.4</p></td>
+</tr>
+<tr class="row-odd"><td><p>819,200</p></td>
+<td><p>27,994.6</p></td>
+<td><p>19,660.8</p></td>
+</tr>
+<tr class="row-even"><td><p>1,638,400</p></td>
+<td><p>25,726.7</p></td>
+<td><p>39,321.6</p></td>
+</tr>
+<tr class="row-odd"><td><p>3,276,800</p></td>
+<td><p>24,847.7</p></td>
+<td><p>78,643.2</p></td>
+</tr>
+<tr class="row-even"><td><p>4,000,000</p></td>
+<td><p>24,332.4</p></td>
+<td><p>96,000.0</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>My cache sizes:</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Cache</p></th>
+<th class="head"><p>Size (KB)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>L1d</p></td>
+<td><p>48</p></td>
+</tr>
+<tr class="row-odd"><td><p>L2</p></td>
+<td><p>1,280</p></td>
+</tr>
+<tr class="row-even"><td><p>L3</p></td>
+<td><p>8,192</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul class="simple">
+<li><p>Now the bandwidth drops are right in line with the cache</p></li>
+<li><p>This is because vector instructions simply process data more rapidly, and stress the memory hierarchy more than scalar instructions</p></li>
+</ul>
+<p>Possible todo: convert the table into CSV and then plot (with additional lines for the cache sizes)</p>
+</section>
+</section>
+<section id="Arithmetic-Intensity">
+<h3>Arithmetic Intensity<a class="headerlink" href="#Arithmetic-Intensity" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Due to the memory bandwidth limitations, much HPC computation is actually memory-bounded.</p></li>
+<li><p>This can be visualized by looking at arithmetic intensity, measured as FLOP/byte</p>
+<ul>
+<li><p>In other words, how much computation can we do with data in L1 cache in the time it takes for data from memory to be returned?</p></li>
+</ul>
+</li>
+</ul>
+<p><img alt="image" src="../_images/pointwise_mult_stride_O3.png" /></p>
+<div class="alert alert-block alert-danger"><p>The ratio here sells the story short, as it takes 8 bytes to store/transport a single double precision number. So the FLOPs/scalar is about 8x the number reported above</p>
+</div><ul class="simple">
+<li><p>Key point is this is <em>theoretical</em>, not measured; plenty of small things can get in the way of seeing these actual numbers</p>
+<ul>
+<li><p>Requires cooperation of the compiler <strong>and</strong> good algorithms <strong>and</strong> giving the computer/compiler as much information it needs before computation</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="FLOPs-are-(sometimes)-free!">
+<h3>FLOPs are (sometimes) free!<a class="headerlink" href="#FLOPs-are-(sometimes)-free!" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>The bandwidth limits of memory mean that we can actually do some computations for free.</p></li>
+</ul>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">foo</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="mi">1000</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">foo_complicated</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">    </span><span class="n">one</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">one</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">0.25</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">7</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">one</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">one</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">one</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><img alt="image" src="../_images/pointwise_mult_stride_O3.png" /></p>
+<ul class="simple">
+<li><p>At small array sizes, the extra computation slows the processing down</p></li>
+<li><p>At large array sizes (once it has to go to RAM), they have the exact same speed, even though “complicated” does 13x the FLOPs</p></li>
+</ul>
+<p>With vectorization, changes are just faster (though you can notice the cache steps more clearly with the “just mult” case)</p>
+<p><img alt="image" src="../_images/pointwise_mult_stride_O3.png" /></p>
+<section id="Issues-with-Multiblock">
+<h4>Issues with Multiblock<a class="headerlink" href="#Issues-with-Multiblock" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>With multiblock, <code class="docutils literal notranslate"><span class="pre">--inner_reps</span></code> was supposed to increase the number of flops per byte</p></li>
+<li><p>But we didn’t really see that expected “free FLOPs”</p></li>
+<li><p><strong>Why??</strong></p></li>
+</ul>
+<p>Conjecture:</p>
+<ul class="simple">
+<li><p>The compiler doesn’t know abuot the size of the work needed to be done, so it couldn’t appropriately optimize for it</p></li>
+<li><p>Therefore, the compiler has to maintain flexibility and be checking for input sizes when it runs</p></li>
+</ul>
+<p><a class="reference external" href="https://godbolt.org/z/fEssxjThh">https://godbolt.org/z/fEssxjThh</a></p>
+<p>Check it running <code class="docutils literal notranslate"><span class="pre">perf</span> <span class="pre">stat</span></code></p>
+<p>Short demo using <code class="docutils literal notranslate"><span class="pre">perf</span> <span class="pre">stat</span></code>:</p>
+<p>Without hardcoding the <code class="docutils literal notranslate"><span class="pre">--inner_reps</span></code> and <code class="docutils literal notranslate"><span class="pre">--block_size</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ sudo perf stat ./multiblock_mysecond --outer_reps 10 --num_blocks=1000000 --block_size=8 --inner_reps 16
+ops per block: 256
+bytes per block: 64
+malloc'ing 128000000 bytes
+min seconds: 0.035862
+avg seconds: 0.0364863
+max Mops/second: 7138.481438
+max MB/second: 3569.240719
+
+ Performance counter stats for './multiblock_mysecond --outer_reps 10 --num_blocks=1000000 --block_size=8 --inner_reps 16':
+
+                 3      context-switches                 #      6.8 cs/sec  cs_per_second
+                 0      cpu-migrations                   #      0.0 migrations/sec  migrations_per_second
+             4,745      page-faults                      #  10811.3 faults/sec  page_faults_per_second
+            438.89 msec task-clock                       #      nan CPUs  CPUs_utilized
+            90,926      branch-misses                    #      0.0 %  branch_miss_rate
+       672,494,762      branches                         #   1532.3 M/sec  branch_frequency
+     1,782,295,990      cpu-cycles                       #      4.1 GHz  cycles_frequency
+     5,072,295,141      instructions                     #      2.8 instructions  insn_per_cycle
+            TopdownL1 #     45.8 %  tma_backend_bound
+                                                         #      1.6 %  tma_bad_speculation
+                                                         #      2.1 %  tma_frontend_bound
+                                                         #     50.5 %  tma_retiring
+
+       0.441486307 seconds time elapsed
+
+       0.428358000 seconds user
+       0.011888000 seconds sys
+</pre></div>
+</div>
+<p>With hardcoding the <code class="docutils literal notranslate"><span class="pre">--inner_reps</span></code> and <code class="docutils literal notranslate"><span class="pre">--block_size</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ sudo perf stat ./multiblock_mysecond --outer_reps 10 --num_blocks=1000000 --block_size=8 --inner_reps 16
+ops per block: 256
+bytes per block: 64
+malloc'ing 128000000 bytes
+min seconds: 0.0280612
+avg seconds: 0.0284695
+max Mops/second: 9122.932819
+max MB/second: 4561.466410
+
+ Performance counter stats for './multiblock_mysecond --outer_reps 10 --num_blocks=1000000 --block_size=8 --inner_reps 16':
+
+                 3      context-switches                 #      8.4 cs/sec  cs_per_second
+                 0      cpu-migrations                   #      0.0 migrations/sec  migrations_per_second
+            13,943      page-faults                      #  38875.9 faults/sec  page_faults_per_second
+            358.65 msec task-clock                       #      nan CPUs  CPUs_utilized
+            15,548      branch-misses                    #      0.1 %  branch_miss_rate
+        29,985,086      branches                         #     83.6 M/sec  branch_frequency
+     1,470,420,463      cpu-cycles                       #      4.1 GHz  cycles_frequency
+     1,824,747,568      instructions                     #      1.2 instructions  insn_per_cycle
+            TopdownL1 #     72.4 %  tma_backend_bound
+                                                         #      2.0 %  tma_bad_speculation
+                                                         #      1.0 %  tma_frontend_bound
+                                                         #     24.7 %  tma_retiring
+
+       0.364968392 seconds time elapsed
+
+       0.341939000 seconds user
+       0.021883000 seconds sys
+</pre></div>
+</div>
+<p>Notice…</p>
+<ol class="arabic simple">
+<li><p>The significant reduction in total of branches encountered in the code</p></li>
+<li><p>The number of branch-misses encountered</p>
+<ul class="simple">
+<li><p>Branch prediction is good, but it’s not perfect</p></li>
+<li><p>We miss 4x the number of branches when not hardcoding values</p></li>
+</ul>
+</li>
+<li><p>The total increase in number of instructions</p></li>
+</ol>
+</section>
+</section>
+<section id="Impact-of-strides">
+<h3>Impact of strides<a class="headerlink" href="#Impact-of-strides" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Striding is effectively skipping between every nth scalar value.</p></li>
+</ul>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">foo</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="mi">1000</span><span class="o">*</span><span class="n">stride</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">+=</span><span class="n">stride</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><img alt="image" src="../_images/pointwise_mult_stride_O3.png" /></p>
+<ul class="simple">
+<li><p>Even though we do the same work (and thus use the same amount of memory) regardless of stride, we’re still slower</p></li>
+<li><p>Why?</p></li>
+</ul>
+<p><strong>Cache lines</strong></p>
+<ul class="simple">
+<li><p>CPU must grab a full 64 byte chunk at a time</p></li>
+<li><p>Even if we only want a single number from the chunk, we still have to pay for the full 64 byte transfer</p>
+<ul>
+<li><p>This is the case for the 8 unit stride case</p></li>
+</ul>
+</li>
+</ul>
+<section id="Strides-with-Vectorization">
+<h4>Strides with Vectorization<a class="headerlink" href="#Strides-with-Vectorization" title="Link to this heading">¶</a></h4>
+<p><img alt="image" src="../_images/pointwise_mult_stride_O3.png" /></p>
+<p>Vectorization doesn’t make a difference; the rate of computation at the end is still limited by memory</p>
+<p><em>And now, for something completely different</em></p>
+</section>
+</section>
+</section>
+<section id="Why-vectorization-fails?">
+<h2>Why vectorization fails?<a class="headerlink" href="#Why-vectorization-fails?" title="Link to this heading">¶</a></h2>
+<p>Just because you have a for loop, doesn’t mean it can be vectorized. Or that a compiler will vectorize it.</p>
+<section id="Vector-cost-models">
+<h3>Vector cost models<a class="headerlink" href="#Vector-cost-models" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Compilers need to determine whether they it’s worth vectorizing a loop or not</p>
+<ul>
+<li><p>Depends on the complexity of the loop, memory accesses, etc.</p></li>
+</ul>
+</li>
+<li><p>Sometimes, these cost models don’t align with what we the programmer knows</p></li>
+</ul>
+<ul class="simple">
+<li><p>Enter pragmas, to specifically tell compilers to vectorize loops</p></li>
+</ul>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">foo_complicated</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="cp">#pragma omp simd</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">    </span><span class="n">one</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">one</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">0.25</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">7</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">one</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">one</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">one</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="If-statements">
+<h3>If statements<a class="headerlink" href="#If-statements" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Branches within “hot loops” can prevent vectorization.</p></li>
+</ul>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">foo</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">a</span><span class="p">[],</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">b</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="alert alert-block alert-warning"><p>It is possible to vectorize these kinds of workloads, and compilers are quite good these days at getting them vectorized. But if you can avoid them, it will be significantly faster. See for example <a class="reference external" href="https://en.algorithmica.org/hpc/simd/masking/">SIMD masking</a></p>
+</div></section>
+<section id="Loop-carried-dependency">
+<h3>Loop-carried dependency<a class="headerlink" href="#Loop-carried-dependency" title="Link to this heading">¶</a></h3>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="nf">dot</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">a</span><span class="p">[],</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">b</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="mi">-1</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">sum</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Result of <code class="docutils literal notranslate"><span class="pre">b[i]</span></code> dependent on previous result</p></li>
+<li><p>Therefore, each loop iteration is not independent and is impossible to vectorize</p></li>
+</ul>
+</section>
+<section id="Math-limitations">
+<h3>Math limitations<a class="headerlink" href="#Math-limitations" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.wikipedia.org/wiki/IEEE_754">IEEE 754</a> sets the standard for floating point arithmetic</p>
+<ul>
+<li><p>Sets very strict rules for how exactly operations are carried out to ensure bit-for-bit reproducability</p></li>
+<li><p>Floating point operations are not associative: <span class="math notranslate nohighlight">\(a + (b + c) \neq (a + b) + c\)</span></p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>These strict rules can sometimes limit how much a compiler can vectorize</p></li>
+<li><p>However, often times we don’t really care about bit-for-bit reproducability</p>
+<ul>
+<li><p>The issues of floating point error are not a major concern</p></li>
+</ul>
+</li>
+</ul>
+<p>How do we get around it?</p>
+<p>More compiler flags: <code class="docutils literal notranslate"><span class="pre">-fassociative-math</span></code> or <code class="docutils literal notranslate"><span class="pre">-ffast-math</span></code></p>
+<div class="alert alert-block alert-danger"><p><code class="docutils literal notranslate"><span class="pre">-ffast-math</span></code> is dangerous and can have many unintended consequences. See <a class="reference external" href="https://simonbyrne.github.io/notes/fastmath/">this article</a> for details. As a primer, any calls to <code class="docutils literal notranslate"><span class="pre">isnan()</span></code> or <code class="docutils literal notranslate"><span class="pre">isinf()</span></code> in GCC are completely ignored and removed with <code class="docutils literal notranslate"><span class="pre">-ffast-math</span></code>.</p>
+</div></section>
+<section id="Reductions">
+<h3>Reductions<a class="headerlink" href="#Reductions" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Reductions: taking a large piece of data, doing the same operation to it to turn it into smaller piece of data</p>
+<ul>
+<li><p>Example, dot product, or a vector norm</p></li>
+</ul>
+</li>
+<li><p>Dot product <em>technically</em> contains a loop-carried dependency</p></li>
+</ul>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="nf">dot</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">a</span><span class="p">[],</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">b</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">sum</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">sum</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://johnnysswlab.com/loop-optimizations-how-does-the-compiler-do-it/#reductions">https://johnnysswlab.com/loop-optimizations-how-does-the-compiler-do-it/#reductions</a></p>
+<p>We can use OpenMP pragmas to have it do this for us!</p>
+<p><a class="reference external" href="https://passlab.github.io/InteractiveOpenMPProgramming/SIMDandVectorArchitecture/6_SIMDReductionsAndScans.html">https://passlab.github.io/InteractiveOpenMPProgramming/SIMDandVectorArchitecture/6_SIMDReductionsAndScans.html</a></p>
+<p><a class="reference external" href="https://godbolt.org/z/d6r1qdqGG">https://godbolt.org/z/d6r1qdqGG</a></p>
+</section>
+<section id="Function-calls-within-loop">
+<h3>Function calls within loop<a class="headerlink" href="#Function-calls-within-loop" title="Link to this heading">¶</a></h3>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="nf">bar</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">foo</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">a</span><span class="p">[],</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">b</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bar</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://godbolt.org/z/Ev3fb56En">https://godbolt.org/z/Ev3fb56En</a></p>
+<ul class="simple">
+<li><p>Even if we know that array element is independent, the compiler external call can’t work</p></li>
+<li><p>This is where function inlining can help</p>
+<ul>
+<li><p>By inlining the function, the compiler can know exactly whether the loop can be vectorized and how</p></li>
+</ul>
+</li>
+<li><p>Can also be solved by declaring specific vectorized functions, see <a class="reference external" href="https://johnnysswlab.com/the-messy-reality-of-simd-vector-functions/">here</a> for more details</p></li>
+</ul>
+<p>Note, this is also true (especially true) for math functions:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">foo</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">a</span><span class="p">[],</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">b</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sin</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="Language-%22vector%22-functions-does-not-always-equal-vector-instructions">
+<h3>Language “vector” functions does not always equal vector instructions<a class="headerlink" href="#Language-%22vector%22-functions-does-not-always-equal-vector-instructions" title="Link to this heading">¶</a></h3>
+<p>Julia for instance allows for functions to be called on multiple scalar arguments. It calls this <a class="reference external" href="https://docs.julialang.org/en/v1/manual/functions/#man-vectorized">“vectorizing function”</a></p>
+<ul class="simple">
+<li><p>Often times, it can turn these into actual vector instructions</p></li>
+<li><p>But it will still run into similar limitations as C/C++</p></li>
+<li><p>Example: doing vector instructions over some math functions doesn’t quite work.</p></li>
+</ul>
+</section>
+<section id="Resources">
+<h3>Resources<a class="headerlink" href="#Resources" title="Link to this heading">¶</a></h3>
+<p><a class="reference external" href="https://johnnysswlab.com/loop-optimizations-interpreting-the-compiler-optimization-report/">https://johnnysswlab.com/loop-optimizations-interpreting-the-compiler-optimization-report/</a></p>
+<p><a class="reference external" href="https://johnnysswlab.com/vectorization-dependencies-and-outer-loop-vectorization-if-you-cant-beat-them-join-them/">https://johnnysswlab.com/vectorization-dependencies-and-outer-loop-vectorization-if-you-cant-beat-them-join-them/</a></p>
+<p><a class="reference external" href="https://johnnysswlab.com/loop-optimizations-interpreting-the-compiler-optimization-report/">https://johnnysswlab.com/loop-optimizations-interpreting-the-compiler-optimization-report/</a> (jump to “Pass: loop-vectorize”)</p>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../homework.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Homework</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="20260827-CPUs_lie_to_you.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">20260827 - CPUs Lie to You</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, James Wright
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">20260901 - Memory- and Compute-Bound Applications and How Vectorization Fails</a><ul>
+<li><a class="reference internal" href="#Memory--and-Compute-Bound-Applications">Memory- and Compute-Bound Applications</a><ul>
+<li><a class="reference internal" href="#Memory-bandwidth">Memory bandwidth</a><ul>
+<li><a class="reference internal" href="#Memory-bandwidth,-but-with-vectorization">Memory bandwidth, but with vectorization</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Arithmetic-Intensity">Arithmetic Intensity</a></li>
+<li><a class="reference internal" href="#FLOPs-are-(sometimes)-free!">FLOPs are (sometimes) free!</a><ul>
+<li><a class="reference internal" href="#Issues-with-Multiblock">Issues with Multiblock</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Impact-of-strides">Impact of strides</a><ul>
+<li><a class="reference internal" href="#Strides-with-Vectorization">Strides with Vectorization</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Why-vectorization-fails?">Why vectorization fails?</a><ul>
+<li><a class="reference internal" href="#Vector-cost-models">Vector cost models</a></li>
+<li><a class="reference internal" href="#If-statements">If statements</a></li>
+<li><a class="reference internal" href="#Loop-carried-dependency">Loop-carried dependency</a></li>
+<li><a class="reference internal" href="#Math-limitations">Math limitations</a></li>
+<li><a class="reference internal" href="#Reductions">Reductions</a></li>
+<li><a class="reference internal" href="#Function-calls-within-loop">Function calls within loop</a></li>
+<li><a class="reference internal" href="#Language-%22vector%22-functions-does-not-always-equal-vector-instructions">Language “vector” functions does not always equal vector instructions</a></li>
+<li><a class="reference internal" href="#Resources">Resources</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    </body>
+</html>
