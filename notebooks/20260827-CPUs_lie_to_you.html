@@ -466,8 +466,8 @@
 </ul>
 <div class="alert alert-block alert-success"><p>Have <strong>multiple execution units</strong> per core</p>
 </div><p><strong>We can run multiple instructions at the same time!</strong></p>
-<div><p>&lt;img src=”../img/sandy_bridge_microarchitecture.png”, width=”500”&gt;</p>
-</div><ul class="simple">
+<p><img alt="Sandy Bridge Microarchitecture diagram" src="../_images/sandy_bridge_microarchitecture.png" /></p>
+<ul class="simple">
 <li><p>Different execution units live on different “ports”</p></li>
 <li><p>Each port executes one instruction at a time</p></li>
 <li><p><a class="reference external" href="https://www.uops.info/">https://www.uops.info/</a> table also documents which ports are used in specific architectures for specific things</p></li>
@@ -624,8 +624,8 @@
 <p>So we have <strong>caches</strong> of data that we store physically closer to the CPU, which store memory data.</p>
 <p>Usually divided into a few different levels: L1, L2, and L3</p>
 <p>These cache levels plus memory form the <strong>memory hierarchy</strong> of modern CPUs</p>
-<div><p>&lt;img src=”../img/sapphire_rapids_memory_hierarchy.png”, width=”500”&gt;</p>
-</div><p>From <em>The Art of HPC, volume 1</em></p>
+<p><img alt="Sapphire Rapids memory hierarchy" src="../_images/sapphire_rapids_memory_hierarchy.png" /></p>
+<p>From <em>The Art of HPC, volume 1</em></p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -634,8 +634,8 @@
 </pre></div>
 </div>
 </div>
-<div><p>&lt;img src=”./lstopo-local.svg”, width=”500”&gt;</p>
-</div><ul class="simple">
+<p><img alt="Fermat system topology" src="../_images/lstopo-local.svg" /></p>
+<ul class="simple">
 <li><p>L3 is shared across multiple cores, but L2 and L1 are not</p></li>
 <li><p>L1 has an instruction cache “L1i” and data cache “L1d”</p></li>
 </ul>
