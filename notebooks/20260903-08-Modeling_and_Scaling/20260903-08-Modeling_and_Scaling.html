@@ -1,0 +1,1305 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="Homework" href="../../homework.html"><link rel="prev" title="20260901 - Memory- and Compute-Bound Applications and How Vectorization Fails" href="../20260901-Observing_Memory_and_Compute_Bounds_Plus_How_Vectorization_Fails.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>20260903-08 Modeling and Scaling</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">CSCI 5576/4576</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  <span class="sidebar-brand-text">CSCI 5576/4576</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Course Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ungrading.html">Ungrading</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../notebooks.html">Class Notes</a><input aria-label="Toggle navigation of Class Notes" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../20260820-CPU_Basics.html">20260820 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260825-HPC_in_Science_and_Vectorization.html">20260825 - What is HPSC? And Vectorization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260827-CPUs_lie_to_you.html">20260827 - CPUs Lie to You</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260901-Observing_Memory_and_Compute_Bounds_Plus_How_Vectorization_Fails.html">20260901 - Memory- and Compute-Bound Applications and How Vectorization Fails</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">20260903-08 Modeling and Scaling</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../homework.html">Homework</a><input aria-label="Toggle navigation of Homework" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../../_sources/notebooks/20260903-08-Modeling_and_Scaling/20260903-08-Modeling_and_Scaling.ipynb.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="20260903-08-Modeling-and-Scaling">
+<h1>20260903-08 Modeling and Scaling<a class="headerlink" href="#20260903-08-Modeling-and-Scaling" title="Link to this heading">¶</a></h1>
+<section id="Performance-Modeling">
+<h2>Performance Modeling<a class="headerlink" href="#Performance-Modeling" title="Link to this heading">¶</a></h2>
+<p>Models give is a conceptual and roughly quantitative framework by which to answer the following types of questions.</p>
+<ul class="simple">
+<li><p>Why is an implementation exhibiting its observed performance?</p></li>
+<li><p>How will performance change if we:</p>
+<ul>
+<li><p>optimize this component?</p></li>
+<li><p>buy new hardware? (Which new hardware?)</p></li>
+<li><p>run a different configuration?</p></li>
+</ul>
+</li>
+<li><p>While conceptualizing a new algorithm, what performance can we expect and what will be bottlenecks?</p></li>
+</ul>
+<p>Models are a guide for performance, but not an absolute.</p>
+<section id="Terms">
+<h3>Terms<a class="headerlink" href="#Terms" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Symbol</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(n\)</span></p></td>
+<td><p>Input parameter related to problem size</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(W\)</span></p></td>
+<td><p>Amount of work to solve problem <span class="math notranslate nohighlight">\(n\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(T\)</span></p></td>
+<td><p>Execution time</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(R\)</span></p></td>
+<td><p>Rate at which work is done</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="Measuring-work">
+<h3>Measuring work<a class="headerlink" href="#Measuring-work" title="Link to this heading">¶</a></h3>
+<p><strong>STREAM Triad:</strong></p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">    </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">scalar</span><span class="o">*</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</pre></div>
+</div>
+<p><span class="math notranslate nohighlight">\(n\)</span> is the array size.</p>
+<p>Two ways of measuring “work”.</p>
+<p><strong>Compute:</strong> How many FLOPs are we doing?</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[W = 2 \cdot n\]</div>
+</div>
+<p>Rate <span class="math notranslate nohighlight">\(R=W/T\)</span> is FLOP/s</p>
+<p><strong>Memory:</strong> How much memory are we transfering?</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[W = 3 \cdot \texttt{sizeof(double)} \cdot n\]</div>
+</div>
+<p>Rate <span class="math notranslate nohighlight">\(R=W/T\)</span> is bytes/s (usually MB/s)</p>
+<section id="Dense-matrix-multiplication">
+<h4>Dense matrix multiplication<a class="headerlink" href="#Dense-matrix-multiplication" title="Link to this heading">¶</a></h4>
+<p>To perform the operation <span class="math notranslate nohighlight">\(C \gets C + A B\)</span> where <span class="math notranslate nohighlight">\(A,B,C\)</span> are <span class="math notranslate nohighlight">\(n\times n\)</span> matrices.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span>
+<span class="w">            </span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">n</span><span class="o">+</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">n</span><span class="o">+</span><span class="n">k</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="o">*</span><span class="n">n</span><span class="o">+</span><span class="n">j</span><span class="p">];</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Can you identify two expressions for the total amount of work <span class="math notranslate nohighlight">\(W(n)\)</span> and the associated units?</p></li>
+<li><p>Can you think of a context in which one is better than the other and vice-versa?</p></li>
+</ul>
+<p>Compute: <span class="math notranslate nohighlight">\(W = \mathcal{O}(n^3)\)</span></p>
+<p>Memory: <span class="math notranslate nohighlight">\(W = \mathcal{O}(n^2)\)</span> (when done with care)</p>
+</section>
+</section>
+<section id="Estimating-time">
+<h3>Estimating time<a class="headerlink" href="#Estimating-time" title="Link to this heading">¶</a></h3>
+<p>To estimate time, we need to know how fast hardware executes flops and moves bytes.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%matplotlib inline
+import matplotlib.pyplot as plt
+import pandas
+import numpy as np
+# plt.style.use('seaborn')
+
+hardware = pandas.read_csv('data-intel.csv', index_col="Name")
+hardware
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Year</th>
+      <th>GFLOPs-SP</th>
+      <th>GFLOPs-DP</th>
+      <th>Cores</th>
+      <th>Mem-GBps</th>
+      <th>TDP</th>
+      <th>Freq(MHz)</th>
+    </tr>
+    <tr>
+      <th>Name</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Xeon X5482</th>
+      <td>2007</td>
+      <td>102</td>
+      <td>51</td>
+      <td>4</td>
+      <td>26</td>
+      <td>150</td>
+      <td>3200</td>
+    </tr>
+    <tr>
+      <th>Xeon X5492</th>
+      <td>2008</td>
+      <td>108</td>
+      <td>54</td>
+      <td>4</td>
+      <td>26</td>
+      <td>150</td>
+      <td>3400</td>
+    </tr>
+    <tr>
+      <th>Xeon W5590</th>
+      <td>2009</td>
+      <td>106</td>
+      <td>53</td>
+      <td>4</td>
+      <td>32</td>
+      <td>130</td>
+      <td>3300</td>
+    </tr>
+    <tr>
+      <th>Xeon X5680</th>
+      <td>2010</td>
+      <td>160</td>
+      <td>80</td>
+      <td>6</td>
+      <td>32</td>
+      <td>130</td>
+      <td>3300</td>
+    </tr>
+    <tr>
+      <th>Xeon X5690</th>
+      <td>2011</td>
+      <td>166</td>
+      <td>83</td>
+      <td>6</td>
+      <td>32</td>
+      <td>130</td>
+      <td>3470</td>
+    </tr>
+    <tr>
+      <th>Xeon E5-2690</th>
+      <td>2012</td>
+      <td>372</td>
+      <td>186</td>
+      <td>8</td>
+      <td>51</td>
+      <td>135</td>
+      <td>2900</td>
+    </tr>
+    <tr>
+      <th>Xeon E5-2697 v2</th>
+      <td>2013</td>
+      <td>518</td>
+      <td>259</td>
+      <td>12</td>
+      <td>60</td>
+      <td>130</td>
+      <td>2700</td>
+    </tr>
+    <tr>
+      <th>Xeon E5-2699 v3</th>
+      <td>2014</td>
+      <td>1324</td>
+      <td>662</td>
+      <td>18</td>
+      <td>68</td>
+      <td>145</td>
+      <td>2300</td>
+    </tr>
+    <tr>
+      <th>Xeon E5-2699 v3</th>
+      <td>2015</td>
+      <td>1324</td>
+      <td>662</td>
+      <td>18</td>
+      <td>68</td>
+      <td>145</td>
+      <td>2300</td>
+    </tr>
+    <tr>
+      <th>Xeon E5-2699 v4</th>
+      <td>2016</td>
+      <td>1548</td>
+      <td>774</td>
+      <td>22</td>
+      <td>77</td>
+      <td>145</td>
+      <td>2200</td>
+    </tr>
+    <tr>
+      <th>Xeon Platinum 8180</th>
+      <td>2017</td>
+      <td>4480</td>
+      <td>2240</td>
+      <td>28</td>
+      <td>120</td>
+      <td>205</td>
+      <td>2500</td>
+    </tr>
+    <tr>
+      <th>EPYC 7742</th>
+      <td>2019</td>
+      <td>6960</td>
+      <td>3480</td>
+      <td>64</td>
+      <td>204</td>
+      <td>225</td>
+      <td>2250</td>
+    </tr>
+    <tr>
+      <th>EPYC 7763</th>
+      <td>2021</td>
+      <td>7170</td>
+      <td>3580</td>
+      <td>64</td>
+      <td>204</td>
+      <td>280</td>
+      <td>2450</td>
+    </tr>
+    <tr>
+      <th>EPYC 9754</th>
+      <td>2023</td>
+      <td>12700</td>
+      <td>6350</td>
+      <td>128</td>
+      <td>460</td>
+      <td>360</td>
+      <td>2250</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = hardware.plot(x='GFLOPs-DP', y='Mem-GBps', marker='o')
+fig.set_xlim(left=0)
+fig.set_ylim(bottom=0);
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_10_0.png" src="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_10_0.png" />
+</div>
+</div>
+<p>So we have rates <span class="math notranslate nohighlight">\(R_f = 4660 \cdot 10^9\)</span> flops/second and <span class="math notranslate nohighlight">\(R_m = 175 \cdot 10^9\)</span> bytes/second. Now we need to characterize some algorithms.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>algs = pandas.read_csv('algs.csv', index_col='Name')
+algs['intensity'] = algs['flops'] / algs['bytes']
+algs = algs.sort_values('intensity')
+algs
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>bytes</th>
+      <th>flops</th>
+      <th>intensity</th>
+    </tr>
+    <tr>
+      <th>Name</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Triad</th>
+      <td>24</td>
+      <td>2</td>
+      <td>0.083333</td>
+    </tr>
+    <tr>
+      <th>SpMV</th>
+      <td>12</td>
+      <td>2</td>
+      <td>0.166667</td>
+    </tr>
+    <tr>
+      <th>Stencil27-cache</th>
+      <td>24</td>
+      <td>54</td>
+      <td>2.250000</td>
+    </tr>
+    <tr>
+      <th>MatFree-FEM</th>
+      <td>2376</td>
+      <td>15228</td>
+      <td>6.409091</td>
+    </tr>
+    <tr>
+      <th>Stencil27-ideal</th>
+      <td>8</td>
+      <td>54</td>
+      <td>6.750000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def exec_time(machine, alg, n):
+    bytes = n * alg.bytes
+    flops = n * alg.flops
+    T_mem = bytes / (machine['Mem-GBps'] * 1e9)
+    T_flops = flops / (machine['GFLOPs-DP'] * 1e9)
+    return max(T_mem, T_flops)
+
+exec_time(hardware.loc['EPYC 9754'], algs.loc['Triad'], 1e9)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+np.float64(0.05217391304347826)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>for _, machine in hardware.iterrows():
+    for _, alg in algs.iterrows():
+        ns = np.geomspace(1e4, 1e9, 10)
+        times = np.array([exec_time(machine, alg, n) for n in ns])
+        flops = np.array([alg.flops * n for n in ns])
+        rates = flops/times
+        plt.loglog(ns, rates, 'o-')
+plt.xlabel('size of work (n)')
+plt.ylabel('FLOP/s');
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_14_0.png" src="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_14_0.png" />
+</div>
+</div>
+<p>It looks like performance does not depend on problem size.</p>
+<p>Well, yeah, we chose a model in which flops and bytes were both proportional to <span class="math notranslate nohighlight">\(n\)</span>, and our machine model has no sense of cache hierarchy or latency, so time is also proportional to <span class="math notranslate nohighlight">\(n\)</span>. We can divide through by <span class="math notranslate nohighlight">\(n\)</span> and yield a more illuminating plot.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def MorphRangeTo01(value, range, morph_range = [0, 0.95]):
+    return ((value - range[0]) / (range[-1] - range[0])) * (morph_range[1] - morph_range[0]) + morph_range[0]
+
+for _, machine in hardware.iterrows():
+    color = plt.cm.turbo_r(MorphRangeTo01(machine["Year"], [hardware["Year"].min(),hardware["Year"].max()]))
+    times = np.array([exec_time(machine, alg, 1)
+                      for _, alg in algs.iterrows()])
+    rates = algs.flops/times
+    intensities = algs.intensity
+    plt.loglog(intensities, rates, 'o-', label=machine.name, color=color)
+plt.xlabel('intensity')
+plt.ylabel('rate')
+# plt.legend();
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0, 0.5, &#39;rate&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_16_1.png" src="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_16_1.png" />
+</div>
+</div>
+<p>We’re seeing the “roofline” for the older processors while the newer models are memory bandwidth limited for all of these algorithms.</p>
+</section>
+<section id="Recommended-reading-on-single-node-performance-modeling">
+<h3>Recommended reading on single-node performance modeling<a class="headerlink" href="#Recommended-reading-on-single-node-performance-modeling" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://doi.org/10.1145/1498765.1498785">Williams, Waterman, Patterson (2009): Roofline: An insightful visual performance model for multicore architectures</a></p></li>
+</ul>
+</section>
+</section>
+<section id="Scaling:-Programs-with-more-than-one-part">
+<h2>Scaling: Programs with more than one part<a class="headerlink" href="#Scaling:-Programs-with-more-than-one-part" title="Link to this heading">¶</a></h2>
+<p>So far, we’ve focused on simple programs with only one part, but real programs have several different parts, often with data dependencies. Some parts will be amenable to optimization and/or parallelism and others will not.</p>
+<p><img alt="Diminishing returns" src="https://upload.wikimedia.org/wikipedia/commons/e/ea/AmdahlsLaw.svg?utm_source=en.wikipedia.org&amp;utm_campaign=imageinfo&amp;utm_content=original" /></p>
+<p>The best possible performance you get with parallelization is governed by <a class="reference external" href="https://en.wikipedia.org/wiki/Amdahl%27s_law">Amdahl’s Law</a>.</p>
+<p><img alt="Diminishing returns" src="https://upload.wikimedia.org/wikipedia/commons/e/ea/AmdahlsLaw.svg?utm_source=en.wikipedia.org&amp;utm_campaign=imageinfo&amp;utm_content=original" /></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[68]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def exec_time(f, p, n=100, latency=1):
+    # Suppose that a fraction f of the total work is amenable to optimization
+    # We run a problem size n with parallelization factor p
+    return latency + (1-f)*n + f*n/p
+</pre></div>
+</div>
+</div>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[T = \ell + (1-f)\cdot n + f\cdot n / p\]</div>
+</div>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Symbol</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(T\)</span></p></td>
+<td><p>Time taken to run</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\ell\)</span></p></td>
+<td><p>Latency (startup time and time waiting for communication)</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(f\)</span></p></td>
+<td><p>Fraction of work that is parallelizable</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(n\)</span></p></td>
+<td><p>Amount of work</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(p\)</span></p></td>
+<td><p>Total processes parallelized over</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[77]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%matplotlib inline
+import matplotlib.pyplot as plt
+import pandas
+import numpy as np
+
+ps = np.geomspace(1, 1000)
+
+plt.loglog(ps, exec_time(.98, ps, latency=0), label="\"real\"")
+plt.loglog(ps, exec_time(1, ps, latency=1), label="ideal")
+plt.title('Execution time with increased parallelization')
+plt.xlabel('"processors"')
+plt.ylabel('time')
+plt.grid()
+plt.legend();
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_23_0.png" src="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_23_0.png" />
+</div>
+</div>
+<section id="Strong-scaling:-fixed-total-problem-size">
+<h3>Strong scaling: fixed total problem size<a class="headerlink" href="#Strong-scaling:-fixed-total-problem-size" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Good strong scaling == being able to go faster at the same cost (assuming you have the resources)</p></li>
+<li><p>This is the one we all want, but is really difficult to get</p></li>
+</ul>
+<section id="Cost-=-time-*-p">
+<h4>Cost = <code class="docutils literal notranslate"><span class="pre">time</span> <span class="pre">*</span> <span class="pre">p</span></code><a class="headerlink" href="#Cost-=-time-*-p" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>Often compute allocations are given in terms of “node-hours” or “CPU-hours”</p></li>
+<li><p>Therefore, we must balance total execution time with cost</p>
+<ul>
+<li><p>We can use more resources simultaneously to go faster, and thus use those resources for a smaller amount of time</p></li>
+<li><p>But without perfect scalability, using more resources increases costs due to inefficiencies</p></li>
+</ul>
+</li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[82]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def exec_cost(f, p, **kwargs):
+    return exec_time(f, p, **kwargs) * p
+
+plt.loglog(ps, exec_cost(1, ps, latency=), label='"real"')
+plt.loglog(ps, exec_cost(1, ps, latency=0), label='ideal')
+plt.title('Strong scaling')
+plt.xlabel('"processors"')
+plt.ylabel('cost')
+plt.legend()
+plt.grid();
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_26_0.png" src="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_26_0.png" />
+</div>
+</div>
+</section>
+<section id="Efficiency">
+<h4>Efficiency<a class="headerlink" href="#Efficiency" title="Link to this heading">¶</a></h4>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[E = \frac{n}{T p}\]</div>
+</div>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\Rightarrow E =  \frac{n}{\ell p} + \frac{1}{(1 - f) p} + \frac{1}{f}\]</div>
+</div>
+<ul class="simple">
+<li><p>We will ignore the <span class="math notranslate nohighlight">\(n\)</span>, as it’s difficult to quantify in real life the units of “problem size” in a way that makes sense</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[83]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.semilogx(ps, 1/exec_cost(.9999, ps, latency=1), label='"real"')
+plt.semilogx(ps, 1/exec_cost(1, ps, latency=0), label='ideal')
+plt.title('Strong scaling')
+plt.xlabel('p')
+plt.ylabel('efficiency')
+plt.legend()
+plt.ylim(bottom=0);
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_29_0.png" src="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_29_0.png" />
+</div>
+</div>
+</section>
+<section id="Speedup">
+<h4>Speedup<a class="headerlink" href="#Speedup" title="Link to this heading">¶</a></h4>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[S(p) = \frac{T(1)}{T(p)}\]</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[86]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.plot(ps, exec_time(.99, 1, latency=1) / exec_time(.99, ps, latency=1), label='"real"')
+plt.plot(ps, exec_time(1, 1, latency=.0) / exec_time(1, ps, latency=0), label='nearly ideal (with latency)')
+plt.title('Strong scaling')
+plt.xlabel('p')
+plt.ylabel('speedup')
+plt.legend()
+plt.ylim(bottom=0);
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_31_0.png" src="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_31_0.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="Stunt-1:-Report-speedup,-not-absolute-performance!">
+<h3>Stunt 1: Report speedup, not absolute performance!<a class="headerlink" href="#Stunt-1:-Report-speedup,-not-absolute-performance!" title="Link to this heading">¶</a></h3>
+<p><img alt="Hager" src="../../_images/stunt1.jpg" /></p>
+<p>From <a class="reference external" href="https://blogs.fau.de/hager/archives/5299">https://blogs.fau.de/hager/archives/5299</a></p>
+<p>Also see <a class="reference external" href="https://blogs.fau.de/hager/archives/5429">Stunt 2</a> for related discussion</p>
+<ul class="simple">
+<li><p>Strong scaling looks really good when the serial part is really inefficient</p></li>
+</ul>
+</section>
+<section id="Efficiency-Time-spectrum-(Jed's-preference)">
+<h3>Efficiency-Time spectrum (Jed’s preference)<a class="headerlink" href="#Efficiency-Time-spectrum-(Jed's-preference)" title="Link to this heading">¶</a></h3>
+<p>People care about two observable properties</p>
+<ul class="simple">
+<li><p><strong>Time</strong> until job completes</p></li>
+<li><p><strong>Cost</strong> in core-hours or dollars to do job</p></li>
+</ul>
+<p>Together, they show the balance of “How much extra do I need to pay to go X amount faster?”.</p>
+<p>Most HPC applications have access to large machines, so don’t really care how many processes they use for any given job.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[53]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.plot(exec_time(.99, ps), 1/exec_cost(.99, ps), 'o-', label='"real"')
+plt.plot(exec_time(1, ps, latency=0), 1/exec_cost(1, ps, latency=0), 'o-', label="ideal")
+plt.title('Strong scaling')
+plt.xlabel('time')
+plt.ylabel('efficiency')
+plt.ylim(bottom=0);
+plt.legend();
+plt.xlim(left=0);
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_35_0.png" src="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_35_0.png" />
+</div>
+</div>
+<section id="Principles-of-reporting-scaling-and-performance">
+<h4>Principles of reporting scaling and performance<a class="headerlink" href="#Principles-of-reporting-scaling-and-performance" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p><cite>No “soft” ``log`</cite> scale &lt;<a class="reference external" href="https://blogs.fau.de/hager/archives/5835">https://blogs.fau.de/hager/archives/5835</a>&gt;`__</p></li>
+<li><p>Both axes have tangible units</p></li>
+<li><p>Bigger is better on the <span class="math notranslate nohighlight">\(y\)</span> axis</p>
+<ul>
+<li><p>Makes it easier to understand what is doing better than something else</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="Weak-Scaling:-Fixed-work-per-processor">
+<h3>Weak Scaling: Fixed work per processor<a class="headerlink" href="#Weak-Scaling:-Fixed-work-per-processor" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>We’ve kept the problem size <span class="math notranslate nohighlight">\(n\)</span> fixed thus far, but parallel computers are also used to solve large problems.</p></li>
+<li><p>If we keep the amount of work per processor fixed, we are <a class="reference external" href="https://en.wikipedia.org/wiki/Gustafson's_law">weak/Gustafson scaling</a>.</p></li>
+</ul>
+<ul class="simple">
+<li><p>If strong scaling says we can go faster, weak scaling says we can go bigger</p>
+<ul>
+<li><p>If we increase our problem size by N times and use N times the resources, do we take the same amount of time to compute?</p></li>
+<li><p>A different target, much easier to hit (not impacted by latency as much</p></li>
+</ul>
+</li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[58]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ns = 10*ps
+plt.semilogx(ps, exec_time(.99, ps, n=ns, latency=1), 'o-', label="small $n/p$")
+ns = 100*ps
+plt.semilogx(ps, exec_time(.99, ps, n=ns, latency=1), 's-', label="large $n/p$")
+plt.title('Weak scaling')
+plt.xlabel('procs')
+plt.ylabel('time')
+plt.legend()
+plt.ylim(bottom=0);
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_39_0.png" src="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_39_0.png" />
+</div>
+</div>
+<section id="Weak-scaling-via-efficiency">
+<h4>Weak scaling via efficiency<a class="headerlink" href="#Weak-scaling-via-efficiency" title="Link to this heading">¶</a></h4>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[64]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ns = 10*ps
+plt.semilogx(ps, ns/exec_cost(.99, ps, n=ns, latency=1), 'o-', label="small $n/p$")
+ns = 100*ps
+plt.semilogx(ps, ns/exec_cost(.99, ps, n=ns, latency=1), 's-', label="large $n/p$")
+plt.title('Weak scaling')
+plt.xlabel('procs')
+plt.ylabel('efficiency')
+plt.legend()
+plt.ylim(bottom=0);
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_41_0.png" src="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_41_0.png" />
+</div>
+</div>
+<p>Recall</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[E =  \frac{n}{\ell p} + \frac{1}{(1 - f) p} + \frac{1}{f}\]</div>
+</div>
+<ul class="simple">
+<li><p>The latency term is constant when <span class="math notranslate nohighlight">\(n/p\)</span> is fixed</p></li>
+<li><p><span class="math notranslate nohighlight">\(E\)</span> is only <em>really</em> sensitive to the parallelizablility</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[132]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ns = 100*ps
+plt.semilogx(ps, ns/exec_cost(.95, ps, n=ns, latency=1), 's-', label="real")
+plt.semilogx(ps, ns/exec_cost(.99, ps, n=ns, latency=3), 's-', label="ideal")
+plt.title('Weak scaling')
+plt.xlabel('procs')
+plt.ylabel('efficiency')
+plt.legend()
+plt.ylim(bottom=0);
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_43_0.png" src="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_43_0.png" />
+</div>
+</div>
+<div class="alert alert-block alert-danger"><p>On real machines, latency is often also a function of <span class="math notranslate nohighlight">\(p\)</span>; increased network traffic, network topology, different communication standards used depending on hardware (is <span class="math notranslate nohighlight">\(p\)</span> on a single node of a machine? A single CPU socket?)</p>
+</div><div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[127]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def MorphRangeTo01(value, range, morph_range = [0, 0.95]):
+    return ((value - range[0]) / (range[-1] - range[0])) * (morph_range[1] - morph_range[0]) + morph_range[0]
+
+ws = np.geomspace(0.1, 1e3, 20) # problem size per processor
+exec_time_kwargs = {'f': 0.99, 'latency': 1}
+
+for p in ps:
+    ns = ws*p
+    color = 'k'
+    plt.semilogx(exec_time(p=p, n=ns, **exec_time_kwargs),
+                 ns/exec_cost(p=p, n=ns, **exec_time_kwargs), color=color, linewidth=0.25, zorder=-10)
+
+for w in ws:
+    ns = w*ps
+    color = plt.cm.turbo(MorphRangeTo01(np.log(w), np.log([ws.min(),ws.max()])))
+    plt.semilogx(exec_time(p=ps, n=ns, **exec_time_kwargs),
+                 ns/exec_cost(p=ps, n=ns, **exec_time_kwargs), '-', color=color)
+    plt.scatter(exec_time(p=ps, n=ns, **exec_time_kwargs),
+                 ns/exec_cost(p=ps, n=ns, **exec_time_kwargs), marker='o', color=color, s = 70*MorphRangeTo01(np.log(ps), np.log([ps.min(),ps.max()]))**2)
+
+plt.title('Weak scaling')
+plt.xlabel('time')
+plt.ylabel('efficiency')
+plt.ylim(bottom=0);
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_45_0.png" src="../../_images/notebooks_20260903-08-Modeling_and_Scaling_20260903-08-Modeling_and_Scaling_45_0.png" />
+</div>
+</div>
+<ul class="simple">
+<li><p>Colors are fixed work-per-processor (red large, blue small)</p></li>
+<li><p>Dot size relates to number processors</p></li>
+</ul>
+<p>e.g.</p>
+<ul class="simple">
+<li><p>“Vertical” lines are constant work-pre-processor</p></li>
+<li><p>“Horizontal” lines are constant processor count</p></li>
+</ul>
+<ul class="simple">
+<li><p>Efficiency sensitive to number of processors</p></li>
+<li><p>Time sensitive to work-per-processor</p></li>
+</ul>
+</section>
+</section>
+<section id="Weak-vs-Strong-scaling-summary">
+<h3>Weak vs Strong scaling summary<a class="headerlink" href="#Weak-vs-Strong-scaling-summary" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Thing</p></th>
+<th class="head"><p>Strong Scaling</p></th>
+<th class="head"><p>Weak Scaling</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Fixes</p></td>
+<td><p>Problem size</p></td>
+<td><p>Problem size-per processor</p></td>
+</tr>
+<tr class="row-odd"><td><p>Most sensitive to…</p></td>
+<td><p>latency</p></td>
+<td><p>parallelizability</p></td>
+</tr>
+<tr class="row-even"><td><p>Answers “If I have more resources, …”</p></td>
+<td><p>how much <strong>faster</strong> can I run efficiently?</p></td>
+<td><p>how much <strong>larger</strong> (of a problem) can I run efficiently?</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Both have to establish what a representative problem size is.</p>
+<ul class="simple">
+<li><p>Strong scaling has to set an initial problem size</p></li>
+<li><p>Weak scaling needs to set a size-per-processor</p></li>
+</ul>
+<p>Plenty of shenanigans can be had when deciding what the “representative” problem size is.</p>
+</section>
+<section id="%22Normal%22-scaling-metrics-are-not-always-the-best">
+<h3>“Normal” scaling metrics are not always the best<a class="headerlink" href="#%22Normal%22-scaling-metrics-are-not-always-the-best" title="Link to this heading">¶</a></h3>
+<p>From <a class="reference external" href="https://www.geosci-model-dev.net/11/1665/2018/gmd-11-1665-2018.pdf">Fuhrer et al (2018): Near-global climate simulation at 1 km resolution</a></p>
+<p><img alt="Fuhrer (2018)" src="../../_images/fuhrer2018-fig4.png" /></p>
+<p>Goal is to have 1 simulated year-per-day (SYMD, the rate of computation) at a 1km resolution (effectively the size of the problem).</p>
+<p>This plot seems to show that GPUs get us closer to that goal.</p>
+<p>Jed replotted these data for <a class="reference external" href="https://jedbrown.org/files/20190822-Latsis.pdf">his talk</a> at the <a class="reference external" href="https://latsis2019.ethz.ch/">Latsis Symposium</a> in 2019.</p>
+<p><img alt="Fuhrer (2018) replotted" src="../../_images/fuhrer2018-scaling-time-ann4.png" /></p>
+<p>By examing the properties of the problem more specifically, we get a much better informed understanding of how the performance of the code translates into tangible.</p>
+<ul class="simple">
+<li><p>The climate simulation splits the “simulated year” into individual steps</p></li>
+<li><p>The higher the physical resolution (e.g. 1km), the smaller the steps must be (and the more number of steps in a single “simulated year”)</p></li>
+<li><p>With the goal of doing a simulated year per (wall-clock) day, we can compute the time necessary to complete each step</p>
+<ul>
+<li><p>This is the x axis “time per step”</p></li>
+</ul>
+</li>
+<li><p>The y-axis is the amount of compute done per node</p>
+<ul>
+<li><p>This is effectively the <span class="math notranslate nohighlight">\(n/p\)</span> quantity for weak scaling</p></li>
+</ul>
+</li>
+<li><p>Latency is the much more significant bottle neck for these computations them outright compute</p></li>
+<li><p>GPUs aren’t really the answer</p></li>
+<li><p>Moore Money</p>
+<ul>
+<li><p>We can always buy more processors/GPUs to get more compute capability</p></li>
+</ul>
+</li>
+<li><p>Moore Problems</p>
+<ul>
+<li><p>There a limit for how low latency penalty can take when communicating between parallel processors</p></li>
+<li><p>This is physics problem, not a technological one</p></li>
+</ul>
+</li>
+</ul>
+<p>This highlights the need for <strong>different approaches</strong> for solving the problem, not <strong>different implementations</strong> (e.g. better algorithms for hardware)</p>
+<ul class="simple">
+<li><p>Jed specifically focuses on using a different time discretization scheme which allows for less steps for a single simulated year (and thus reducing the required “time per step” necessary to reach 1 SYPD &#64; 1km)</p></li>
+</ul>
+<p>This issue is very similar to the so-called <a class="reference external" href="https://www-tandfonline-com.colorado.idm.oclc.org/doi/full/10.1080/10618562.2019.1612052">LES Crisis</a> on the more engineering side of HPC.</p>
+</section>
+<section id="Further-resources">
+<h3>Further resources<a class="headerlink" href="#Further-resources" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://blogs.fau.de/hager/archives/category/fooling-the-masses">Hager: Fooling the masses</a></p>
+<ul>
+<li><p>Learn by counter-examples</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://htor.inf.ethz.ch/publications/index.php?pub=222">Hoefler and Belli: Scientific Benchmarking of Parallel Computing Systems</a></p>
+<ul>
+<li><p>Recommended best practices, especially for dealing with performance variability</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../../homework.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Homework</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../20260901-Observing_Memory_and_Compute_Bounds_Plus_How_Vectorization_Fails.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">20260901 - Memory- and Compute-Bound Applications and How Vectorization Fails</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, James Wright
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">20260903-08 Modeling and Scaling</a><ul>
+<li><a class="reference internal" href="#Performance-Modeling">Performance Modeling</a><ul>
+<li><a class="reference internal" href="#Terms">Terms</a></li>
+<li><a class="reference internal" href="#Measuring-work">Measuring work</a><ul>
+<li><a class="reference internal" href="#Dense-matrix-multiplication">Dense matrix multiplication</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Estimating-time">Estimating time</a></li>
+<li><a class="reference internal" href="#Recommended-reading-on-single-node-performance-modeling">Recommended reading on single-node performance modeling</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Scaling:-Programs-with-more-than-one-part">Scaling: Programs with more than one part</a><ul>
+<li><a class="reference internal" href="#Strong-scaling:-fixed-total-problem-size">Strong scaling: fixed total problem size</a><ul>
+<li><a class="reference internal" href="#Cost-=-time-*-p">Cost = <code class="docutils literal notranslate"><span class="pre">time</span> <span class="pre">*</span> <span class="pre">p</span></code></a></li>
+<li><a class="reference internal" href="#Efficiency">Efficiency</a></li>
+<li><a class="reference internal" href="#Speedup">Speedup</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Stunt-1:-Report-speedup,-not-absolute-performance!">Stunt 1: Report speedup, not absolute performance!</a></li>
+<li><a class="reference internal" href="#Efficiency-Time-spectrum-(Jed's-preference)">Efficiency-Time spectrum (Jed’s preference)</a><ul>
+<li><a class="reference internal" href="#Principles-of-reporting-scaling-and-performance">Principles of reporting scaling and performance</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Weak-Scaling:-Fixed-work-per-processor">Weak Scaling: Fixed work per processor</a><ul>
+<li><a class="reference internal" href="#Weak-scaling-via-efficiency">Weak scaling via efficiency</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Weak-vs-Strong-scaling-summary">Weak vs Strong scaling summary</a></li>
+<li><a class="reference internal" href="#%22Normal%22-scaling-metrics-are-not-always-the-best">“Normal” scaling metrics are not always the best</a></li>
+<li><a class="reference internal" href="#Further-resources">Further resources</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    </body>
+</html>

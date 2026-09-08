@@ -13,3 +13,4 @@ Introduction
    notebooks/20260825-HPC_in_Science_and_Vectorization.ipynb
    notebooks/20260827-CPUs_lie_to_you.ipynb
    notebooks/20260901-Observing_Memory_and_Compute_Bounds_Plus_How_Vectorization_Fails.ipynb
+   notebooks/20260903-08-Modeling_and_Scaling/20260903-08-Modeling_and_Scaling.ipynb
