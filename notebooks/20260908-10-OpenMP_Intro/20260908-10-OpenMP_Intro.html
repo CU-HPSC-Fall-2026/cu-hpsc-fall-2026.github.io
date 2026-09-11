@@ -1,0 +1,1079 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="Homework" href="../../homework.html"><link rel="prev" title="20260903-08 Modeling and Scaling" href="../20260903-08-Modeling_and_Scaling/20260903-08-Modeling_and_Scaling.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>20260908-10 OpenMP Intro</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">CSCI 5576/4576</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  <span class="sidebar-brand-text">CSCI 5576/4576</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Course Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ungrading.html">Ungrading</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../notebooks.html">Class Notes</a><input aria-label="Toggle navigation of Class Notes" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../20260820-CPU_Basics.html">20260820 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260825-HPC_in_Science_and_Vectorization.html">20260825 - What is HPSC? And Vectorization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260827-CPUs_lie_to_you.html">20260827 - CPUs Lie to You</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260901-Observing_Memory_and_Compute_Bounds_Plus_How_Vectorization_Fails.html">20260901 - Memory- and Compute-Bound Applications and How Vectorization Fails</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260903-08-Modeling_and_Scaling/20260903-08-Modeling_and_Scaling.html">20260903-08 Modeling and Scaling</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">20260908-10 OpenMP Intro</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../homework.html">Homework</a><input aria-label="Toggle navigation of Homework" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../../_sources/notebooks/20260908-10-OpenMP_Intro/20260908-10-OpenMP_Intro.ipynb.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[46]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def render_c(filename):
+    from IPython.display import Markdown
+    with open(filename) as f:
+        contents = f.read()
+    return Markdown("```c\n" + contents + "```\n")
+</pre></div>
+</div>
+</div>
+<section id="20260908-10-OpenMP-Intro">
+<h1>20260908-10 OpenMP Intro<a class="headerlink" href="#20260908-10-OpenMP-Intro" title="Link to this heading">¶</a></h1>
+<section id="What-is-OpenMP?">
+<h2>What is <a class="reference external" href="https://en.wikipedia.org/wiki/OpenMP">OpenMP</a>?<a class="headerlink" href="#What-is-OpenMP?" title="Link to this heading">¶</a></h2>
+<p><img alt="By Wikipedia user A1 - w:en:File:Fork_join.svg, CC BY 3.0, https://commons.wikimedia.org/w/index.php?curid=32004077" src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Fork_join.svg" /></p>
+<p>A community-developed standard Application Programming Interface (with “directives”) for</p>
+<ul class="simple">
+<li><p>multithreaded programming</p></li>
+<li><p>vectorization</p></li>
+<li><p>offload to coprocessors (such as GPUs)</p></li>
+</ul>
+<p>OpenMP is available for C, C++, and Fortran.</p>
+<p>Latest version: OpenMP-6.0, released November 2024. Implementations are <a class="reference external" href="https://gcc.gnu.org/projects/gomp/#implementation-status">still incomplete</a>!</p>
+<ul class="simple">
+<li><p>Even some 5.0 features still aren’t implemented</p></li>
+</ul>
+<section id="OpenMP-Resources">
+<h3>OpenMP Resources<a class="headerlink" href="#OpenMP-Resources" title="Link to this heading">¶</a></h3>
+<section id="Tutorials/Learning">
+<h4>Tutorials/Learning<a class="headerlink" href="#Tutorials/Learning" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p><a class="reference external" href="https://computing.llnl.gov/tutorials/openMP/">LLNL Tutorial</a></p></li>
+<li><p><a class="reference external" href="https://github.com/tgmattso/ATPESC">Tim Mattson: The OpenMP Common Core</a> from <a class="reference external" href="https://extremecomputingtraining.anl.gov/">ATPESC</a> (<a class="reference external" href="https://www.youtube.com/watch?v=T0csnAirv-U&amp;list=PLGj2a3KTwhRa6Ux64xg5L5ga6Jg8QykoQ&amp;index=2">video</a>)</p>
+<ul>
+<li><p>Took a one-day tutorial from him at ATPESC, really great material</p></li>
+<li><p>Tim helped make the OpenMP standard, though he is retired from Intel now</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Reference-Material">
+<h4>Reference Material<a class="headerlink" href="#Reference-Material" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p><a class="reference external" href="https://rookiehpc.org/openmp/docs/index.html">RookieHPC docs</a></p>
+<ul>
+<li><p>Also has the most useful MPI documentation out there</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://www.openmp.org/resources/refguides/">OpenMP-5.0 Reference Cards</a> (a few pages, printable)</p></li>
+<li><p><a class="reference external" href="https://www.openmp.org/spec-html/5.0/openmp.html">OpenMP-5.0 Standard</a></p></li>
+<li><p><a class="reference external" href="http://www.openmp.org/wp-content/uploads/openmp-examples-4.5.0.pdf">OpenMP-4.5 Examples</a></p></li>
+</ul>
+</section>
+</section>
+<section id="#pragma-omp-parallel">
+<h3><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">omp</span> <span class="pre">parallel</span></code><a class="headerlink" href="##pragma-omp-parallel" title="Link to this heading">¶</a></h3>
+<p>The standard is <strong>big</strong>, but most applications only use a few constructs.</p>
+<ul class="simple">
+<li><p>Tim Mattson identifies 21 as the “common core”</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>render_c('omp-hello.c')
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;omp.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="cp">#pragma omp parallel</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">num_threads</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">omp_get_num_threads</span><span class="p">();</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">my_thread_num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">omp_get_thread_num</span><span class="p">();</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"I am %d of %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">my_thread_num</span><span class="p">,</span><span class="w"> </span><span class="n">num_threads</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>render_c('omp-hello.c')
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;omp.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="cp">#pragma omp parallel</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">num_threads</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">omp_get_num_threads</span><span class="p">();</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">my_thread_num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">omp_get_thread_num</span><span class="p">();</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"I am %d of %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">my_thread_num</span><span class="p">,</span><span class="w"> </span><span class="n">num_threads</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>!make CFLAGS='-fopenmp -Wall' -B omp-hello
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+cc -fopenmp -Wall    omp-hello.c   -o omp-hello
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[102]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>!OMP_NUM_THREADS=8 ./omp-hello
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+I am 7 of 8
+I am 4 of 8
+I am 5 of 8
+I am 6 of 8
+I am 2 of 8
+I am 1 of 8
+I am 3 of 8
+I am 0 of 8
+</pre></div></div>
+</div>
+</section>
+<section id="Parallelizing-triad">
+<h3>Parallelizing <code class="docutils literal notranslate"><span class="pre">triad</span></code><a class="headerlink" href="#Parallelizing-triad" title="Link to this heading">¶</a></h3>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">triad</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">scalar</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma omp parallel</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">            </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">scalar</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>What does this code do?</p>
+<p>Need to actually tell each thread what to do.</p>
+<ul class="simple">
+<li><p>This goes under <strong>Single Program Multiple Data (SPMD)</strong> paradigm</p>
+<ul>
+<li><p>As compared to SIMD</p></li>
+</ul>
+</li>
+<li><p>Each thread runs <strong>the exact same code</strong></p></li>
+</ul>
+<ul class="simple">
+<li><p>We need a way for each thread to differentiate itself</p>
+<ul>
+<li><p>And from that differentiation, we can split the work amongst the threads</p></li>
+</ul>
+</li>
+</ul>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">triad</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">scalar</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma omp parallel</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">omp_get_thread_num</span><span class="p">();</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">num_threads</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">omp_get_num_threads</span><span class="p">();</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="n">id</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">+=</span><span class="n">num_threads</span><span class="p">)</span>
+<span class="w">            </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">scalar</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="False-Sharing">
+<h3>False Sharing<a class="headerlink" href="#False-Sharing" title="Link to this heading">¶</a></h3>
+<section id="Cache-Coherency">
+<h4>Cache Coherency<a class="headerlink" href="#Cache-Coherency" title="Link to this heading">¶</a></h4>
+<blockquote>
+<div><p>There are only two hard things in Computer Science: cache invalidation and naming things.</p>
+<p class="attribution">—Phil Karlton</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>The von Neumann model (effectively) specifies that</p>
+<ul>
+<li><p>There is one single pool of memory</p></li>
+<li><p>All processes have access to that exact same pool of memory</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>In reality, CPUs use caches to store data closer to the processing units</p>
+<ul>
+<li><p>Data is stored in multiple locations</p></li>
+<li><p>There is no longer a single “source of truth” for what a data value should be</p></li>
+</ul>
+</li>
+<li><p>By the “von Neumann contract”, accessing data in memory should be <strong>as if</strong> it is also stored in a single memory pool</p></li>
+<li><p>If a process modifies data in it’s L1 cache, the data in L2, L3, and memory are incorrect!</p>
+<ul>
+<li><p>Not a big problem for serial programs; the data is only stored in one L1 cache, so there’s no risk of incoherence</p></li>
+<li><p>Bigger issue for parallel programs with shared memory (e.g. threads)</p></li>
+</ul>
+</li>
+</ul>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/File:Coherent.gif">Wikipedia Cache Coherency Gif</a></p>
+<ul class="simple">
+<li><p>Rather than communicate individual values, the CPU operates on cachelines</p></li>
+<li><p>So updating the L1 cache in a different process requires communicating the entire cache line</p></li>
+<li><p>And determining whether the data has changed is done on a cacheline basis</p></li>
+</ul>
+</section>
+<section id="False-Sharing-example">
+<h4>False Sharing example<a class="headerlink" href="#False-Sharing-example" title="Link to this heading">¶</a></h4>
+<p>Take a reduction operation:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#define NUM_THREADS 4</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">sums</span><span class="p">[</span><span class="n">NUM_THREADS</span><span class="p">];</span>
+
+<span class="n">omp_set_num_threads</span><span class="p">(</span><span class="n">NUM_THREADS</span><span class="p">);</span>
+<span class="cp">#pragma omp parallel</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">omp_get_thread_num</span><span class="p">();</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="n">id</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">+=</span><span class="n">num_threads</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">sums</span><span class="p">[</span><span class="n">id</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><img alt="Mattson_false_sharing" src="../../_images/Mattson_false_sharing.png" /></p>
+<ul class="simple">
+<li><p>Memory system operates on cache lines</p>
+<ul>
+<li><p>When one process writes to it’s <code class="docutils literal notranslate"><span class="pre">sums</span></code> value, the entire cache line has to be corrected</p></li>
+</ul>
+</li>
+<li><p>Everytime a <code class="docutils literal notranslate"><span class="pre">sums</span></code> value is written, the entire cache line has to be communicated across to the other caches</p></li>
+<li><p>Each thread, when wanting to use it’s own <code class="docutils literal notranslate"><span class="pre">sums</span></code> entry, has to wait to recieve the updated cacheline from the other threads</p></li>
+</ul>
+</section>
+<section id="False-sharing-solution">
+<h4>False sharing solution<a class="headerlink" href="#False-sharing-solution" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>Pad the array so that the entries fall outside of the cacheline</p></li>
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">`alignas</span></code> &lt;<a class="reference external" href="https://en.cppreference.com/c/language/_Alignas">https://en.cppreference.com/c/language/_Alignas</a>&gt;`__ type specifier</p></li>
+</ul>
+<div class="alert alert-block alert-warning"><p>Some modern processors have ways of avoiding these issues and false sharing isn’t actually an issue.</p>
+</div></section>
+</section>
+<section id="Parallelizing-dot">
+<h3>Parallelizing <code class="docutils literal notranslate"><span class="pre">dot</span></code><a class="headerlink" href="#Parallelizing-dot" title="Link to this heading">¶</a></h3>
+<section id="Reference">
+<h4>Reference<a class="headerlink" href="#Reference" title="Link to this heading">¶</a></h4>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="nf">dot_ref</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">    </span><span class="n">sum</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">sum</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="Opt-1---Striding-over-data">
+<h4>Opt 1 - Striding over data<a class="headerlink" href="#Opt-1---Striding-over-data" title="Link to this heading">¶</a></h4>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#define NUM_THREADS 4</span>
+<span class="kt">double</span><span class="w"> </span><span class="nf">dot_opt1</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">sums</span><span class="p">[</span><span class="n">NUM_THREADS</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">  </span><span class="n">omp_set_num_threads</span><span class="p">(</span><span class="n">NUM_THREADS</span><span class="p">);</span>
+<span class="w">  </span><span class="cp">#pragma omp parallel</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">omp_get_thread_num</span><span class="p">();</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="n">id</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">+=</span><span class="n">NUM_THREADS</span><span class="p">)</span>
+<span class="w">      </span><span class="n">sums</span><span class="p">[</span><span class="n">id</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">j</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">&lt;</span><span class="n">NUM_THREADS</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="n">sums</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">sums</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">sums</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Need to give every thread it’s own sum entry to add into</p></li>
+<li><p>Collect each threads result at the end</p></li>
+<li><p>Obviously runs into false sharing, so we could use padding to address this</p></li>
+</ul>
+<ul class="simple">
+<li><p>Each thread is striding over data, <em>probably</em> not ideal!</p>
+<ul>
+<li><p>Not a big concern for global memory bandwidth (the data in each fetched cache line is still used, just by different threads)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Opt-2---Divide-data-in-the-loop-between-each-thread">
+<h4>Opt 2 - Divide data in the loop between each thread<a class="headerlink" href="#Opt-2---Divide-data-in-the-loop-between-each-thread" title="Link to this heading">¶</a></h4>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#define NUM_THREADS 4</span>
+<span class="cp">#define PAD 8</span>
+<span class="kt">double</span><span class="w"> </span><span class="nf">dot_opt2</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">sums</span><span class="p">[</span><span class="n">NUM_THREADS</span><span class="p">][</span><span class="n">PAD</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">  </span><span class="n">omp_set_num_threads</span><span class="p">(</span><span class="n">NUM_THREADS</span><span class="p">);</span>
+<span class="w">  </span><span class="cp">#pragma omp parallel</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="n">omp_get_thread_num</span><span class="p">();</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">num_threads</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">omp_get_num_threads</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// Divide work between each thread</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">num_threads</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">num_threads</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">num_threads</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="n">end</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">start</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">end</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">      </span><span class="n">sums</span><span class="p">[</span><span class="n">id</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">j</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">&lt;</span><span class="n">NUM_THREADS</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="n">sums</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">sums</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">sums</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>No more striding!</p></li>
+</ul>
+<ul class="simple">
+<li><p>Really annoying to have to compute these bounds ourselves</p></li>
+<li><p>Surely there’s a better way…</p></li>
+</ul>
+</section>
+</section>
+<section id="omp-pragma-for">
+<h3><code class="docutils literal notranslate"><span class="pre">omp</span> <span class="pre">pragma</span> <span class="pre">for</span></code><a class="headerlink" href="#omp-pragma-for" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>We can just tell OpenMP “Hey, here’s a bunch of independent work in the form of a loop. Distribute it amongst threads”</p></li>
+</ul>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="nf">dot_opt3</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">sums</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">  </span><span class="n">omp_set_num_threads</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+<span class="w">  </span><span class="cp">#pragma omp parallel</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">omp_get_thread_num</span><span class="p">();</span>
+<span class="w">    </span><span class="cp">#pragma omp for</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">      </span><span class="n">sums</span><span class="p">[</span><span class="n">id</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">j</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="n">sums</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">sums</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">sums</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="alert alert-block alert-info"><p>This is technically no longer SPMD. Each thread has it’s own OpenMP-designated code that it will run. Not a problem, but something of note.</p>
+</div><ul class="simple">
+<li><p>Cool, but <strong>how</strong> do we distribute it amongst threads?</p>
+<ul>
+<li><p>The interleaving before distributed work amongst the threads</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Scheduling">
+<h3>Scheduling<a class="headerlink" href="#Scheduling" title="Link to this heading">¶</a></h3>
+<p>OpenMP offers different options for how to <strong>schedule</strong> the work across threads</p>
+<ul class="simple">
+<li><p>Work divided into <strong>chunks</strong></p>
+<ul>
+<li><p>Each chunk is a contiguous non-empty subset of the loop iterations</p></li>
+<li><p>We can specify the <em>chunk_size</em></p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>Those chunks are distributed to the threads via different <strong>kinds</strong> of schedules</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">static</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dynamic</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">guided</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">auto</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">runtime</span></code></p></li>
+</ul>
+</li>
+</ul>
+<section id="Static-Scheduling">
+<h4>Static Scheduling<a class="headerlink" href="#Static-Scheduling" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>Each thread gets chunk of specific size</p></li>
+<li><p>All iteratations are handed out</p></li>
+<li><p>Completely deterministic algorithm</p>
+<ul>
+<li><p><strong>NO</strong> communication or synchronization is necessary to spread out the work</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>Row is thread ID</p></li>
+<li><p>Column is which loop iteration was assigned</p>
+<ul>
+<li><p>It is <strong>not</strong> time</p></li>
+</ul>
+</li>
+</ul>
+<p><em>Slightly modified from</em> <a class="reference external" href="http://jakascorner.com/blog/2016/06/omp-for-scheduling.html">this</a> <em>blog post</em></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>schedule(static, 1):
+          0123456789          0123456789          0123456789          0123
+                    0123456789          0123456789          0123456789
+Thread 0: *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+Thread 1:  *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+Thread 2:   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+Thread 3:    *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>schedule(static, 4):
+          0123456789          0123456789          0123456789          0123
+                    0123456789          0123456789          0123456789
+Thread 0: ****            ****            ****            ****
+Thread 1:     ****            ****            ****            ****
+Thread 2:         ****            ****            ****            ****
+Thread 3:             ****            ****            ****            ****
+
+schedule(static, 8):
+          0123456789          0123456789          0123456789          0123
+                    0123456789          0123456789          0123456789
+Thread 0: ********                        ********
+Thread 1:         ********                        ********
+Thread 2:                 ********                        ********
+Thread 3:                         ********                        ********
+</pre></div>
+</div>
+<p><strong>Static Pros:</strong></p>
+<ul class="simple">
+<li><p>Dead simple</p></li>
+<li><p>No overhead when assigning work</p></li>
+</ul>
+<p><strong>Static Cons:</strong></p>
+<ul class="simple">
+<li><p>If work per iteration varies, work is not spread evenly</p>
+<ul>
+<li><p>e.g. no load balancing</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Chunk-size">
+<h4>Chunk size<a class="headerlink" href="#Chunk-size" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>For static scheduling, how does chunk size impact execution?</p></li>
+</ul>
+<ol class="arabic simple">
+<li><p>Vectorization</p>
+<ul class="simple">
+<li><p>If the memory being operated on is contiguous and chunk size is smaller than the vector width, then the code won’t be vectorized</p></li>
+</ul>
+</li>
+<li><p>Cache locality</p>
+<ul class="simple">
+<li><p>Keeping each thread using data that is aligned in cache lines reduces contention</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="Dynamic-Scheduling">
+<h4>Dynamic Scheduling<a class="headerlink" href="#Dynamic-Scheduling" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>Chunks are placed in a queue</p></li>
+<li><p>Threads then pop them chunks off the queue</p></li>
+<li><p>When a thread is done with it’s chunk, it goes back to the queue</p></li>
+<li><p>Increasing chunk size makes scheduling more static, but less load balancing potential</p></li>
+</ul>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>schedule(dynamic, 1):
+          0123456789          0123456789          0123456789          0123
+                    0123456789          0123456789          0123456789
+Thread 0: *  * *  *    *  *     *  *    *  *    *   * *        *     *
+Thread 1:  *  *  *   *  *    *    *   *  *   *   *   *  * ** **  * ** ** *
+Thread 2:          *  *     *  *    *     * *  *   *        *           *
+Thread 3:   *   *   *    * *  *  *   * *      *   *    * *      * *
+
+schedule(dynamic, 4):
+          0123456789          0123456789          0123456789          0123
+                    0123456789          0123456789          0123456789
+Thread 0:     ****            ****    ****        ****        ****
+Thread 1: ****                    ****                ****        ****
+Thread 2:             ****                    ****                    ****
+Thread 3:         ****    ****            ****            ****
+
+schedule(dynamic, 8):
+          0123456789          0123456789          0123456789          0123
+                    0123456789          0123456789          0123456789
+Thread 0:         ********                        ************************
+Thread 1: ********                        ********
+Thread 2:                 ********
+Thread 3:                         ********
+</pre></div>
+</div>
+<p><strong>Dynamic Pros:</strong></p>
+<ul class="simple">
+<li><p>Flexible scheduling</p></li>
+<li><p>Helps ensure that all threads are actively working on something</p>
+<ul>
+<li><p>e.g. load balancing</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Dynamic Cons:</strong></p>
+<ul class="simple">
+<li><p>Maintaining queue requires overhead</p>
+<ul>
+<li><p>Queue <strong>must</strong> be synchronized between all threads</p></li>
+<li><p>Synchronization can be slow</p></li>
+<li><p>Thread is waiting until it can get work off of the queue</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Guided-Scheduling">
+<h4>Guided Scheduling<a class="headerlink" href="#Guided-Scheduling" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>Same as dynamic, but the chunk size is dynamic, starting at large sizes and decreasing as iterations reduce</p>
+<ul>
+<li><p>Smallest chunk size controlled by the user</p></li>
+</ul>
+</li>
+<li><p>Large chunk sizes == less time interacting with queue</p>
+<ul>
+<li><p>Theoretically, less could be more efficient than dynamic</p></li>
+</ul>
+</li>
+<li><p>More expensive per queue-visit than dynamic</p>
+<ul>
+<li><p>Each queue visit, the handler must compute what the next chunk size should be</p></li>
+</ul>
+</li>
+</ul>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>schedule(guided, 2):
+          0123456789          0123456789          0123456789          0123
+                    0123456789          0123456789          0123456789
+Thread 0:                 ************                     ****   **    **
+Thread 1: ****************                            *****
+Thread 2:                                      *******                **
+Thread 3:                             *********                ***  **
+
+schedule(guided, 4):
+          0123456789          0123456789          0123456789          0123
+                    0123456789          0123456789          0123456789
+Thread 0:                             *********       *****
+Thread 1:                                      *******         ****    ***
+Thread 2: ****************                                 ****
+Thread 3:                 ************                             ****
+
+schedule(guided, 8):
+          0123456789          0123456789          0123456789          0123
+                    0123456789          0123456789          0123456789
+Thread 0:                 ************                         ********
+Thread 1:                             *********        ********
+Thread 2:                                      ********
+Thread 3: ****************                                             ***
+</pre></div>
+</div>
+<p><strong>Guided Pros:</strong></p>
+<ul class="simple">
+<li><p>Does load balancing</p></li>
+<li><p>Attempts to reduce the number of queue visits</p></li>
+</ul>
+<p><strong>Guided Cons:</strong></p>
+<ul class="simple">
+<li><p>Extra overhead compared to dynamic</p>
+<ul>
+<li><p>Mitigated if the work-per iteration is larger than the extra overhead</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Scheduling-and-Chunk-Size-Analogy">
+<h4>Scheduling and Chunk Size Analogy<a class="headerlink" href="#Scheduling-and-Chunk-Size-Analogy" title="Link to this heading">¶</a></h4>
+<p>By analogy, say you want to fill a box with rocks, with the goal being to fill the volume of the box with as much rock as possible. Any air in the box in considered “wasted space”. Rocks can be of different sizes and different shapes, so that impacts the strategy you might use to fill the box.</p>
+<p>First, we can divide the rocks into either square shape, or irregular shapes. Square shapes are easy to pack optimally by using a pre-determined packing order. Conversely, irregular shapes require extra thought and attention to get the best packing. It’s best in this case to place one rock at a time, re-evaluating where the next rock goes each time.</p>
+<p>Second, we can divide the rocks into different sizes. Small rocks will more easily pack into the box and leave less space. Large rocks will are easier to work with (we fill a lot of volume while only moving a single rock), but are more likely to leave large air gaps if we’re not careful.</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Rock Analogy</p></th>
+<th class="head"><p>Scheduling Analogy</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Rocks</p></td>
+<td><p>Iteration chunks, useful work</p></td>
+</tr>
+<tr class="row-odd"><td><p>Air gaps</p></td>
+<td><p>Threads waiting, no useful work done</p></td>
+</tr>
+<tr class="row-even"><td><p>Square rocks</p></td>
+<td><p>Consistent work per iteration</p></td>
+</tr>
+<tr class="row-odd"><td><p>Irregular rocks</p></td>
+<td><p>Inconsistent work per iteration</p></td>
+</tr>
+<tr class="row-even"><td><p>Size of rocks</p></td>
+<td><p>Chunk size</p></td>
+</tr>
+<tr class="row-odd"><td><p>Packing order/strategy</p></td>
+<td><p>Thread scheduling</p></td>
+</tr>
+<tr class="row-even"><td><p>Pre-determined packing</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">static</span></code> scheduling</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul class="simple">
+<li><p>Static scheduling work best with consistent work-per-iteration</p>
+<ul>
+<li><p>Square rocks are more ameanable to a pre-determined packing order</p></li>
+<li><p>Using a pre-determined packing order for irregular rocks will certainly lead to unnecessary air gaps</p></li>
+</ul>
+</li>
+<li><p>Dynamic scheduling is good for inconsistent work-per-iteration</p>
+<ul>
+<li><p>With irregular rock shapes, you want to go one step at a time placing each rock to help ensure there’s fewer gaps</p></li>
+</ul>
+</li>
+<li><p>Guided scheduling attempts to balance efficiency and optimality with it’s scheduling</p>
+<ul>
+<li><p>Starting with larger rocks means we have less total rocks to move (and less descisions to make each time)</p></li>
+<li><p>However, if the rocks are <em>really</em> irregular, better packing could be achieved by breaking up the large rock into smaller ones instead</p></li>
+</ul>
+</li>
+<li><p>Smaller chunk size means more flexibility with work distribution</p>
+<ul>
+<li><p>Smaller rocks can more easily fill the air gaps in the box</p></li>
+</ul>
+</li>
+<li><p>Larger chunk sizes are easier to work with</p>
+<ul>
+<li><p>We only have to move one rock for a significant volume of the box to be filled</p></li>
+<li><p>Each rock moved is simply easier to work with</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Scheduling-Summary">
+<h4>Scheduling Summary<a class="headerlink" href="#Scheduling-Summary" title="Link to this heading">¶</a></h4>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Schedule Kind</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Best for …</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">static</span></code></p></td>
+<td><p>Chunks are assigned to each thread round-robin style</p></td>
+<td><p>Consistent work per iteration</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dynamic</span></code></p></td>
+<td><p>Chunks are placed in a queue. When a thread is done with it’s chunk, it pops a chunk off the queue</p></td>
+<td><p>Small, inconsistent work per iteration</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">guided</span></code></p></td>
+<td><p>Threads grab block of iterations. The size of the block starts large and shrinks down to size “chunk” as the calculation proceeds.</p></td>
+<td><p>Large inconsistent work per iteration</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">runtime</span></code></p></td>
+<td><p>Set via <code class="docutils literal notranslate"><span class="pre">OMP_SCHEDULE</span></code> environment variable, so runtime changable!</p></td>
+<td><p>Experimenting!</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">auto</span></code></p></td>
+<td><p>Schedule is left up the implementation (can be whatever it once, not necessarily one of the above)</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="alert alert-block alert-danger"><p>Don’t guess, just measure! Benchmark your code to determine which schedule is best rather than what you think is best. Sometimes it’s obvious (mostly for using <code class="docutils literal notranslate"><span class="pre">static</span></code>), but othertimes not.</p>
+</div></section>
+</section>
+<section id="omp-for-for-the-dot-function">
+<h3><code class="docutils literal notranslate"><span class="pre">omp</span> <span class="pre">for</span></code> for the dot function<a class="headerlink" href="#omp-for-for-the-dot-function" title="Link to this heading">¶</a></h3>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="nf">dot_opt3</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">sums</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">  </span><span class="n">omp_set_num_threads</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+<span class="w">  </span><span class="cp">#pragma omp parallel</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">omp_get_thread_num</span><span class="p">();</span>
+<span class="w">    </span><span class="cp">#pragma omp for</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">      </span><span class="n">sums</span><span class="p">[</span><span class="n">id</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">j</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="n">sums</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">sums</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">sums</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>What schedule do you think we should use?</p>
+<p>Probably static scheduling.</p>
+<ul class="simple">
+<li><p>The work per iteration is fixed at 2 FLOPs</p></li>
+<li><p>The memory access patterns aren’t complex or random either</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../../homework.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Homework</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../20260903-08-Modeling_and_Scaling/20260903-08-Modeling_and_Scaling.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">20260903-08 Modeling and Scaling</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, James Wright
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">20260908-10 OpenMP Intro</a><ul>
+<li><a class="reference internal" href="#What-is-OpenMP?">What is OpenMP?</a><ul>
+<li><a class="reference internal" href="#OpenMP-Resources">OpenMP Resources</a><ul>
+<li><a class="reference internal" href="#Tutorials/Learning">Tutorials/Learning</a></li>
+<li><a class="reference internal" href="#Reference-Material">Reference Material</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="##pragma-omp-parallel"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">omp</span> <span class="pre">parallel</span></code></a></li>
+<li><a class="reference internal" href="#Parallelizing-triad">Parallelizing <code class="docutils literal notranslate"><span class="pre">triad</span></code></a></li>
+<li><a class="reference internal" href="#False-Sharing">False Sharing</a><ul>
+<li><a class="reference internal" href="#Cache-Coherency">Cache Coherency</a></li>
+<li><a class="reference internal" href="#False-Sharing-example">False Sharing example</a></li>
+<li><a class="reference internal" href="#False-sharing-solution">False sharing solution</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Parallelizing-dot">Parallelizing <code class="docutils literal notranslate"><span class="pre">dot</span></code></a><ul>
+<li><a class="reference internal" href="#Reference">Reference</a></li>
+<li><a class="reference internal" href="#Opt-1---Striding-over-data">Opt 1 - Striding over data</a></li>
+<li><a class="reference internal" href="#Opt-2---Divide-data-in-the-loop-between-each-thread">Opt 2 - Divide data in the loop between each thread</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#omp-pragma-for"><code class="docutils literal notranslate"><span class="pre">omp</span> <span class="pre">pragma</span> <span class="pre">for</span></code></a></li>
+<li><a class="reference internal" href="#Scheduling">Scheduling</a><ul>
+<li><a class="reference internal" href="#Static-Scheduling">Static Scheduling</a></li>
+<li><a class="reference internal" href="#Chunk-size">Chunk size</a></li>
+<li><a class="reference internal" href="#Dynamic-Scheduling">Dynamic Scheduling</a></li>
+<li><a class="reference internal" href="#Guided-Scheduling">Guided Scheduling</a></li>
+<li><a class="reference internal" href="#Scheduling-and-Chunk-Size-Analogy">Scheduling and Chunk Size Analogy</a></li>
+<li><a class="reference internal" href="#Scheduling-Summary">Scheduling Summary</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#omp-for-for-the-dot-function"><code class="docutils literal notranslate"><span class="pre">omp</span> <span class="pre">for</span></code> for the dot function</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    </body>
+</html>
