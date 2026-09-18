@@ -15,3 +15,5 @@ Introduction
    notebooks/20260901-Observing_Memory_and_Compute_Bounds_Plus_How_Vectorization_Fails.ipynb
    notebooks/20260903-08-Modeling_and_Scaling/20260903-08-Modeling_and_Scaling.ipynb
    notebooks/20260908-10-OpenMP_Intro/20260908-10-OpenMP_Intro.ipynb
+   notebooks/20260915-OpenMP_cont/20260915-OpenMP_cont.ipynb
+   notebooks/20260917-TMA_perf_lab3/20260917-TMA_perf_lab3.ipynb

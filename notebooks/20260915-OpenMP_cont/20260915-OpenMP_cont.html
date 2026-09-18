@@ -1,0 +1,968 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="20260917 - Perf and Topdown Microarchitecture Analysis (Lab 3)" href="../20260917-TMA_perf_lab3/20260917-TMA_perf_lab3.html"><link rel="prev" title="20260908-10 OpenMP Intro" href="../20260908-10-OpenMP_Intro/20260908-10-OpenMP_Intro.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>20260915-OpenMP continued</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">CSCI 5576/4576</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  <span class="sidebar-brand-text">CSCI 5576/4576</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Course Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ungrading.html">Ungrading</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../notebooks.html">Class Notes</a><input aria-label="Toggle navigation of Class Notes" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../20260820-CPU_Basics.html">20260820 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260825-HPC_in_Science_and_Vectorization.html">20260825 - What is HPSC? And Vectorization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260827-CPUs_lie_to_you.html">20260827 - CPUs Lie to You</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260901-Observing_Memory_and_Compute_Bounds_Plus_How_Vectorization_Fails.html">20260901 - Memory- and Compute-Bound Applications and How Vectorization Fails</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260903-08-Modeling_and_Scaling/20260903-08-Modeling_and_Scaling.html">20260903-08 Modeling and Scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260908-10-OpenMP_Intro/20260908-10-OpenMP_Intro.html">20260908-10 OpenMP Intro</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">20260915-OpenMP continued</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260917-TMA_perf_lab3/20260917-TMA_perf_lab3.html">20260917 - Perf and Topdown Microarchitecture Analysis (Lab 3)</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../homework.html">Homework</a><input aria-label="Toggle navigation of Homework" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../../_sources/notebooks/20260915-OpenMP_cont/20260915-OpenMP_cont.ipynb.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="20260915-OpenMP-continued">
+<h1>20260915-OpenMP continued<a class="headerlink" href="#20260915-OpenMP-continued" title="Link to this heading">¶</a></h1>
+<section id="Parallelizing-dot-product-continued">
+<h2>Parallelizing dot product continued<a class="headerlink" href="#Parallelizing-dot-product-continued" title="Link to this heading">¶</a></h2>
+<div class="alert alert-block alert-info"><p>This continues from the previous notes, where we were going over different ways of vectorizing the dot function</p>
+</div><section id="Reductions">
+<h3>Reductions<a class="headerlink" href="#Reductions" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>You know what else is annoying? Creating individual sum areas for each thread</p>
+<ul>
+<li><p>Have to be careful about false sharing</p></li>
+<li><p>Needs to be flexible to the number of threads being used</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>We can use the <code class="docutils literal notranslate"><span class="pre">reduction</span></code> modifier for <code class="docutils literal notranslate"><span class="pre">omp</span> <span class="pre">parallel</span> <span class="pre">for</span></code> as well</p></li>
+</ul>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="nf">dot_opt4</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">omp_set_num_threads</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+<span class="w">  </span><span class="cp">#pragma omp parallel for reduction(+:sum)</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">    </span><span class="n">sum</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">sum</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>How does it work?</p>
+<p><img alt="reduction_clause_diagram" src="../../_images/reduction_clause.png" /></p>
+<p><em>from http://jakascorner.com/blog/2016/06/omp-for-reduction.html</em></p>
+<ul class="simple">
+<li><p>Note that the local <code class="docutils literal notranslate"><span class="pre">sum</span></code> variable for each thread is completely normal</p></li>
+<li><p>OpenMP handles the false sharing issue without us needing to do anything</p></li>
+</ul>
+</section>
+<section id="Performance-of-our-different-optimized-dot-products">
+<h3>Performance of our different optimized dot products<a class="headerlink" href="#Performance-of-our-different-optimized-dot-products" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">dot</span></code> version</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ref</span></code></p></td>
+<td><p>completely serial implementation</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">opt1</span></code></p></td>
+<td><p>naive parallelization, with interleaving data</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">opt2</span></code></p></td>
+<td><p>padding and manual chunking/scheduling</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">opt3</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">omp</span> <span class="pre">parallel</span> <span class="pre">for</span></code> with static scheduling</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">opt4</span></code></p></td>
+<td><p>same as <code class="docutils literal notranslate"><span class="pre">opt3</span></code>, but with reduction clause</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>!make CFLAGS='-O3 -march=native -fopenmp' -B dot
+!OMP_NUM_THREADS=2 ./dot -r 4 -n 1000000
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+cc -O3 -march=native -fopenmp    dot.c   -o dot
+  Name          flops   ticks   flops/tick
+ dot_ref        2000000 4057726     0.49
+ dot_ref        2000000 3455875     0.58
+ dot_ref        2000000 3266452     0.61
+ dot_ref        2000000 2771885     0.72
+
+dot_opt1        2000000 2205205     0.91
+dot_opt1        2000000 2032270     0.98
+dot_opt1        2000000 1908097     1.05
+dot_opt1        2000000 1858887     1.08
+
+dot_opt2        2000000 793373      2.52
+dot_opt2        2000000 827521      2.42
+dot_opt2        2000000 774900      2.58
+dot_opt2        2000000 758207      2.64
+
+dot_opt3        2000000 789678      2.53
+dot_opt3        2000000 827487      2.42
+dot_opt3        2000000 840292      2.38
+dot_opt3        2000000 885605      2.26
+
+dot_opt4        2000000 832850      2.40
+dot_opt4        2000000 797991      2.51
+dot_opt4        2000000 808423      2.47
+dot_opt4        2000000 782563      2.56
+</pre></div></div>
+</div>
+<ul class="simple">
+<li><p>We see <code class="docutils literal notranslate"><span class="pre">opt1</span></code> does about twice as better performance than <code class="docutils literal notranslate"><span class="pre">ref</span></code></p>
+<ul>
+<li><p>Makes sense, as we’re using two threads</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">opt2</span></code> performs much better than <code class="docutils literal notranslate"><span class="pre">opt1</span></code></p>
+<ul>
+<li><p>The data interleaving in <code class="docutils literal notranslate"><span class="pre">opt1</span></code> was causing memory contention issues</p></li>
+<li><p>Both threads wanting to access data on the same cache line</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">opt2</span></code>, <code class="docutils literal notranslate"><span class="pre">opt3</span></code>, and <code class="docutils literal notranslate"><span class="pre">opt4</span></code> perform very similarly</p>
+<ul>
+<li><p>They were all executing the same strategy</p></li>
+<li><p>The only difference is that the latter optimized runs were using more convienient OpenMP constructs to implement them</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="Vectorization-Failures---Aliasing">
+<h2>Vectorization Failures - Aliasing<a class="headerlink" href="#Vectorization-Failures---Aliasing" title="Link to this heading">¶</a></h2>
+<p>OpenMP-4.0 added the <code class="docutils literal notranslate"><span class="pre">omp</span> <span class="pre">simd</span></code> construct, which is a portable way to request that the compiler vectorize code. An example of a reason why a compiler might fail to vectorize code is aliasing, which we investigate below.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>render_c('triad.c')
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">triad</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">scalar</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">        </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">scalar</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>!gcc -O2 -ftree-vectorize -fopt-info-all -c triad.c
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Unit growth for small function inlining: 15-&gt;15 (0%)
+
+Inlined 0 calls, eliminated 0 functions
+
+BB 3 is always executed in loop 1
+loop 1&#39;s coldest_outermost_loop is 1, hotter_than_inner_loop is NULL
+consider run-time aliasing test between *_3 and *_8
+consider run-time aliasing test between *_5 and *_8
+triad.c:2:20: optimized: loop vectorized using 16 byte vectors and unroll factor 2
+triad.c:2:20: optimized:  loop versioned for vectorization because of possible aliasing
+triad.c:1:6: note: vectorized 1 loops in function.
+triad.c:2:20: optimized: loop turned into non-loop; it never loops
+triad.c:1:6: note: ***** Analysis failed with vector mode V2DF
+triad.c:1:6: note: ***** The result for vector mode V16QI would be the same
+triad.c:1:6: note: ***** Re-trying analysis with vector mode V8QI
+triad.c:1:6: note: ***** Analysis failed with vector mode V8QI
+triad.c:1:6: note: ***** Re-trying analysis with vector mode V4QI
+triad.c:1:6: note: ***** Analysis failed with vector mode V4QI
+BB 8 is always executed in loop 2
+BB 3 is always executed in loop 1
+loop 2&#39;s coldest_outermost_loop is 2, hotter_than_inner_loop is NULL
+loop 1&#39;s coldest_outermost_loop is 1, hotter_than_inner_loop is NULL
+triad.c:2:20: note: considering unrolling loop 2 at BB 11
+considering unrolling loop with constant number of iterations
+considering unrolling loop with runtime-computable number of iterations
+triad.c:3:14: note: considering unrolling loop 1 at BB 7
+considering unrolling loop with constant number of iterations
+considering unrolling loop with runtime-computable number of iterations
+</pre></div></div>
+</div>
+<ul class="simple">
+<li><p>gcc autovectorization starts at <code class="docutils literal notranslate"><span class="pre">-O3</span></code> or if you use <code class="docutils literal notranslate"><span class="pre">-ftree-vectorize</span></code></p></li>
+<li><p>options such as <a class="reference external" href="https://gcc.gnu.org/onlinedocs/gcc/Developer-Options.html#index-fopt-info">-fopt-info</a> give useful diagnostics, but are compiler-dependent and sometimes referring to assembly is useful</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">man</span> <span class="pre">gcc</span></code> with search (<code class="docutils literal notranslate"><span class="pre">/</span></code>) is your friend</p></li>
+</ul>
+<section id="What-is-aliasing?">
+<h3>What is aliasing?<a class="headerlink" href="#What-is-aliasing?" title="Link to this heading">¶</a></h3>
+<p>Is this valid code? What xs <code class="docutils literal notranslate"><span class="pre">x</span></code> after this call?</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">triad</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">scalar</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">        </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">scalar</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="kt">double</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">};</span>
+<span class="n">triad</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mf">10.</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>C allows memory to overlap arbitrarily.</p></li>
+<li><p>Here, the <code class="docutils literal notranslate"><span class="pre">a</span></code> parameter is set with the part of data <em>ahead</em> of the original array</p>
+<ul>
+<li><p>So parts of <code class="docutils literal notranslate"><span class="pre">b</span></code> and <code class="docutils literal notranslate"><span class="pre">c</span></code> are being overwritten before</p></li>
+</ul>
+</li>
+<li><p>Clearly, that’s not what we ever want to happen, but compiler has to respect it</p></li>
+</ul>
+<ul class="simple">
+<li><p>You can inform the compiler there there shouldn’t be any memory overlap using the <code class="docutils literal notranslate"><span class="pre">`restrict</span></code> qualifier &lt;<a class="reference external" href="https://en.wikipedia.org/wiki/Restrict">https://en.wikipedia.org/wiki/Restrict</a>&gt;`__</p>
+<ul>
+<li><p>(C99/C11; <code class="docutils literal notranslate"><span class="pre">__restrict</span></code> or <code class="docutils literal notranslate"><span class="pre">__restrict__</span></code> work with most C++ and <a class="reference external" href="https://devblogs.nvidia.com/cuda-pro-tip-optimize-pointer-aliasing/">CUDA</a> compilers).</p></li>
+</ul>
+</li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>render_c('triad-restrict.c')
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">triad</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="kr">restrict</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="kr">restrict</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">scalar</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="kr">restrict</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">        </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">scalar</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>!gcc -O2 -march=native -ftree-vectorize -fopt-info-all -c triad-restrict.c
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Unit growth for small function inlining: 15-&gt;15 (0%)
+
+Inlined 0 calls, eliminated 0 functions
+
+BB 3 is always executed in loop 1
+loop 1&#39;s coldest_outermost_loop is 1, hotter_than_inner_loop is NULL
+triad-restrict.c:2:20: optimized: loop vectorized using 32 byte vectors and unroll factor 4
+triad-restrict.c:2:20: optimized: epilogue loop vectorized using 16 byte vectors and unroll factor 2
+triad-restrict.c:1:6: note: vectorized 1 loops in function.
+triad-restrict.c:2:20: optimized: loop turned into non-loop; it never loops
+triad-restrict.c:3:17: optimized: loop turned into non-loop; it never loops
+triad-restrict.c:1:6: note: ***** Analysis failed with vector mode V4DF
+triad-restrict.c:1:6: note: ***** The result for vector mode V32QI would be the same
+triad-restrict.c:1:6: note: ***** Re-trying analysis with vector mode V16QI
+triad-restrict.c:1:6: note: ***** Analysis failed with vector mode V16QI
+triad-restrict.c:1:6: note: ***** Re-trying analysis with vector mode V8QI
+triad-restrict.c:1:6: note: ***** Analysis failed with vector mode V8QI
+triad-restrict.c:1:6: note: ***** Re-trying analysis with vector mode V4QI
+triad-restrict.c:1:6: note: ***** Analysis failed with vector mode V4QI
+BB 3 is always executed in loop 1
+loop 1&#39;s coldest_outermost_loop is 1, hotter_than_inner_loop is NULL
+triad-restrict.c:3:14: note: considering unrolling loop 1 at BB 5
+considering unrolling loop with constant number of iterations
+considering unrolling loop with runtime-computable number of iterations
+</pre></div></div>
+</div>
+<p>Notice how there is no more <code class="docutils literal notranslate"><span class="pre">loop</span> <span class="pre">versioned</span> <span class="pre">for</span> <span class="pre">vectorization</span> <span class="pre">because</span> <span class="pre">of</span> <span class="pre">possible</span> <span class="pre">aliasing</span></code>.</p>
+<p>The complexity of checking for aliasing can grow combinatorially in the number of arrays being processed, leading to many loop variants and/or preventing vectorization.</p>
+<p>Can also see this with the multiblock code as well: <a class="reference external" href="https://godbolt.org/z/P39984Ko8">https://godbolt.org/z/P39984Ko8</a></p>
+<p>Note that this does not significantly affect performance of multiblock. Why might that be?</p>
+<ul class="simple">
+<li><p>Because the aliasing issue occurs well outside the hot loop</p></li>
+<li><p>Aliasing is a more significant problem if, for example, the hot loop in the middle was replaced by a function call.</p></li>
+<li><p><strong>The key problem with “aliasing” is that loops may not be vectorized, not necessarily that the loop gets “versioned”</strong></p></li>
+</ul>
+<section id="Aside:-Warnings">
+<h4>Aside: Warnings<a class="headerlink" href="#Aside:-Warnings" title="Link to this heading">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">-Wrestrict</span></code> flag (included in <code class="docutils literal notranslate"><span class="pre">-Wall</span></code>) can catch some programming errors</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">foo</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">triad</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>!gcc -O2 -Wall -c triad-foo.c
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">triad-foo.c:</span> In function ‘<span class="ansi-bold">foo</span>’:
+<span class="ansi-bold">triad-foo.c:7:5:</span> <span class="ansi-magenta-intense-fg ansi-bold">warning: </span>passing argument 2 to ‘<span class="ansi-bold">restrict</span>’-qualified parameter aliases with arguments 3, 5 [<span class="ansi-magenta-intense-fg ansi-bold">]8;;https://gcc.gnu.org/onlinedocs/gcc-16.2.0/gcc/Warning-Options.html#index-Wno-restrict-Wrestrict]8;;</span>]
+    7 |     <span class="ansi-magenta-intense-fg ansi-bold">triad</span>(2, x, x, 10, x);
+      |     <span class="ansi-magenta-intense-fg ansi-bold">^~~~~</span>
+</pre></div></div>
+</div>
+<p>The powers of <code class="docutils literal notranslate"><span class="pre">-Wrestrict</span></code> are limited, however, and (as of gcc-16) do not even catch</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">foo</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">triad</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="Check-the-assembly">
+<h3>Check the assembly<a class="headerlink" href="#Check-the-assembly" title="Link to this heading">¶</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[41]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>!gcc -march=native -O2 -ftree-vectorize -c triad.c
+!objdump -d --prefix-addresses -M intel triad.o
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+triad.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+0000000000000000 &lt;triad&gt; <span class="ansi-yellow-fg">vmovapd </span><span class="ansi-blue-fg">xmm2</span>,<span class="ansi-blue-fg">xmm0</span>
+0000000000000004 &lt;triad+0x4&gt; <span class="ansi-yellow-fg">vbroadcastsd </span><span class="ansi-blue-fg">ymm3</span>,<span class="ansi-blue-fg">xmm0</span>
+0000000000000009 &lt;triad+0x9&gt; <span class="ansi-yellow-fg">test   </span><span class="ansi-blue-fg">edi</span>,<span class="ansi-blue-fg">edi</span>
+000000000000000b &lt;triad+0xb&gt; <span class="ansi-yellow-fg">jle    </span><span class="ansi-magenta-fg">00000000000000c3</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">c3</span>&gt;
+0000000000000011 &lt;triad+0x11&gt; <span class="ansi-yellow-fg">cmp    </span><span class="ansi-blue-fg">edi</span>,<span class="ansi-magenta-fg">0x1</span>
+0000000000000014 &lt;triad+0x14&gt; <span class="ansi-yellow-fg">je     </span><span class="ansi-magenta-fg">00000000000000d0</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">d0</span>&gt;
+000000000000001a &lt;triad+0x1a&gt; <span class="ansi-yellow-fg">lea    </span><span class="ansi-blue-fg">rax</span>,[<span class="ansi-blue-fg">rsi</span><span class="ansi-magenta-fg">-</span><span class="ansi-magenta-fg">0x8</span>]
+000000000000001e &lt;triad+0x1e&gt; <span class="ansi-yellow-fg">mov    </span><span class="ansi-blue-fg">r8</span>,<span class="ansi-blue-fg">rax</span>
+0000000000000021 &lt;triad+0x21&gt; <span class="ansi-yellow-fg">sub    </span><span class="ansi-blue-fg">r8</span>,<span class="ansi-blue-fg">rdx</span>
+0000000000000024 &lt;triad+0x24&gt; <span class="ansi-yellow-fg">cmp    </span><span class="ansi-blue-fg">r8</span>,<span class="ansi-magenta-fg">0x10</span>
+0000000000000028 &lt;triad+0x28&gt; <span class="ansi-yellow-fg">jbe    </span><span class="ansi-magenta-fg">00000000000000d0</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">d0</span>&gt;
+000000000000002e &lt;triad+0x2e&gt; <span class="ansi-yellow-fg">sub    </span><span class="ansi-blue-fg">rax</span>,<span class="ansi-blue-fg">rcx</span>
+0000000000000031 &lt;triad+0x31&gt; <span class="ansi-yellow-fg">cmp    </span><span class="ansi-blue-fg">rax</span>,<span class="ansi-magenta-fg">0x10</span>
+0000000000000035 &lt;triad+0x35&gt; <span class="ansi-yellow-fg">jbe    </span><span class="ansi-magenta-fg">00000000000000d0</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">d0</span>&gt;
+000000000000003b &lt;triad+0x3b&gt; <span class="ansi-yellow-fg">lea    </span><span class="ansi-blue-fg">eax</span>,[<span class="ansi-blue-fg">rdi</span><span class="ansi-magenta-fg">-</span><span class="ansi-magenta-fg">0x1</span>]
+000000000000003e &lt;triad+0x3e&gt; <span class="ansi-yellow-fg">mov    </span><span class="ansi-blue-fg">r9d</span>,<span class="ansi-blue-fg">edi</span>
+0000000000000041 &lt;triad+0x41&gt; <span class="ansi-yellow-fg">cmp    </span><span class="ansi-blue-fg">eax</span>,<span class="ansi-magenta-fg">0x2</span>
+0000000000000044 &lt;triad+0x44&gt; <span class="ansi-yellow-fg">jbe    </span><span class="ansi-magenta-fg">00000000000000fd</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">fd</span>&gt;
+000000000000004a &lt;triad+0x4a&gt; <span class="ansi-yellow-fg">shr    </span><span class="ansi-blue-fg">r9d</span>,<span class="ansi-magenta-fg">0x2</span>
+000000000000004e &lt;triad+0x4e&gt; <span class="ansi-yellow-fg">vmovapd </span><span class="ansi-blue-fg">ymm1</span>,<span class="ansi-blue-fg">ymm3</span>
+0000000000000052 &lt;triad+0x52&gt; <span class="ansi-yellow-fg">xor    </span><span class="ansi-blue-fg">eax</span>,<span class="ansi-blue-fg">eax</span>
+0000000000000054 &lt;triad+0x54&gt; <span class="ansi-yellow-fg">mov    </span><span class="ansi-blue-fg">r8d</span>,<span class="ansi-blue-fg">r9d</span>
+0000000000000057 &lt;triad+0x57&gt; <span class="ansi-yellow-fg">shl    </span><span class="ansi-blue-fg">r8</span>,<span class="ansi-magenta-fg">0x5</span>
+000000000000005b &lt;triad+0x5b&gt; <span class="ansi-yellow-fg">nop    </span>DWORD PTR [<span class="ansi-blue-fg">rax</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">1</span>+<span class="ansi-magenta-fg">0x0</span>]
+0000000000000060 &lt;triad+0x60&gt; <span class="ansi-yellow-fg">vmovupd </span><span class="ansi-blue-fg">ymm0</span>,YMMWORD PTR [<span class="ansi-blue-fg">rcx</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">1</span>]
+0000000000000065 &lt;triad+0x65&gt; <span class="ansi-yellow-fg">vfmadd213pd </span><span class="ansi-blue-fg">ymm0</span>,<span class="ansi-blue-fg">ymm1</span>,YMMWORD PTR [<span class="ansi-blue-fg">rdx</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">1</span>]
+000000000000006b &lt;triad+0x6b&gt; <span class="ansi-yellow-fg">vmovupd </span>YMMWORD PTR [<span class="ansi-blue-fg">rsi</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">1</span>],<span class="ansi-blue-fg">ymm0</span>
+0000000000000070 &lt;triad+0x70&gt; <span class="ansi-yellow-fg">add    </span><span class="ansi-blue-fg">rax</span>,<span class="ansi-magenta-fg">0x20</span>
+0000000000000074 &lt;triad+0x74&gt; <span class="ansi-yellow-fg">cmp    </span><span class="ansi-blue-fg">rax</span>,<span class="ansi-blue-fg">r8</span>
+0000000000000077 &lt;triad+0x77&gt; <span class="ansi-yellow-fg">jne    </span><span class="ansi-magenta-fg">0000000000000060</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">60</span>&gt;
+0000000000000079 &lt;triad+0x79&gt; <span class="ansi-yellow-fg">lea    </span><span class="ansi-blue-fg">eax</span>,[<span class="ansi-blue-fg">r9</span>*<span class="ansi-magenta-fg">4</span>+<span class="ansi-magenta-fg">0x0</span>]
+0000000000000081 &lt;triad+0x81&gt; <span class="ansi-yellow-fg">cmp    </span><span class="ansi-blue-fg">edi</span>,<span class="ansi-blue-fg">eax</span>
+0000000000000083 &lt;triad+0x83&gt; <span class="ansi-yellow-fg">je     </span><span class="ansi-magenta-fg">00000000000000c3</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">c3</span>&gt;
+0000000000000085 &lt;triad+0x85&gt; <span class="ansi-yellow-fg">sub    </span><span class="ansi-blue-fg">edi</span>,<span class="ansi-blue-fg">eax</span>
+0000000000000087 &lt;triad+0x87&gt; <span class="ansi-yellow-fg">mov    </span><span class="ansi-blue-fg">r8d</span>,<span class="ansi-blue-fg">eax</span>
+000000000000008a &lt;triad+0x8a&gt; <span class="ansi-yellow-fg">mov    </span><span class="ansi-blue-fg">r9d</span>,<span class="ansi-blue-fg">edi</span>
+000000000000008d &lt;triad+0x8d&gt; <span class="ansi-yellow-fg">cmp    </span><span class="ansi-blue-fg">edi</span>,<span class="ansi-magenta-fg">0x1</span>
+0000000000000090 &lt;triad+0x90&gt; <span class="ansi-yellow-fg">je     </span><span class="ansi-magenta-fg">00000000000000b1</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">b1</span>&gt;
+0000000000000092 &lt;triad+0x92&gt; <span class="ansi-yellow-fg">vmovupd </span><span class="ansi-blue-fg">xmm4</span>,XMMWORD PTR [<span class="ansi-blue-fg">rdx</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">8</span>]
+0000000000000097 &lt;triad+0x97&gt; <span class="ansi-yellow-fg">vfmadd132pd </span><span class="ansi-blue-fg">xmm3</span>,<span class="ansi-blue-fg">xmm4</span>,XMMWORD PTR [<span class="ansi-blue-fg">rcx</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">8</span>]
+000000000000009d &lt;triad+0x9d&gt; <span class="ansi-yellow-fg">vmovupd </span>XMMWORD PTR [<span class="ansi-blue-fg">rsi</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">8</span>],<span class="ansi-blue-fg">xmm3</span>
+00000000000000a2 &lt;triad+0xa2&gt; <span class="ansi-yellow-fg">mov    </span><span class="ansi-blue-fg">eax</span>,<span class="ansi-blue-fg">r9d</span>
+00000000000000a5 &lt;triad+0xa5&gt; <span class="ansi-yellow-fg">and    </span><span class="ansi-blue-fg">eax</span>,<span class="ansi-magenta-fg">0xfffffffe</span>
+00000000000000a8 &lt;triad+0xa8&gt; <span class="ansi-yellow-fg">and    </span><span class="ansi-blue-fg">r9d</span>,<span class="ansi-magenta-fg">0x1</span>
+00000000000000ac &lt;triad+0xac&gt; <span class="ansi-yellow-fg">je     </span><span class="ansi-magenta-fg">00000000000000c3</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">c3</span>&gt;
+00000000000000ae &lt;triad+0xae&gt; <span class="ansi-yellow-fg">add    </span><span class="ansi-blue-fg">r8d</span>,<span class="ansi-blue-fg">eax</span>
+00000000000000b1 &lt;triad+0xb1&gt; <span class="ansi-yellow-fg">vmovsd </span><span class="ansi-blue-fg">xmm5</span>,QWORD PTR [<span class="ansi-blue-fg">rdx</span>+<span class="ansi-blue-fg">r8</span>*<span class="ansi-magenta-fg">8</span>]
+00000000000000b7 &lt;triad+0xb7&gt; <span class="ansi-yellow-fg">vfmadd132sd </span><span class="ansi-blue-fg">xmm2</span>,<span class="ansi-blue-fg">xmm5</span>,QWORD PTR [<span class="ansi-blue-fg">rcx</span>+<span class="ansi-blue-fg">r8</span>*<span class="ansi-magenta-fg">8</span>]
+00000000000000bd &lt;triad+0xbd&gt; <span class="ansi-yellow-fg">vmovsd </span>QWORD PTR [<span class="ansi-blue-fg">rsi</span>+<span class="ansi-blue-fg">r8</span>*<span class="ansi-magenta-fg">8</span>],<span class="ansi-blue-fg">xmm2</span>
+00000000000000c3 &lt;triad+0xc3&gt; <span class="ansi-yellow-fg">vzeroupper</span>
+00000000000000c6 &lt;triad+0xc6&gt; <span class="ansi-yellow-fg">ret</span>
+00000000000000c7 &lt;triad+0xc7&gt; <span class="ansi-yellow-fg">nop    </span>WORD PTR [<span class="ansi-blue-fg">rax</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">1</span>+<span class="ansi-magenta-fg">0x0</span>]
+00000000000000d0 &lt;triad+0xd0&gt; <span class="ansi-yellow-fg">mov    </span><span class="ansi-blue-fg">edi</span>,<span class="ansi-blue-fg">edi</span>
+00000000000000d2 &lt;triad+0xd2&gt; <span class="ansi-yellow-fg">xor    </span><span class="ansi-blue-fg">eax</span>,<span class="ansi-blue-fg">eax</span>
+00000000000000d4 &lt;triad+0xd4&gt; <span class="ansi-yellow-fg">shl    </span><span class="ansi-blue-fg">rdi</span>,<span class="ansi-magenta-fg">0x3</span>
+00000000000000d8 &lt;triad+0xd8&gt; <span class="ansi-yellow-fg">nop    </span>DWORD PTR [<span class="ansi-blue-fg">rax</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">1</span>+<span class="ansi-magenta-fg">0x0</span>]
+00000000000000e0 &lt;triad+0xe0&gt; <span class="ansi-yellow-fg">vmovsd </span><span class="ansi-blue-fg">xmm0</span>,QWORD PTR [<span class="ansi-blue-fg">rcx</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">1</span>]
+00000000000000e5 &lt;triad+0xe5&gt; <span class="ansi-yellow-fg">vfmadd213sd </span><span class="ansi-blue-fg">xmm0</span>,<span class="ansi-blue-fg">xmm2</span>,QWORD PTR [<span class="ansi-blue-fg">rdx</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">1</span>]
+00000000000000eb &lt;triad+0xeb&gt; <span class="ansi-yellow-fg">vmovsd </span>QWORD PTR [<span class="ansi-blue-fg">rsi</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">1</span>],<span class="ansi-blue-fg">xmm0</span>
+00000000000000f0 &lt;triad+0xf0&gt; <span class="ansi-yellow-fg">add    </span><span class="ansi-blue-fg">rax</span>,<span class="ansi-magenta-fg">0x8</span>
+00000000000000f4 &lt;triad+0xf4&gt; <span class="ansi-yellow-fg">cmp    </span><span class="ansi-blue-fg">rdi</span>,<span class="ansi-blue-fg">rax</span>
+00000000000000f7 &lt;triad+0xf7&gt; <span class="ansi-yellow-fg">jne    </span><span class="ansi-magenta-fg">00000000000000e0</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">e0</span>&gt;
+00000000000000f9 &lt;triad+0xf9&gt; <span class="ansi-yellow-fg">vzeroupper</span>
+00000000000000fc &lt;triad+0xfc&gt; <span class="ansi-yellow-fg">ret</span>
+00000000000000fd &lt;triad+0xfd&gt; <span class="ansi-yellow-fg">xor    </span><span class="ansi-blue-fg">eax</span>,<span class="ansi-blue-fg">eax</span>
+00000000000000ff &lt;triad+0xff&gt; <span class="ansi-yellow-fg">xor    </span><span class="ansi-blue-fg">r8d</span>,<span class="ansi-blue-fg">r8d</span>
+0000000000000102 &lt;triad+0x102&gt; <span class="ansi-yellow-fg">jmp    </span><span class="ansi-magenta-fg">0000000000000092</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">92</span>&gt;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>!gcc -march=native -O2 -ftree-vectorize -c triad-restrict.c
+!objdump -d --prefix-addresses -M intel triad-restrict.o
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+triad-restrict.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+0000000000000000 &lt;triad&gt; <span class="ansi-yellow-fg">mov    </span><span class="ansi-blue-fg">r9d</span>,<span class="ansi-blue-fg">edi</span>
+0000000000000003 &lt;triad+0x3&gt; <span class="ansi-yellow-fg">vmovapd </span><span class="ansi-blue-fg">xmm3</span>,<span class="ansi-blue-fg">xmm0</span>
+0000000000000007 &lt;triad+0x7&gt; <span class="ansi-yellow-fg">vbroadcastsd </span><span class="ansi-blue-fg">ymm2</span>,<span class="ansi-blue-fg">xmm0</span>
+000000000000000c &lt;triad+0xc&gt; <span class="ansi-yellow-fg">mov    </span><span class="ansi-blue-fg">rdi</span>,<span class="ansi-blue-fg">rdx</span>
+000000000000000f &lt;triad+0xf&gt; <span class="ansi-yellow-fg">test   </span><span class="ansi-blue-fg">r9d</span>,<span class="ansi-blue-fg">r9d</span>
+0000000000000012 &lt;triad+0x12&gt; <span class="ansi-yellow-fg">jle    </span><span class="ansi-magenta-fg">000000000000009f</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">9f</span>&gt;
+0000000000000018 &lt;triad+0x18&gt; <span class="ansi-yellow-fg">lea    </span><span class="ansi-blue-fg">eax</span>,[<span class="ansi-blue-fg">r9</span><span class="ansi-magenta-fg">-</span><span class="ansi-magenta-fg">0x1</span>]
+000000000000001c &lt;triad+0x1c&gt; <span class="ansi-yellow-fg">cmp    </span><span class="ansi-blue-fg">eax</span>,<span class="ansi-magenta-fg">0x2</span>
+000000000000001f &lt;triad+0x1f&gt; <span class="ansi-yellow-fg">jbe    </span><span class="ansi-magenta-fg">00000000000000a3</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">a3</span>&gt;
+0000000000000025 &lt;triad+0x25&gt; <span class="ansi-yellow-fg">mov    </span><span class="ansi-blue-fg">r8d</span>,<span class="ansi-blue-fg">r9d</span>
+0000000000000028 &lt;triad+0x28&gt; <span class="ansi-yellow-fg">vmovapd </span><span class="ansi-blue-fg">ymm1</span>,<span class="ansi-blue-fg">ymm2</span>
+000000000000002c &lt;triad+0x2c&gt; <span class="ansi-yellow-fg">xor    </span><span class="ansi-blue-fg">eax</span>,<span class="ansi-blue-fg">eax</span>
+000000000000002e &lt;triad+0x2e&gt; <span class="ansi-yellow-fg">shr    </span><span class="ansi-blue-fg">r8d</span>,<span class="ansi-magenta-fg">0x2</span>
+0000000000000032 &lt;triad+0x32&gt; <span class="ansi-yellow-fg">mov    </span><span class="ansi-blue-fg">edx</span>,<span class="ansi-blue-fg">r8d</span>
+0000000000000035 &lt;triad+0x35&gt; <span class="ansi-yellow-fg">shl    </span><span class="ansi-blue-fg">rdx</span>,<span class="ansi-magenta-fg">0x5</span>
+0000000000000039 &lt;triad+0x39&gt; <span class="ansi-yellow-fg">nop    </span>DWORD PTR [<span class="ansi-blue-fg">rax</span>+<span class="ansi-magenta-fg">0x0</span>]
+0000000000000040 &lt;triad+0x40&gt; <span class="ansi-yellow-fg">vmovupd </span><span class="ansi-blue-fg">ymm0</span>,YMMWORD PTR [<span class="ansi-blue-fg">rcx</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">1</span>]
+0000000000000045 &lt;triad+0x45&gt; <span class="ansi-yellow-fg">vfmadd213pd </span><span class="ansi-blue-fg">ymm0</span>,<span class="ansi-blue-fg">ymm1</span>,YMMWORD PTR [<span class="ansi-blue-fg">rdi</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">1</span>]
+000000000000004b &lt;triad+0x4b&gt; <span class="ansi-yellow-fg">vmovupd </span>YMMWORD PTR [<span class="ansi-blue-fg">rsi</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">1</span>],<span class="ansi-blue-fg">ymm0</span>
+0000000000000050 &lt;triad+0x50&gt; <span class="ansi-yellow-fg">add    </span><span class="ansi-blue-fg">rax</span>,<span class="ansi-magenta-fg">0x20</span>
+0000000000000054 &lt;triad+0x54&gt; <span class="ansi-yellow-fg">cmp    </span><span class="ansi-blue-fg">rax</span>,<span class="ansi-blue-fg">rdx</span>
+0000000000000057 &lt;triad+0x57&gt; <span class="ansi-yellow-fg">jne    </span><span class="ansi-magenta-fg">0000000000000040</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">40</span>&gt;
+0000000000000059 &lt;triad+0x59&gt; <span class="ansi-yellow-fg">lea    </span><span class="ansi-blue-fg">eax</span>,[<span class="ansi-blue-fg">r8</span>*<span class="ansi-magenta-fg">4</span>+<span class="ansi-magenta-fg">0x0</span>]
+0000000000000061 &lt;triad+0x61&gt; <span class="ansi-yellow-fg">mov    </span><span class="ansi-blue-fg">edx</span>,<span class="ansi-blue-fg">eax</span>
+0000000000000063 &lt;triad+0x63&gt; <span class="ansi-yellow-fg">cmp    </span><span class="ansi-blue-fg">r9d</span>,<span class="ansi-blue-fg">eax</span>
+0000000000000066 &lt;triad+0x66&gt; <span class="ansi-yellow-fg">je     </span><span class="ansi-magenta-fg">000000000000009f</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">9f</span>&gt;
+0000000000000068 &lt;triad+0x68&gt; <span class="ansi-yellow-fg">sub    </span><span class="ansi-blue-fg">r9d</span>,<span class="ansi-blue-fg">eax</span>
+000000000000006b &lt;triad+0x6b&gt; <span class="ansi-yellow-fg">cmp    </span><span class="ansi-blue-fg">r9d</span>,<span class="ansi-magenta-fg">0x1</span>
+000000000000006f &lt;triad+0x6f&gt; <span class="ansi-yellow-fg">je     </span><span class="ansi-magenta-fg">000000000000008f</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">8f</span>&gt;
+0000000000000071 &lt;triad+0x71&gt; <span class="ansi-yellow-fg">vmovupd </span><span class="ansi-blue-fg">xmm4</span>,XMMWORD PTR [<span class="ansi-blue-fg">rdi</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">8</span>]
+0000000000000076 &lt;triad+0x76&gt; <span class="ansi-yellow-fg">vfmadd132pd </span><span class="ansi-blue-fg">xmm2</span>,<span class="ansi-blue-fg">xmm4</span>,XMMWORD PTR [<span class="ansi-blue-fg">rcx</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">8</span>]
+000000000000007c &lt;triad+0x7c&gt; <span class="ansi-yellow-fg">vmovupd </span>XMMWORD PTR [<span class="ansi-blue-fg">rsi</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">8</span>],<span class="ansi-blue-fg">xmm2</span>
+0000000000000081 &lt;triad+0x81&gt; <span class="ansi-yellow-fg">mov    </span><span class="ansi-blue-fg">eax</span>,<span class="ansi-blue-fg">r9d</span>
+0000000000000084 &lt;triad+0x84&gt; <span class="ansi-yellow-fg">and    </span><span class="ansi-blue-fg">eax</span>,<span class="ansi-magenta-fg">0xfffffffe</span>
+0000000000000087 &lt;triad+0x87&gt; <span class="ansi-yellow-fg">and    </span><span class="ansi-blue-fg">r9d</span>,<span class="ansi-magenta-fg">0x1</span>
+000000000000008b &lt;triad+0x8b&gt; <span class="ansi-yellow-fg">je     </span><span class="ansi-magenta-fg">000000000000009f</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">9f</span>&gt;
+000000000000008d &lt;triad+0x8d&gt; <span class="ansi-yellow-fg">add    </span><span class="ansi-blue-fg">edx</span>,<span class="ansi-blue-fg">eax</span>
+000000000000008f &lt;triad+0x8f&gt; <span class="ansi-yellow-fg">vmovsd </span><span class="ansi-blue-fg">xmm5</span>,QWORD PTR [<span class="ansi-blue-fg">rdi</span>+<span class="ansi-blue-fg">rdx</span>*<span class="ansi-magenta-fg">8</span>]
+0000000000000094 &lt;triad+0x94&gt; <span class="ansi-yellow-fg">vfmadd132sd </span><span class="ansi-blue-fg">xmm3</span>,<span class="ansi-blue-fg">xmm5</span>,QWORD PTR [<span class="ansi-blue-fg">rcx</span>+<span class="ansi-blue-fg">rdx</span>*<span class="ansi-magenta-fg">8</span>]
+000000000000009a &lt;triad+0x9a&gt; <span class="ansi-yellow-fg">vmovsd </span>QWORD PTR [<span class="ansi-blue-fg">rsi</span>+<span class="ansi-blue-fg">rdx</span>*<span class="ansi-magenta-fg">8</span>],<span class="ansi-blue-fg">xmm3</span>
+000000000000009f &lt;triad+0x9f&gt; <span class="ansi-yellow-fg">vzeroupper</span>
+00000000000000a2 &lt;triad+0xa2&gt; <span class="ansi-yellow-fg">ret</span>
+00000000000000a3 &lt;triad+0xa3&gt; <span class="ansi-yellow-fg">xor    </span><span class="ansi-blue-fg">eax</span>,<span class="ansi-blue-fg">eax</span>
+00000000000000a5 &lt;triad+0xa5&gt; <span class="ansi-yellow-fg">xor    </span><span class="ansi-blue-fg">edx</span>,<span class="ansi-blue-fg">edx</span>
+00000000000000a7 &lt;triad+0xa7&gt; <span class="ansi-yellow-fg">jmp    </span><span class="ansi-magenta-fg">0000000000000068</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">68</span>&gt;
+</pre></div></div>
+</div>
+<ul class="simple">
+<li><p>How do the results change if you go up and replace <code class="docutils literal notranslate"><span class="pre">-march=native</span></code> with <code class="docutils literal notranslate"><span class="pre">-march=skylake-avx512</span> <span class="pre">-mprefer-vector-width=512</span></code>?</p></li>
+<li><p>Is the assembly qualitatively different without <code class="docutils literal notranslate"><span class="pre">restrict</span></code> (in which case the compiler “versions” the loop).</p></li>
+</ul>
+</section>
+<section id="Pragma-omp-simd">
+<h3>Pragma <code class="docutils literal notranslate"><span class="pre">omp</span> <span class="pre">simd</span></code><a class="headerlink" href="#Pragma-omp-simd" title="Link to this heading">¶</a></h3>
+<p>An alternative (or supplement) to <code class="docutils literal notranslate"><span class="pre">restrict</span></code> is <code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">omp</span> <span class="pre">simd</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>render_c('triad-omp-simd.c')
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">triad</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">scalar</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma omp simd</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">        </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">scalar</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>!gcc -O2 -march=native -ftree-vectorize -fopenmp -fopt-info-all -c triad-omp-simd.c
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Unit growth for small function inlining: 15-&gt;15 (0%)
+
+Inlined 0 calls, eliminated 0 functions
+
+BB 3 is always executed in loop 1
+loop 1&#39;s coldest_outermost_loop is 1, hotter_than_inner_loop is NULL
+consider run-time aliasing test between *_8 and *_16
+consider run-time aliasing test between *_11 and *_16
+triad-omp-simd.c:4:17: optimized: loop vectorized using 32 byte vectors and unroll factor 4
+triad-omp-simd.c:4:17: optimized: epilogue loop vectorized using 16 byte vectors and unroll factor 2
+triad-omp-simd.c:1:6: note: vectorized 1 loops in function.
+triad-omp-simd.c:4:17: optimized: loop turned into non-loop; it never loops
+triad-omp-simd.c:4:17: optimized: loop turned into non-loop; it never loops
+triad-omp-simd.c:1:6: note: ***** Analysis failed with vector mode V4DF
+triad-omp-simd.c:1:6: note: ***** The result for vector mode V32QI would be the same
+triad-omp-simd.c:1:6: note: ***** Re-trying analysis with vector mode V16QI
+triad-omp-simd.c:1:6: note: ***** Analysis failed with vector mode V16QI
+triad-omp-simd.c:1:6: note: ***** Re-trying analysis with vector mode V8QI
+triad-omp-simd.c:1:6: note: ***** Analysis failed with vector mode V8QI
+triad-omp-simd.c:1:6: note: ***** Re-trying analysis with vector mode V4QI
+triad-omp-simd.c:1:6: note: ***** Analysis failed with vector mode V4QI
+BB 3 is always executed in loop 1
+loop 1&#39;s coldest_outermost_loop is 1, hotter_than_inner_loop is NULL
+triad-omp-simd.c:4:14: note: considering unrolling loop 1 at BB 5
+considering unrolling loop with constant number of iterations
+considering unrolling loop with runtime-computable number of iterations
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>!gcc -march=native -O2 -ftree-vectorize -fopenmp-c triad-omp-simd.c
+!objdump -d --prefix-addresses -M intel triad-omp-simd.o
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+triad-omp-simd.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+0000000000000000 &lt;triad&gt; <span class="ansi-yellow-fg">mov    </span><span class="ansi-blue-fg">r9d</span>,<span class="ansi-blue-fg">edi</span>
+0000000000000003 &lt;triad+0x3&gt; <span class="ansi-yellow-fg">vmovapd </span><span class="ansi-blue-fg">xmm3</span>,<span class="ansi-blue-fg">xmm0</span>
+0000000000000007 &lt;triad+0x7&gt; <span class="ansi-yellow-fg">vbroadcastsd </span><span class="ansi-blue-fg">ymm2</span>,<span class="ansi-blue-fg">xmm0</span>
+000000000000000c &lt;triad+0xc&gt; <span class="ansi-yellow-fg">mov    </span><span class="ansi-blue-fg">rdi</span>,<span class="ansi-blue-fg">rdx</span>
+000000000000000f &lt;triad+0xf&gt; <span class="ansi-yellow-fg">test   </span><span class="ansi-blue-fg">r9d</span>,<span class="ansi-blue-fg">r9d</span>
+0000000000000012 &lt;triad+0x12&gt; <span class="ansi-yellow-fg">jle    </span><span class="ansi-magenta-fg">000000000000009f</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">9f</span>&gt;
+0000000000000018 &lt;triad+0x18&gt; <span class="ansi-yellow-fg">lea    </span><span class="ansi-blue-fg">eax</span>,[<span class="ansi-blue-fg">r9</span><span class="ansi-magenta-fg">-</span><span class="ansi-magenta-fg">0x1</span>]
+000000000000001c &lt;triad+0x1c&gt; <span class="ansi-yellow-fg">cmp    </span><span class="ansi-blue-fg">eax</span>,<span class="ansi-magenta-fg">0x2</span>
+000000000000001f &lt;triad+0x1f&gt; <span class="ansi-yellow-fg">jbe    </span><span class="ansi-magenta-fg">00000000000000a8</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">a8</span>&gt;
+0000000000000025 &lt;triad+0x25&gt; <span class="ansi-yellow-fg">mov    </span><span class="ansi-blue-fg">r8d</span>,<span class="ansi-blue-fg">r9d</span>
+0000000000000028 &lt;triad+0x28&gt; <span class="ansi-yellow-fg">vmovapd </span><span class="ansi-blue-fg">ymm1</span>,<span class="ansi-blue-fg">ymm2</span>
+000000000000002c &lt;triad+0x2c&gt; <span class="ansi-yellow-fg">xor    </span><span class="ansi-blue-fg">eax</span>,<span class="ansi-blue-fg">eax</span>
+000000000000002e &lt;triad+0x2e&gt; <span class="ansi-yellow-fg">shr    </span><span class="ansi-blue-fg">r8d</span>,<span class="ansi-magenta-fg">0x2</span>
+0000000000000032 &lt;triad+0x32&gt; <span class="ansi-yellow-fg">mov    </span><span class="ansi-blue-fg">edx</span>,<span class="ansi-blue-fg">r8d</span>
+0000000000000035 &lt;triad+0x35&gt; <span class="ansi-yellow-fg">shl    </span><span class="ansi-blue-fg">rdx</span>,<span class="ansi-magenta-fg">0x5</span>
+0000000000000039 &lt;triad+0x39&gt; <span class="ansi-yellow-fg">nop    </span>DWORD PTR [<span class="ansi-blue-fg">rax</span>+<span class="ansi-magenta-fg">0x0</span>]
+0000000000000040 &lt;triad+0x40&gt; <span class="ansi-yellow-fg">vmovupd </span><span class="ansi-blue-fg">ymm0</span>,YMMWORD PTR [<span class="ansi-blue-fg">rcx</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">1</span>]
+0000000000000045 &lt;triad+0x45&gt; <span class="ansi-yellow-fg">vfmadd213pd </span><span class="ansi-blue-fg">ymm0</span>,<span class="ansi-blue-fg">ymm1</span>,YMMWORD PTR [<span class="ansi-blue-fg">rdi</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">1</span>]
+000000000000004b &lt;triad+0x4b&gt; <span class="ansi-yellow-fg">vmovupd </span>YMMWORD PTR [<span class="ansi-blue-fg">rsi</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">1</span>],<span class="ansi-blue-fg">ymm0</span>
+0000000000000050 &lt;triad+0x50&gt; <span class="ansi-yellow-fg">add    </span><span class="ansi-blue-fg">rax</span>,<span class="ansi-magenta-fg">0x20</span>
+0000000000000054 &lt;triad+0x54&gt; <span class="ansi-yellow-fg">cmp    </span><span class="ansi-blue-fg">rax</span>,<span class="ansi-blue-fg">rdx</span>
+0000000000000057 &lt;triad+0x57&gt; <span class="ansi-yellow-fg">jne    </span><span class="ansi-magenta-fg">0000000000000040</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">40</span>&gt;
+0000000000000059 &lt;triad+0x59&gt; <span class="ansi-yellow-fg">lea    </span><span class="ansi-blue-fg">eax</span>,[<span class="ansi-blue-fg">r8</span>*<span class="ansi-magenta-fg">4</span>+<span class="ansi-magenta-fg">0x0</span>]
+0000000000000061 &lt;triad+0x61&gt; <span class="ansi-yellow-fg">mov    </span><span class="ansi-blue-fg">edx</span>,<span class="ansi-blue-fg">eax</span>
+0000000000000063 &lt;triad+0x63&gt; <span class="ansi-yellow-fg">cmp    </span><span class="ansi-blue-fg">r9d</span>,<span class="ansi-blue-fg">eax</span>
+0000000000000066 &lt;triad+0x66&gt; <span class="ansi-yellow-fg">je     </span><span class="ansi-magenta-fg">000000000000009f</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">9f</span>&gt;
+0000000000000068 &lt;triad+0x68&gt; <span class="ansi-yellow-fg">sub    </span><span class="ansi-blue-fg">r9d</span>,<span class="ansi-blue-fg">eax</span>
+000000000000006b &lt;triad+0x6b&gt; <span class="ansi-yellow-fg">cmp    </span><span class="ansi-blue-fg">r9d</span>,<span class="ansi-magenta-fg">0x1</span>
+000000000000006f &lt;triad+0x6f&gt; <span class="ansi-yellow-fg">je     </span><span class="ansi-magenta-fg">000000000000008f</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">8f</span>&gt;
+0000000000000071 &lt;triad+0x71&gt; <span class="ansi-yellow-fg">vmovupd </span><span class="ansi-blue-fg">xmm4</span>,XMMWORD PTR [<span class="ansi-blue-fg">rdi</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">8</span>]
+0000000000000076 &lt;triad+0x76&gt; <span class="ansi-yellow-fg">vfmadd132pd </span><span class="ansi-blue-fg">xmm2</span>,<span class="ansi-blue-fg">xmm4</span>,XMMWORD PTR [<span class="ansi-blue-fg">rcx</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">8</span>]
+000000000000007c &lt;triad+0x7c&gt; <span class="ansi-yellow-fg">vmovupd </span>XMMWORD PTR [<span class="ansi-blue-fg">rsi</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">8</span>],<span class="ansi-blue-fg">xmm2</span>
+0000000000000081 &lt;triad+0x81&gt; <span class="ansi-yellow-fg">mov    </span><span class="ansi-blue-fg">eax</span>,<span class="ansi-blue-fg">r9d</span>
+0000000000000084 &lt;triad+0x84&gt; <span class="ansi-yellow-fg">and    </span><span class="ansi-blue-fg">eax</span>,<span class="ansi-magenta-fg">0xfffffffe</span>
+0000000000000087 &lt;triad+0x87&gt; <span class="ansi-yellow-fg">and    </span><span class="ansi-blue-fg">r9d</span>,<span class="ansi-magenta-fg">0x1</span>
+000000000000008b &lt;triad+0x8b&gt; <span class="ansi-yellow-fg">je     </span><span class="ansi-magenta-fg">000000000000009f</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">9f</span>&gt;
+000000000000008d &lt;triad+0x8d&gt; <span class="ansi-yellow-fg">add    </span><span class="ansi-blue-fg">edx</span>,<span class="ansi-blue-fg">eax</span>
+000000000000008f &lt;triad+0x8f&gt; <span class="ansi-yellow-fg">vmovsd </span><span class="ansi-blue-fg">xmm5</span>,QWORD PTR [<span class="ansi-blue-fg">rdi</span>+<span class="ansi-blue-fg">rdx</span>*<span class="ansi-magenta-fg">8</span>]
+0000000000000094 &lt;triad+0x94&gt; <span class="ansi-yellow-fg">vfmadd132sd </span><span class="ansi-blue-fg">xmm3</span>,<span class="ansi-blue-fg">xmm5</span>,QWORD PTR [<span class="ansi-blue-fg">rcx</span>+<span class="ansi-blue-fg">rdx</span>*<span class="ansi-magenta-fg">8</span>]
+000000000000009a &lt;triad+0x9a&gt; <span class="ansi-yellow-fg">vmovsd </span>QWORD PTR [<span class="ansi-blue-fg">rsi</span>+<span class="ansi-blue-fg">rdx</span>*<span class="ansi-magenta-fg">8</span>],<span class="ansi-blue-fg">xmm3</span>
+000000000000009f &lt;triad+0x9f&gt; <span class="ansi-yellow-fg">vzeroupper</span>
+00000000000000a2 &lt;triad+0xa2&gt; <span class="ansi-yellow-fg">ret</span>
+00000000000000a3 &lt;triad+0xa3&gt; <span class="ansi-yellow-fg">nop    </span>DWORD PTR [<span class="ansi-blue-fg">rax</span>+<span class="ansi-blue-fg">rax</span>*<span class="ansi-magenta-fg">1</span>+<span class="ansi-magenta-fg">0x0</span>]
+00000000000000a8 &lt;triad+0xa8&gt; <span class="ansi-yellow-fg">xor    </span><span class="ansi-blue-fg">eax</span>,<span class="ansi-blue-fg">eax</span>
+00000000000000aa &lt;triad+0xaa&gt; <span class="ansi-yellow-fg">xor    </span><span class="ansi-blue-fg">edx</span>,<span class="ansi-blue-fg">edx</span>
+00000000000000ac &lt;triad+0xac&gt; <span class="ansi-yellow-fg">jmp    </span><span class="ansi-magenta-fg">0000000000000068</span> &lt;<span class="ansi-green-fg">triad</span><span class="ansi-magenta-fg">+0x</span><span class="ansi-magenta-fg">68</span>&gt;
+</pre></div></div>
+</div>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../20260917-TMA_perf_lab3/20260917-TMA_perf_lab3.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">20260917 - Perf and Topdown Microarchitecture Analysis (Lab 3)</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../20260908-10-OpenMP_Intro/20260908-10-OpenMP_Intro.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">20260908-10 OpenMP Intro</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, James Wright
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">20260915-OpenMP continued</a><ul>
+<li><a class="reference internal" href="#Parallelizing-dot-product-continued">Parallelizing dot product continued</a><ul>
+<li><a class="reference internal" href="#Reductions">Reductions</a></li>
+<li><a class="reference internal" href="#Performance-of-our-different-optimized-dot-products">Performance of our different optimized dot products</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Vectorization-Failures---Aliasing">Vectorization Failures - Aliasing</a><ul>
+<li><a class="reference internal" href="#What-is-aliasing?">What is aliasing?</a><ul>
+<li><a class="reference internal" href="#Aside:-Warnings">Aside: Warnings</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Check-the-assembly">Check the assembly</a></li>
+<li><a class="reference internal" href="#Pragma-omp-simd">Pragma <code class="docutils literal notranslate"><span class="pre">omp</span> <span class="pre">simd</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    </body>
+</html>
