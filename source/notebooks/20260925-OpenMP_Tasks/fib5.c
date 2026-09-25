@@ -1,0 +1,27 @@
+#include <stdio.h>
+#include <omp.h>
+#include <stdlib.h>
+
+long fib(long n) {
+  if (n < 2) return n;
+  return fib(n - 1) + fib(n - 2);
+}
+
+int main(int argc, char **argv) {
+  if (argc > 3 || argc < 1) {
+    fprintf(stderr, "Usage: %s N [p]\n", argv[0]);
+    return 1;
+  }
+  long N = atol(argv[1]);
+  long fibs[N];
+  double time = omp_get_wtime();
+  #pragma omp parallel for schedule(static,1)
+  for (long i=0; i<N; i++)
+    fibs[i] = fib(i+1);
+  if (argc == 3 && argv[2][0] == 'p') {
+    for (long i=0; i<N; i++)
+      printf("%2ld: %5ld\n", i+1, fibs[i]);
+  }
+  printf("Time taken: %g\n", omp_get_wtime() - time);
+  return 0;
+}
