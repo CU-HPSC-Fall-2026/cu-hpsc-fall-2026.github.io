@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="Homework" href="../../homework.html"><link rel="prev" title="20260917 - Perf and Topdown Microarchitecture Analysis (Lab 3)" href="../20260917-TMA_perf_lab3/20260917-TMA_perf_lab3.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>20260925 OpenMP tasks</title>
+        <title>20260925 OpenMP Memory Semantics and Tasks</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
@@ -204,7 +204,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../20260908-10-OpenMP_Intro/20260908-10-OpenMP_Intro.html">20260908-10 OpenMP Intro</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../20260915-OpenMP_cont/20260915-OpenMP_cont.html">20260915-OpenMP continued</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../20260917-TMA_perf_lab3/20260917-TMA_perf_lab3.html">20260917 - Perf and Topdown Microarchitecture Analysis (Lab 3)</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">20260925 OpenMP tasks</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">20260925 OpenMP Memory Semantics and Tasks</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../homework.html">Homework</a><input aria-label="Toggle navigation of Homework" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
@@ -260,8 +260,438 @@
 </pre></div>
 </div>
 </div>
-<section id="20260925-OpenMP-tasks">
-<h1>20260925 OpenMP tasks<a class="headerlink" href="#20260925-OpenMP-tasks" title="Link to this heading">¶</a></h1>
+<section id="20260925-OpenMP-Memory-Semantics-and-Tasks">
+<h1>20260925 OpenMP Memory Semantics and Tasks<a class="headerlink" href="#20260925-OpenMP-Memory-Semantics-and-Tasks" title="Link to this heading">¶</a></h1>
+<section id="OpenMP-Memory-Semantics-and-Background">
+<h2>OpenMP Memory Semantics and Background<a class="headerlink" href="#OpenMP-Memory-Semantics-and-Background" title="Link to this heading">¶</a></h2>
+<p>What does the compiler do when we add <code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">omp</span> <span class="pre">parallel</span></code>?</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">static</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">dot_opt3</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">omp_set_num_threads</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+<span class="w">  </span><span class="cp">#pragma omp parallel</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="cp">#pragma omp for reduction(+:sum)</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">      </span><span class="n">sum</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">sum</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>!gcc -Os -march=native -fopenmp dot-minimal.c -o dot-minimal
+!objdump -d --prefix-addresses -M intel dot-minimal | grep dot_opt3
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+00000000000010c3 &lt;main+0x23&gt; call   000000000000127a &lt;dot_opt3.constprop.0.isra.0&gt;
+00000000000011d9 &lt;dot_opt3._omp_fn.0&gt; push   r12
+00000000000011db &lt;dot_opt3._omp_fn.0+0x2&gt; cmp    QWORD PTR [rdi],0x0
+00000000000011df &lt;dot_opt3._omp_fn.0+0x6&gt; push   rbp
+00000000000011e0 &lt;dot_opt3._omp_fn.0+0x7&gt; mov    rbp,rdi
+00000000000011e3 &lt;dot_opt3._omp_fn.0+0xa&gt; push   rbx
+00000000000011e4 &lt;dot_opt3._omp_fn.0+0xb&gt; jne    0000000000001215 &lt;dot_opt3._omp_fn.0+0x3c&gt;
+00000000000011e6 &lt;dot_opt3._omp_fn.0+0xd&gt; vxorpd xmm0,xmm0,xmm0
+00000000000011ea &lt;dot_opt3._omp_fn.0+0x11&gt; mov    rdx,QWORD PTR [rbp+0x18]
+00000000000011ee &lt;dot_opt3._omp_fn.0+0x15&gt; lea    rcx,[rbp+0x18]
+00000000000011f2 &lt;dot_opt3._omp_fn.0+0x19&gt; vmovq  xmm2,rdx
+00000000000011f7 &lt;dot_opt3._omp_fn.0+0x1e&gt; mov    rax,rdx
+00000000000011fa &lt;dot_opt3._omp_fn.0+0x21&gt; vaddsd xmm1,xmm0,xmm2
+00000000000011fe &lt;dot_opt3._omp_fn.0+0x25&gt; vmovq  rsi,xmm1
+0000000000001203 &lt;dot_opt3._omp_fn.0+0x2a&gt; lock cmpxchg QWORD PTR [rcx],rsi
+0000000000001208 &lt;dot_opt3._omp_fn.0+0x2f&gt; mov    rsi,rdx
+000000000000120b &lt;dot_opt3._omp_fn.0+0x32&gt; mov    rdx,rax
+000000000000120e &lt;dot_opt3._omp_fn.0+0x35&gt; cmp    rsi,rax
+0000000000001211 &lt;dot_opt3._omp_fn.0+0x38&gt; je     0000000000001275 &lt;dot_opt3._omp_fn.0+0x9c&gt;
+0000000000001213 &lt;dot_opt3._omp_fn.0+0x3a&gt; jmp    00000000000011f2 &lt;dot_opt3._omp_fn.0+0x19&gt;
+0000000000001215 &lt;dot_opt3._omp_fn.0+0x3c&gt; call   0000000000001070 &lt;omp_get_num_threads@plt&gt;
+000000000000121a &lt;dot_opt3._omp_fn.0+0x41&gt; movsxd r12,eax
+000000000000121d &lt;dot_opt3._omp_fn.0+0x44&gt; call   0000000000001040 &lt;omp_get_thread_num@plt&gt;
+0000000000001222 &lt;dot_opt3._omp_fn.0+0x49&gt; xor    edx,edx
+0000000000001224 &lt;dot_opt3._omp_fn.0+0x4b&gt; movsxd rcx,eax
+0000000000001227 &lt;dot_opt3._omp_fn.0+0x4e&gt; mov    rax,QWORD PTR [rbp+0x0]
+000000000000122b &lt;dot_opt3._omp_fn.0+0x52&gt; div    r12
+000000000000122e &lt;dot_opt3._omp_fn.0+0x55&gt; cmp    rcx,rdx
+0000000000001231 &lt;dot_opt3._omp_fn.0+0x58&gt; lea    rsi,[rax+0x1]
+0000000000001235 &lt;dot_opt3._omp_fn.0+0x5c&gt; cmovb  rax,rsi
+0000000000001239 &lt;dot_opt3._omp_fn.0+0x60&gt; mov    esi,0x0
+000000000000123e &lt;dot_opt3._omp_fn.0+0x65&gt; cmovb  rdx,rsi
+0000000000001242 &lt;dot_opt3._omp_fn.0+0x69&gt; imul   rcx,rax
+0000000000001246 &lt;dot_opt3._omp_fn.0+0x6d&gt; add    rdx,rcx
+0000000000001249 &lt;dot_opt3._omp_fn.0+0x70&gt; add    rax,rdx
+000000000000124c &lt;dot_opt3._omp_fn.0+0x73&gt; cmp    rdx,rax
+000000000000124f &lt;dot_opt3._omp_fn.0+0x76&gt; jae    00000000000011e6 &lt;dot_opt3._omp_fn.0+0xd&gt;
+0000000000001251 &lt;dot_opt3._omp_fn.0+0x78&gt; mov    rcx,QWORD PTR [rbp+0x10]
+0000000000001255 &lt;dot_opt3._omp_fn.0+0x7c&gt; mov    rsi,QWORD PTR [rbp+0x8]
+0000000000001259 &lt;dot_opt3._omp_fn.0+0x80&gt; vxorpd xmm0,xmm0,xmm0
+000000000000125d &lt;dot_opt3._omp_fn.0+0x84&gt; vmovsd xmm3,QWORD PTR [rsi+rdx*8]
+0000000000001262 &lt;dot_opt3._omp_fn.0+0x89&gt; vfmadd231sd xmm0,xmm3,QWORD PTR [rcx+rdx*8]
+0000000000001268 &lt;dot_opt3._omp_fn.0+0x8f&gt; inc    rdx
+000000000000126b &lt;dot_opt3._omp_fn.0+0x92&gt; cmp    rax,rdx
+000000000000126e &lt;dot_opt3._omp_fn.0+0x95&gt; jne    000000000000125d &lt;dot_opt3._omp_fn.0+0x84&gt;
+0000000000001270 &lt;dot_opt3._omp_fn.0+0x97&gt; jmp    00000000000011ea &lt;dot_opt3._omp_fn.0+0x11&gt;
+0000000000001275 &lt;dot_opt3._omp_fn.0+0x9c&gt; pop    rbx
+0000000000001276 &lt;dot_opt3._omp_fn.0+0x9d&gt; pop    rbp
+0000000000001277 &lt;dot_opt3._omp_fn.0+0x9e&gt; pop    r12
+0000000000001279 &lt;dot_opt3._omp_fn.0+0xa0&gt; ret
+000000000000127a &lt;dot_opt3.constprop.0.isra.0&gt; push   rbp
+000000000000127b &lt;dot_opt3.constprop.0.isra.0+0x1&gt; push   rbx
+000000000000127c &lt;dot_opt3.constprop.0.isra.0+0x2&gt; mov    rbx,rdi
+000000000000127f &lt;dot_opt3.constprop.0.isra.0+0x5&gt; mov    edi,0x4
+0000000000001284 &lt;dot_opt3.constprop.0.isra.0+0xa&gt; sub    rsp,0x38
+0000000000001288 &lt;dot_opt3.constprop.0.isra.0+0xe&gt; mov    rbp,QWORD PTR fs:0x28
+0000000000001291 &lt;dot_opt3.constprop.0.isra.0+0x17&gt; mov    QWORD PTR [rsp+0x28],rbp
+0000000000001296 &lt;dot_opt3.constprop.0.isra.0+0x1c&gt; mov    rbp,rsi
+0000000000001299 &lt;dot_opt3.constprop.0.isra.0+0x1f&gt; call   0000000000001050 &lt;omp_set_num_threads@plt&gt;
+000000000000129e &lt;dot_opt3.constprop.0.isra.0+0x24&gt; xor    ecx,ecx
+00000000000012a0 &lt;dot_opt3.constprop.0.isra.0+0x26&gt; xor    edx,edx
+00000000000012a2 &lt;dot_opt3.constprop.0.isra.0+0x28&gt; lea    rsi,[rsp+0x8]
+00000000000012a7 &lt;dot_opt3.constprop.0.isra.0+0x2d&gt; lea    rdi,[rip+0xffffffffffffff2b]        # 00000000000011d9 &lt;dot_opt3._omp_fn.0&gt;
+00000000000012ae &lt;dot_opt3.constprop.0.isra.0+0x34&gt; mov    QWORD PTR [rsp+0x10],rbx
+00000000000012b3 &lt;dot_opt3.constprop.0.isra.0+0x39&gt; mov    QWORD PTR [rsp+0x8],0x1388
+00000000000012bc &lt;dot_opt3.constprop.0.isra.0+0x42&gt; mov    QWORD PTR [rsp+0x20],0x0
+00000000000012c5 &lt;dot_opt3.constprop.0.isra.0+0x4b&gt; mov    QWORD PTR [rsp+0x18],rbp
+00000000000012ca &lt;dot_opt3.constprop.0.isra.0+0x50&gt; call   0000000000001090 &lt;GOMP_parallel@plt&gt;
+00000000000012cf &lt;dot_opt3.constprop.0.isra.0+0x55&gt; mov    rax,QWORD PTR [rsp+0x28]
+00000000000012d4 &lt;dot_opt3.constprop.0.isra.0+0x5a&gt; sub    rax,QWORD PTR fs:0x28
+00000000000012dd &lt;dot_opt3.constprop.0.isra.0+0x63&gt; je     00000000000012e4 &lt;dot_opt3.constprop.0.isra.0+0x6a&gt;
+00000000000012df &lt;dot_opt3.constprop.0.isra.0+0x65&gt; call   0000000000001060 &lt;__stack_chk_fail@plt&gt;
+00000000000012e4 &lt;dot_opt3.constprop.0.isra.0+0x6a&gt; add    rsp,0x38
+00000000000012e8 &lt;dot_opt3.constprop.0.isra.0+0x6e&gt; pop    rbx
+00000000000012e9 &lt;dot_opt3.constprop.0.isra.0+0x6f&gt; pop    rbp
+00000000000012ea &lt;dot_opt3.constprop.0.isra.0+0x70&gt; ret
+</pre></div></div>
+</div>
+</section>
+<section id="Anatomy-of-a-parallel-region">
+<h2>Anatomy of a parallel region<a class="headerlink" href="#Anatomy-of-a-parallel-region" title="Link to this heading">¶</a></h2>
+<div class="highlight-mermaid notranslate"><div class="highlight"><pre><span></span>graph LR;
+  A[&lt;tt&gt;dot_opt3&lt;/tt&gt;]--&gt;B[&lt;tt&gt;GOMP_parallel&lt;/tt&gt;];
+  B-- id=0_ --&gt;C{&lt;tt&gt;dot_opt3._omp_fn.0&lt;/tt&gt;};
+  B-- id=1_ --&gt;C{&lt;tt&gt;dot_opt3._omp_fn.0&lt;/tt&gt;};
+  B-- id=2_ --&gt;C{&lt;tt&gt;dot_opt3._omp_fn.0&lt;/tt&gt;};
+  A-. "Body inside__" .-&gt;C;
+  C--&gt;D[&lt;tt&gt;omp_get_num_threads&lt;/tt&gt;];
+  C--&gt;E[&lt;tt&gt;omp_get_thread_num&lt;/tt&gt;];
+  style A fill:#9b9,stroke:#686,stroke-width:4px;
+  style C fill:#9b9,stroke:#668,stroke-width:8px;
+</pre></div>
+</div>
+<p><a class="reference external" href="https://github.com/gcc-mirror/gcc/blob/9c09713871ad6d05e1bd2bd65cb3c78c823cb42e/libgomp/parallel.c#L171-L180">Actual source code:</a></p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span>
+<span class="nf">GOMP_parallel</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">fn</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">),</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">num_threads</span><span class="p">,</span>
+<span class="w">           </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">flags</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">num_threads</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gomp_resolve_num_threads</span><span class="w"> </span><span class="p">(</span><span class="n">num_threads</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="w">  </span><span class="n">gomp_team_start</span><span class="w"> </span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">num_threads</span><span class="p">,</span><span class="w"> </span><span class="n">flags</span><span class="p">,</span><span class="w"> </span><span class="n">gomp_new_team</span><span class="w"> </span><span class="p">(</span><span class="n">num_threads</span><span class="p">),</span>
+<span class="w">           </span><span class="nb">NULL</span><span class="p">);</span>
+<span class="w">  </span><span class="n">fn</span><span class="w"> </span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+<span class="w">  </span><span class="n">ialias_call</span><span class="w"> </span><span class="p">(</span><span class="n">GOMP_parallel_end</span><span class="p">)</span><span class="w"> </span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://godbolt.org/z/67c9rh7o3">https://godbolt.org/z/67c9rh7o3</a></p>
+<ul class="simple">
+<li><p>Static automatically embeds calls to <code class="docutils literal notranslate"><span class="pre">omp_get_num_threads</span></code> and <code class="docutils literal notranslate"><span class="pre">omp_get_thread_num</span></code></p></li>
+<li><p>Bounds of the loop are done by each thread independently</p></li>
+<li><p>No extra communication requried to some global “GOMP_parallel” type function</p></li>
+</ul>
+<section id="Dynamic-Scheduling">
+<h3>Dynamic Scheduling<a class="headerlink" href="#Dynamic-Scheduling" title="Link to this heading">¶</a></h3>
+<div class="highlight-mermaid notranslate"><div class="highlight"><pre><span></span>graph LR;
+  A[&lt;tt&gt;dot_opt3&lt;/tt&gt;]--&gt;B[GOMP_parallel];
+  B-- id=0_ --&gt;C{&lt;tt&gt;dot_opt3._omp_fn.0&lt;/tt&gt;};
+  B-- id=1_ --&gt;C{&lt;tt&gt;dot_opt3._omp_fn.0&lt;/tt&gt;};
+  B-- id=2_ --&gt;C{&lt;tt&gt;dot_opt3._omp_fn.0&lt;/tt&gt;};
+  A-. "Body inside__" .-&gt;C;
+  C--&gt;D[GOMP_*_dynamic_start];
+  C--&gt;E[GOMP_*_dynamic_next];
+  E--&gt;C
+  style A fill:#9b9,stroke:#686,stroke-width:4px;
+  style C fill:#9b9,stroke:#668,stroke-width:8px;
+</pre></div>
+</div>
+<p><a class="reference external" href="https://godbolt.org/z/edsxf9nsP">https://godbolt.org/z/edsxf9nsP</a></p>
+<ul class="simple">
+<li><p>Requires repeated calls to <code class="docutils literal notranslate"><span class="pre">GOMP_loop_ull_nonmonotonic_dynamic_next()</span></code> to get next chunk of work to operate on</p></li>
+</ul>
+</section>
+</section>
+<section id="Memory-semantics">
+<h2>Memory semantics<a class="headerlink" href="#Memory-semantics" title="Link to this heading">¶</a></h2>
+<p>For each variable accessed within the parallel region, we can specify whether it is</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">private</span></code> to the thread, with value undefined inside the region</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">firstprivate</span></code>, which is like private, but initialized by the value upon entering the parallel region</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shared</span></code>, meaning that every thread accesses the same value in memory (but changes are not immediately visible)</p></li>
+</ul>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span>
+<span class="cp">#pragma omp parallel private(a) firstprivate(b) shared(c)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">omp_get_thread_num</span><span class="p">();</span>
+<span class="w">  </span><span class="n">a</span><span class="o">++</span><span class="p">;</span>
+<span class="w">  </span><span class="n">b</span><span class="o">++</span><span class="p">;</span>
+<span class="w">  </span><span class="n">c</span><span class="o">++</span><span class="p">;</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">"[%d] %d %d %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"END: %d %d %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>!make CFLAGS='-fopenmp -Wall' -B omp-mem
+!OMP_NUM_THREADS=8 ./omp-mem
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+cc -fopenmp -Wall    omp-mem.c   -o omp-mem
+[3] 1 2 7
+[0] 1 2 8
+[7] 1 2 7
+[2] 1 2 7
+[4] 1 2 7
+[6] 1 2 7
+[1] 1 2 7
+[5] 1 2 7
+END: 0 1 8
+</pre></div></div>
+</div>
+<section id="Programming-style">
+<h3>Programming style<a class="headerlink" href="#Programming-style" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">private</span></code> semantics unnecessary and error-prone.</p>
+<ul class="simple">
+<li><p>We can just declare those variables at inner-most scope.</p></li>
+<li><p>Informs reader exactly where the variables are used, regardless of parallel context or not</p></li>
+</ul>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span>
+<span class="cp">#pragma omp parallel firstprivate(b) shared(c)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">omp_get_thread_num</span><span class="p">();</span>
+<span class="w">  </span><span class="n">a</span><span class="o">++</span><span class="p">;</span>
+<span class="w">  </span><span class="n">b</span><span class="o">++</span><span class="p">;</span>
+<span class="w">  </span><span class="n">c</span><span class="o">++</span><span class="p">;</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">"[%d] %d %d %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"END: %d %d %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="c1">// Error: a not in scope here</span>
+</pre></div>
+</div>
+</section>
+<section id="Updating-shared-variables">
+<h3>Updating shared variables<a class="headerlink" href="#Updating-shared-variables" title="Link to this heading">¶</a></h3>
+<p>We see that the shared variable <code class="docutils literal notranslate"><span class="pre">c</span></code> has lots of opportunities for conflict.</p>
+<div class="highlight-mermaid notranslate"><div class="highlight"><pre><span></span>sequenceDiagram
+participant Thread0
+participant Memory
+participant Thread1
+Memory-&gt;&gt;Thread0: load c=2
+Memory-&gt;&gt;Thread1: load c=2
+Note left of Thread0: c++ (=3)
+Note right of Thread1: c++ (=3)
+Note right of Thread1: print c
+Thread0-&gt;&gt;Memory: store c=3
+Thread1-&gt;&gt;Memory: store c=3
+Note left of Thread0: print c
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Any of the load or store arrows could happen in different orders, relative to each thread</p>
+<ul>
+<li><p>Thread 0 might store it’s result before thread 1 reads, or vice versa</p></li>
+</ul>
+</li>
+<li><p>If we run the above many times, we may observe that</p>
+<ul>
+<li><p>multiple processes have the same value of <code class="docutils literal notranslate"><span class="pre">c</span></code></p></li>
+<li><p>each thread observes different increments from others</p></li>
+<li><p>the total number of increments may vary</p></li>
+</ul>
+</li>
+</ul>
+<p>This undeterministic behavior is never desired.</p>
+<p>We can eliminate it by defining ordering semantics</p>
+</section>
+</section>
+<section id="Ordering-Semantics">
+<h2>Ordering Semantics<a class="headerlink" href="#Ordering-Semantics" title="Link to this heading">¶</a></h2>
+<section id="Observation-vs-Timing-aside">
+<h3>Observation vs Timing aside<a class="headerlink" href="#Observation-vs-Timing-aside" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Parallel programs are only correct if they maintain the appropriate order of events</p></li>
+<li><p>There are two logical ways of doing this:</p>
+<ol class="arabic simple">
+<li><p>by observation: processes explicitly communicate to coordinate order of actions between processes</p></li>
+<li><p>by timing: processes “agree” to do events at specific times</p></li>
+</ol>
+</li>
+</ul>
+<div class="alert alert-block alert-danger"><p>Determinstic parallel computation is only guarnateed by using observations to enforce ordering.</p>
+</div><ul class="simple">
+<li><p>This is due to physics (special relativity), where observers (processors) can only agree on the order of events, not when they happen</p>
+<ul>
+<li><p>Attempting to coordinate processses based on a “you do this after 5 seconds, then I’ll do this” is non-deterministic</p></li>
+<li><p>All processors don’t have the same understanding of when “5 seconds” is</p></li>
+</ul>
+</li>
+<li><p>Thus, correct ordering can only be deterministically enforced by explicitly communicating ordering</p></li>
+<li><p>First noticed and formalized by <a class="reference external" href="https://en.wikipedia.org/wiki/Leslie_Lamport">Leslie Lamport</a>, which he (in part) won a Turing Award for</p></li>
+</ul>
+</section>
+<section id="OpenMP-Ordering-Semantics">
+<h3>OpenMP Ordering Semantics<a class="headerlink" href="#OpenMP-Ordering-Semantics" title="Link to this heading">¶</a></h3>
+<p>We can define ordering semantics using <code class="docutils literal notranslate"><span class="pre">atomic</span></code>, <code class="docutils literal notranslate"><span class="pre">critical</span></code>, and <code class="docutils literal notranslate"><span class="pre">barrier</span></code>.</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Syncronization Flag</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">barrier</span></code></p></td>
+<td><p>All threads wait until every thread has hit the barrier</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">critical</span></code></p></td>
+<td><p>All threads must execute the block, but only one thread at a time</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">atomic</span></code></p></td>
+<td><p>Only one thread may access a memory location at a time</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul class="simple">
+<li><p>All of these are executed by explicit observations between processes</p>
+<ul>
+<li><p>Barrier’s wait until they’ve recieved communication from every process that they’ve reached the barrier</p></li>
+<li><p>Critical uses a flag that all processes can observe to determine if another thread is in the critical section</p></li>
+<li><p>Atomic does the same as critical</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="critical-vs-atomic">
+<h3><code class="docutils literal notranslate"><span class="pre">critical</span></code> vs <code class="docutils literal notranslate"><span class="pre">atomic</span></code><a class="headerlink" href="#critical-vs-atomic" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">critical</span></code> can apply to any executable block of code.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">atomic</span></code> can only apply to expressions of the type:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">binop</span> <span class="pre">=</span> <span class="pre">expr</span></code></p>
+<ul>
+<li><p>where <code class="docutils literal notranslate"><span class="pre">binop</span></code> is one of <code class="docutils literal notranslate"><span class="pre">+</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>, <code class="docutils literal notranslate"><span class="pre">-</span></code>, <code class="docutils literal notranslate"><span class="pre">/</span></code>, <code class="docutils literal notranslate"><span class="pre">&amp;</span></code>, <code class="docutils literal notranslate"><span class="pre">^</span></code>, <code class="docutils literal notranslate"><span class="pre">|</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;&lt;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&gt;&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">expr</span></code> is <em>not</em> guaranteed to be run by a single thread at a time, just the load and store of <code class="docutils literal notranslate"><span class="pre">x</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x++</span></code>, <code class="docutils literal notranslate"><span class="pre">++x</span></code>, <code class="docutils literal notranslate"><span class="pre">x--</span></code>, and <code class="docutils literal notranslate"><span class="pre">--x</span></code></p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">atomic</span></code> is often more efficient and cheaper than <code class="docutils literal notranslate"><span class="pre">critical</span></code></p>
+<ul>
+<li><p>CPUs often have hardware associated with keeping <em>memory</em> locations with exclusive read/write access</p></li>
+<li><p>This hardware functionality is often more efficient than software versions of the same features (e.g. mutex or spinlock)</p></li>
+<li><p>If this hardware does not exist, OMP implementations can replace <code class="docutils literal notranslate"><span class="pre">atomic</span></code> with <code class="docutils literal notranslate"><span class="pre">critical</span></code> should they need to</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="atomic-vs-critical-Example">
+<h3><code class="docutils literal notranslate"><span class="pre">atomic</span></code> vs <code class="docutils literal notranslate"><span class="pre">critical</span></code> Example<a class="headerlink" href="#atomic-vs-critical-Example" title="Link to this heading">¶</a></h3>
+<p>Note that only the load and store of the memory in <code class="docutils literal notranslate"><span class="pre">x</span></code> is actually enforced to be exclusive to each thread. Example:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="cp">#pragma omp parallel shared(a,b)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="cp">#pragma omp critical</span>
+<span class="w">  </span><span class="n">a</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">foo</span><span class="p">();</span>
+
+<span class="w">  </span><span class="cp">#pragma omp barrier</span>
+
+<span class="w">  </span><span class="cp">#pragma omp atomic</span>
+<span class="w">  </span><span class="n">b</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">bar</span><span class="p">();</span>
+<span class="w">  </span><span class="cp">#pragma omp barrier</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Cycle</p></th>
+<th class="head"><p>thread 0</p></th>
+<th class="head"><p>thread 1</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">foo()</span></code></p></td>
+<td><p><em>critical</em></p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">+=</span></code></p></td>
+<td><p><em>critical</em></p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p><em>exit critical</em></p></td>
+<td><p><em>critical</em></p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p><em>barrier</em></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">foo()</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p><em>barrier</em></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">+=</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>5</p></td>
+<td><p><em>barrier</em></p></td>
+<td><p><em>barrier</em></p></td>
+</tr>
+<tr class="row-even"><td><p>6</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bar()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bar()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>7</p></td>
+<td><p><em>atomic</em></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">b</span> <span class="pre">+=</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>8</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">b</span> <span class="pre">+=</span></code></p></td>
+<td><p><em>barrier</em></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">critical</span></code> clause guarantees that <code class="docutils literal notranslate"><span class="pre">foo()</span></code>, <code class="docutils literal notranslate"><span class="pre">+</span></code>, and <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">=</span></code> (store operation) are only done by a single thread at a time</p>
+<ul>
+<li><p>And that all three operations are done sequentially by the same thread before another thread is allowed to go</p></li>
+</ul>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">atomic</span></code> only ensures that the load and store of <code class="docutils literal notranslate"><span class="pre">b</span></code> is run by a single thread at a time</p>
+<ul>
+<li><p>The call to <code class="docutils literal notranslate"><span class="pre">bar()</span></code> can be executed threads simultaneously</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="OpenMP-Tasks">
+<h2>OpenMP Tasks<a class="headerlink" href="#OpenMP-Tasks" title="Link to this heading">¶</a></h2>
 <p>Up to now, we’ve been expressing parallelism as iterations in a loop or as pure SPMD.</p>
 <ul class="simple">
 <li><p>What if we want to do more abstract breakdowns of work?</p></li>
@@ -314,7 +744,7 @@
 <li><p>When a thread is done with a task, it asks for another one</p></li>
 </ul>
 <section id="Anatomy-of-OpenMP-Task-Code">
-<h2>Anatomy of OpenMP Task Code<a class="headerlink" href="#Anatomy-of-OpenMP-Task-Code" title="Link to this heading">¶</a></h2>
+<h3>Anatomy of OpenMP Task Code<a class="headerlink" href="#Anatomy-of-OpenMP-Task-Code" title="Link to this heading">¶</a></h3>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#pragma omp parallel </span><span class="c1">// Create team of threads to execute tasks</span>
 <span class="p">{</span>
 <span class="w">  </span><span class="cp">#pragma omp single </span><span class="c1">// Only a single thread should perform the task creation</span>
@@ -370,7 +800,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">firstprivate(i)</span></code> ensures that each function call will be for <code class="docutils literal notranslate"><span class="pre">i</span></code> at the time of the task creation</p></li>
 </ul>
 <section id="Our-linked-list-example:">
-<h3>Our linked list example:<a class="headerlink" href="#Our-linked-list-example:" title="Link to this heading">¶</a></h3>
+<h4>Our linked list example:<a class="headerlink" href="#Our-linked-list-example:" title="Link to this heading">¶</a></h4>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#pragma omp parallel</span>
 <span class="cp">#pragma omp single</span>
 <span class="p">{</span>
@@ -387,7 +817,7 @@
 </section>
 </section>
 <section id="Child-tasks">
-<h2>Child tasks<a class="headerlink" href="#Child-tasks" title="Link to this heading">¶</a></h2>
+<h3>Child tasks<a class="headerlink" href="#Child-tasks" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Tasks can spawn their own tasks, creating <strong>child tasks</strong></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">omp</span> <span class="pre">taskwait</span></code> can be used as a barrier to ensure that child tasks have all been executed before doing other work</p></li>
@@ -477,7 +907,7 @@ task 3  finish  id: 0
 </div>
 </section>
 <section id="Computing-the-Fibonacci-numbers-with-OpenMP">
-<h2>Computing the <a class="reference external" href="https://en.wikipedia.org/wiki/Fibonacci_number">Fibonacci numbers</a> with OpenMP<a class="headerlink" href="#Computing-the-Fibonacci-numbers-with-OpenMP" title="Link to this heading">¶</a></h2>
+<h3>Computing the <a class="reference external" href="https://en.wikipedia.org/wiki/Fibonacci_number">Fibonacci numbers</a> with OpenMP<a class="headerlink" href="#Computing-the-Fibonacci-numbers-with-OpenMP" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>Fibonacci numbers are defined by the recurrence :nbsphinx-math:<a href="#id1"><span class="problematic" id="id2">`</span></a>begin{align}</dt><dd><p>F_0 &amp;= 0 \
 F_1 &amp;= 1 \
@@ -552,7 +982,7 @@ Time taken: 0.374608
 <li><p>Static scheduling with automatic chunk_size means last thread gets all of the most expensive Fibonacci numbers to compute</p></li>
 </ul>
 <section id="Use-tasks">
-<h3>Use tasks<a class="headerlink" href="#Use-tasks" title="Link to this heading">¶</a></h3>
+<h4>Use tasks<a class="headerlink" href="#Use-tasks" title="Link to this heading">¶</a></h4>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[204]:
 </pre></div>
@@ -660,7 +1090,7 @@ Time taken: 1.6034
 </ul>
 </section>
 <section id="Using-cutoffs">
-<h3>Using cutoffs<a class="headerlink" href="#Using-cutoffs" title="Link to this heading">¶</a></h3>
+<h4>Using cutoffs<a class="headerlink" href="#Using-cutoffs" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p>At a small enough <code class="docutils literal notranslate"><span class="pre">n</span></code>, we just do the work in serial</p></li>
 </ul>
@@ -774,8 +1204,11 @@ Time taken: 0.368259
 </li>
 <li><p>Since the new <code class="docutils literal notranslate"><span class="pre">fib()</span></code> is creating child tasks, compiler doesn’t make the recursion optimizations for the sequential part</p></li>
 </ul>
-<p><strong>Separate your thread-local code from your task creation code</strong></p>
+</section>
+<section id="Separate-function-for-thread-local-code">
+<h4>Separate function for thread-local code<a class="headerlink" href="#Separate-function-for-thread-local-code" title="Link to this heading">¶</a></h4>
 <ul class="simple">
+<li><p>Separate your thread-local code from your task creation code</p></li>
 <li><p>This will make your code easier to read</p></li>
 <li><p>Also make your compiler happier to perform optimizations</p></li>
 </ul>
@@ -872,7 +1305,7 @@ Time taken: 0.139879
 </div>
 </section>
 <section id="Alt:-schedule(static,1)">
-<h3>Alt: <code class="docutils literal notranslate"><span class="pre">schedule(static,1)</span></code><a class="headerlink" href="#Alt:-schedule(static,1)" title="Link to this heading">¶</a></h3>
+<h4>Alt: <code class="docutils literal notranslate"><span class="pre">schedule(static,1)</span></code><a class="headerlink" href="#Alt:-schedule(static,1)" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p>However good a demonstration this is, it’s also pretty dumb</p></li>
 <li><p>Really, should just have each thread work on it’s own Fibonacci number</p></li>
@@ -956,7 +1389,7 @@ Time taken: 0.187545
 </div>
 </section>
 <section id="Better-math">
-<h3>Better math<a class="headerlink" href="#Better-math" title="Link to this heading">¶</a></h3>
+<h4>Better math<a class="headerlink" href="#Better-math" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p>Never be afraid to step back and ask “wait, what are we <strong>really</strong> trying to do here?”</p></li>
 <li><p>Why don’t we implement the basic Fibonacci algorithm we discussed in the first or second lecture?</p>
@@ -1041,7 +1474,7 @@ Time taken: 1.89058e-07
 </section>
 </section>
 <section id="Task-dependencies">
-<h2>Task dependencies<a class="headerlink" href="#Task-dependencies" title="Link to this heading">¶</a></h2>
+<h3>Task dependencies<a class="headerlink" href="#Task-dependencies" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Declare data dependencies between tasks using <code class="docutils literal notranslate"><span class="pre">depend()</span></code> clause</p></li>
 <li><p>Creates a dependency graph such that tasks of different kinds maybe created all</p></li>
@@ -1072,7 +1505,7 @@ Time taken: 1.89058e-07
 </table>
 </div>
 <section id="Examples">
-<h3>Examples<a class="headerlink" href="#Examples" title="Link to this heading">¶</a></h3>
+<h4>Examples<a class="headerlink" href="#Examples" title="Link to this heading">¶</a></h4>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[189]:
 </pre></div>
@@ -1221,7 +1654,7 @@ x + 1 = 3. x + 2 = 4.
 </section>
 </section>
 <section id="To-fork/join-or-to-task?">
-<h2>To fork/join or to task?<a class="headerlink" href="#To-fork/join-or-to-task?" title="Link to this heading">¶</a></h2>
+<h3>To fork/join or to task?<a class="headerlink" href="#To-fork/join-or-to-task?" title="Link to this heading">¶</a></h3>
 <p>When the work unit <strong>size</strong> and <strong>compute speed</strong> is predictable, we can partition work in advance and schedule with <code class="docutils literal notranslate"><span class="pre">omp</span> <span class="pre">for</span></code> to achieve load balance.</p>
 <p>Satisfying both criteria is often hard:</p>
 <ul class="simple">
@@ -1251,14 +1684,14 @@ x + 1 = 3. x + 2 = 4.
 <p><img alt="image1" src="../../_images/chol-alg.png" /></p>
 </section>
 <section id="Computational-depth-and-the-critical-path">
-<h2>Computational depth and the critical path<a class="headerlink" href="#Computational-depth-and-the-critical-path" title="Link to this heading">¶</a></h2>
+<h3>Computational depth and the critical path<a class="headerlink" href="#Computational-depth-and-the-critical-path" title="Link to this heading">¶</a></h3>
 <p>Consider the block Cholesky factorization algorithm (applying to the lower-triangular matrix <span class="math notranslate nohighlight">\(A\)</span>).</p>
 <p><img alt="image1" src="../../_images/chol-alg.png" /></p>
 <p>Expressing essential data dependencies, this results in the following directed acyclic graph (DAG). No parallel algorithm can complete in less time than it takes for a sequential algorithm to perform each operation along the critical path (i.e., the minimum depth of this graph such that all arrows point downward).</p>
 <p><img alt="image2" src="../../_images/chol-graph.png" /></p>
 <p>Figures from <a class="reference external" href="https://doi.org/10.1109/IPDPS.2016.9">Agullo et al (2016): Are Static Schedules so Bad? A Case Study on Cholesky Factorization</a>, which is an interesting counterpoint to the common narrative pushing dynamic scheduling.</p>
 <section id="Question:-what-is-the-computational-depth-of-summing-an-array?">
-<h3>Question: what is the computational depth of summing an array?<a class="headerlink" href="#Question:-what-is-the-computational-depth-of-summing-an-array?" title="Link to this heading">¶</a></h3>
+<h4>Question: what is the computational depth of summing an array?<a class="headerlink" href="#Question:-what-is-the-computational-depth-of-summing-an-array?" title="Link to this heading">¶</a></h4>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[\sum_{i=0}^{N-1} a_i\]</div>
@@ -1270,8 +1703,17 @@ x + 1 = 3. x + 2 = 4.
 </div>
 <p>Given an arbitrarily large number <span class="math notranslate nohighlight">\(P\)</span> of processing units, what is the smallest computational depth to compute this mathematical result? (You’re free to use any associativity.)</p>
 </section>
+</section>
 <section id="Resources">
 <h3>Resources<a class="headerlink" href="#Resources" title="Link to this heading">¶</a></h3>
+<p>Many, many more advanced usages of OpenMP tasks</p>
+<ul class="simple">
+<li><p>Task priority</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">taskgroup</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">taskwait</span></code> dependencies</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">final</span></code> clause</p></li>
+</ul>
+<p>Many of them can be found in these tutorials:</p>
 <ul class="simple">
 <li><p>OpenMP Tasking Tutorials by Xavier Teruel: <a class="reference external" href="https://www.openmp.org/wp-content/uploads/OpenMP-UMT-Tasking-1.pdf">Part 1</a>, <a class="reference external" href="https://www.openmp.org/wp-content/uploads/OpenMP-UMT-Tasking-2.pdf">Part 2</a></p></li>
 </ul>
@@ -1334,7 +1776,25 @@ x + 1 = 3. x + 2 = 4.
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">20260925 OpenMP tasks</a><ul>
+<li><a class="reference internal" href="#">20260925 OpenMP Memory Semantics and Tasks</a><ul>
+<li><a class="reference internal" href="#OpenMP-Memory-Semantics-and-Background">OpenMP Memory Semantics and Background</a></li>
+<li><a class="reference internal" href="#Anatomy-of-a-parallel-region">Anatomy of a parallel region</a><ul>
+<li><a class="reference internal" href="#Dynamic-Scheduling">Dynamic Scheduling</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Memory-semantics">Memory semantics</a><ul>
+<li><a class="reference internal" href="#Programming-style">Programming style</a></li>
+<li><a class="reference internal" href="#Updating-shared-variables">Updating shared variables</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Ordering-Semantics">Ordering Semantics</a><ul>
+<li><a class="reference internal" href="#Observation-vs-Timing-aside">Observation vs Timing aside</a></li>
+<li><a class="reference internal" href="#OpenMP-Ordering-Semantics">OpenMP Ordering Semantics</a></li>
+<li><a class="reference internal" href="#critical-vs-atomic"><code class="docutils literal notranslate"><span class="pre">critical</span></code> vs <code class="docutils literal notranslate"><span class="pre">atomic</span></code></a></li>
+<li><a class="reference internal" href="#atomic-vs-critical-Example"><code class="docutils literal notranslate"><span class="pre">atomic</span></code> vs <code class="docutils literal notranslate"><span class="pre">critical</span></code> Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#OpenMP-Tasks">OpenMP Tasks</a><ul>
 <li><a class="reference internal" href="#Anatomy-of-OpenMP-Task-Code">Anatomy of OpenMP Task Code</a><ul>
 <li><a class="reference internal" href="#Our-linked-list-example:">Our linked list example:</a></li>
 </ul>
@@ -1343,6 +1803,7 @@ x + 1 = 3. x + 2 = 4.
 <li><a class="reference internal" href="#Computing-the-Fibonacci-numbers-with-OpenMP">Computing the Fibonacci numbers with OpenMP</a><ul>
 <li><a class="reference internal" href="#Use-tasks">Use tasks</a></li>
 <li><a class="reference internal" href="#Using-cutoffs">Using cutoffs</a></li>
+<li><a class="reference internal" href="#Separate-function-for-thread-local-code">Separate function for thread-local code</a></li>
 <li><a class="reference internal" href="#Alt:-schedule(static,1)">Alt: <code class="docutils literal notranslate"><span class="pre">schedule(static,1)</span></code></a></li>
 <li><a class="reference internal" href="#Better-math">Better math</a></li>
 </ul>
@@ -1354,6 +1815,8 @@ x + 1 = 3. x + 2 = 4.
 <li><a class="reference internal" href="#To-fork/join-or-to-task?">To fork/join or to task?</a></li>
 <li><a class="reference internal" href="#Computational-depth-and-the-critical-path">Computational depth and the critical path</a><ul>
 <li><a class="reference internal" href="#Question:-what-is-the-computational-depth-of-summing-an-array?">Question: what is the computational depth of summing an array?</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#Resources">Resources</a></li>
 </ul>
 </li>
