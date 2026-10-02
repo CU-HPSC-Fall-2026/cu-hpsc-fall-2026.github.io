@@ -18,3 +18,4 @@ Introduction
    notebooks/20260915-OpenMP_cont/20260915-OpenMP_cont.ipynb
    notebooks/20260917-TMA_perf_lab3/20260917-TMA_perf_lab3.ipynb
    notebooks/20260925-OpenMP_Tasks/20260925-OpenMP_Tasks.ipynb
+   notebooks/20260929_Parallel_Hardware.ipynb
