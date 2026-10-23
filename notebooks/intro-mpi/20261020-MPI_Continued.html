@@ -1,0 +1,518 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="20261022 Advanced MPI" href="../20261022-Advanced_MPI.html"><link rel="prev" title="20261015 Intro to MPI" href="20261015-Intro_to_MPI.html">
+
+    <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
+        <title>20261020 MPI Intro Cont.</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">CSCI 5576/4576</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  <span class="sidebar-brand-text">CSCI 5576/4576</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Course Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ungrading.html">Ungrading</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../notebooks.html">Class Notes</a><input aria-label="Toggle navigation of Class Notes" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../20260820-CPU_Basics.html">20260820 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260825-HPC_in_Science_and_Vectorization.html">20260825 - What is HPSC? And Vectorization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260827-CPUs_lie_to_you.html">20260827 - CPUs Lie to You</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260901-Observing_Memory_and_Compute_Bounds_Plus_How_Vectorization_Fails.html">20260901 - Memory- and Compute-Bound Applications and How Vectorization Fails</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260903-08-Modeling_and_Scaling/20260903-08-Modeling_and_Scaling.html">20260903-08 Modeling and Scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260908-10-OpenMP_Intro/20260908-10-OpenMP_Intro.html">20260908-10 OpenMP Intro</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260915-OpenMP_cont/20260915-OpenMP_cont.html">20260915-OpenMP continued</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260917-TMA_perf_lab3/20260917-TMA_perf_lab3.html">20260917 - Perf and Topdown Microarchitecture Analysis (Lab 3)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260925-OpenMP_Tasks/20260925-OpenMP_Tasks.html">20260925 OpenMP Memory Semantics and Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20260929_Parallel_Hardware.html">20260929 Parallel Computing Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20261006-Distributed_Memory_Parallelism.html">20261006 - Distributed-Memory Parallelism</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261015-Intro_to_MPI.html">20261015 Intro to MPI</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">20261020 MPI Intro Cont.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../20261022-Advanced_MPI.html">20261022 Advanced MPI</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../homework.html">Homework</a><input aria-label="Toggle navigation of Homework" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../../_sources/notebooks/intro-mpi/20261020-MPI_Continued.ipynb.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="20261020-MPI-Intro-Cont.">
+<h1>20261020 MPI Intro Cont.<a class="headerlink" href="#20261020-MPI-Intro-Cont." title="Link to this heading">¶</a></h1>
+<section id="How-to-libraries-implement-collectives">
+<h2>How to libraries implement collectives<a class="headerlink" href="#How-to-libraries-implement-collectives" title="Link to this heading">¶</a></h2>
+<section id="Reduce">
+<h3>Reduce<a class="headerlink" href="#Reduce" title="Link to this heading">¶</a></h3>
+<p>Simplest way to implement the all reduce is simple series iteration:</p>
+<p><img alt="reduce iterative" src="../../_images/abtin-reduction-iterative.png" /></p>
+<p>Requires a communication for every rank.</p>
+<p>Alternatively, do a binary-tree-esque recursion:</p>
+<p><img alt="reduce recursive" src="../../_images/abtin-reduction-recursive.png" /></p>
+<p>Requires <span class="math notranslate nohighlight">\(\log_2(N)\)</span> communications (<span class="math notranslate nohighlight">\(N\)</span> is number of ranks)</p>
+<p>Can you think of situations where the binary tree-recursion may not be the most efficient?</p>
+<ul class="simple">
+<li><p>If all communication costs are equivalent, then it most likely is the most efficient</p></li>
+<li><p>If all communication costs aren’t the same, then we can group some sub-reductions together using the “fast” networks to minimize the number of messages needed on the “slow” networks</p>
+<ul>
+<li><p>Perform subreductions intra-node before communicating inter-node</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Scan">
+<h3>Scan<a class="headerlink" href="#Scan" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Scan is a cumulative reduction operation (e.g. cumulative sum)</p>
+<ul>
+<li><p>If each rank has <code class="docutils literal notranslate"><span class="pre">5,</span> <span class="pre">0,</span> <span class="pre">2,</span> <span class="pre">4</span></code>, then the result of scan is <code class="docutils literal notranslate"><span class="pre">[5,</span> <span class="pre">5,</span> <span class="pre">7,</span> <span class="pre">11]</span></code></p></li>
+</ul>
+</li>
+<li><p>Quite useful for minimizing communication of distributed IDs</p>
+<ul>
+<li><p>Example: Often we have certain objects distributed across ranks which have a unique ID assigned to them (e.g. mesh cells, vector elements, etc)</p></li>
+<li><p>It is desireable for every rank to know who owns what object. The easist way to do this is for each rank to own a contiguous range of IDs (rank 0 owns [0,10), rank 1 owns [10,23), etc)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MPI_Scan()</span></code> is a useful tool to build these contiguous ranges without any single rank having to know all of the possible unique IDs</p></li>
+<li><p>Each rank reports to <code class="docutils literal notranslate"><span class="pre">MPI_Scan()</span></code> how many objects they own the scan, then the scan itself computes the bounds of the contiguous array.</p></li>
+</ul>
+</li>
+</ul>
+<p>Recursive implementation of scan: <img alt="scan recursive" src="../../_images/abtin-scan-recursive.png" /></p>
+<p><em>Collective communication graph figures courtesy Abtin Rahimian’s course notes</em></p>
+</section>
+</section>
+<section id="Communicators">
+<h2>Communicators<a class="headerlink" href="#Communicators" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MPI_COMM_WORLD</span></code> contains all ranks in the <code class="docutils literal notranslate"><span class="pre">mpiexec</span></code>. Those ranks may be on different nodes, even in different parts of the world (technically).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MPI_COMM_SELF</span></code> contains only one rank (the current rank)</p></li>
+</ul>
+<ul class="simple">
+<li><p>Can create new communicators from existing ones</p></li>
+</ul>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">MPI_Comm_dup</span><span class="p">(</span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="n">MPI_Comm</span><span class="w"> </span><span class="o">*</span><span class="n">newcomm</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">MPI_Comm_split</span><span class="p">(</span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">color</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">MPI_Comm</span><span class="w"> </span><span class="o">*</span><span class="n">newcomm</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">MPI_Comm_create</span><span class="p">(</span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="n">MPI_Group</span><span class="w"> </span><span class="n">group</span><span class="p">,</span><span class="w"> </span><span class="n">MPI_Comm</span><span class="w"> </span><span class="o">*</span><span class="n">newcomm</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><img alt="MPI Comm Layers" src="../../_images/MPI_Comm_Layers_Gropp_ATPESC.png" /></p>
+<p><em>From</em> <a class="reference external" href="https://extremecomputingtraining.anl.gov/sites/atpesc/files/2026-03/MPI%20for%20Scalable%20Computing%20%28all%20sessions%29.pdf">ATPESC Slides</a> <em>by Bill Gropp</em></p>
+<ul class="simple">
+<li><p>Each process gets a unique rank ID for each communicator it is in</p></li>
+<li><p>Sub_communicators particularly useful for collectives</p></li>
+</ul>
+<ul class="simple">
+<li><p>Can spawn new processes (but not supported on all machines)</p></li>
+</ul>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">MPI_Comm_spawn</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">command</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[],</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">maxprocs</span><span class="p">,</span>
+<span class="w">            </span><span class="n">MPI_Info</span><span class="w"> </span><span class="n">info</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span>
+<span class="w">            </span><span class="n">MPI_Comm</span><span class="w"> </span><span class="o">*</span><span class="n">intercomm</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">array_of_errcodes</span><span class="p">[]);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Can attach <em>attributes</em> to communicators (useful for library composition)</p></li>
+</ul>
+</section>
+<section id="Blocking-and-Non-blocking-Calls">
+<h2>Blocking and Non-blocking Calls<a class="headerlink" href="#Blocking-and-Non-blocking-Calls" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>When calling an MPI communciation function, function returns only once the operation is done</p>
+<ul>
+<li><p>For <code class="docutils literal notranslate"><span class="pre">MPI_Send</span></code> and <code class="docutils literal notranslate"><span class="pre">MPI_Recv</span></code>, they are done when the communication is complete</p>
+<ul>
+<li><p>Therefore both ranks are synchronized</p></li>
+</ul>
+</li>
+<li><p>For collectives (e.g. <code class="docutils literal notranslate"><span class="pre">MPI_Reduce()</span></code>), they exit once their “job” in the operation is done.</p>
+<ul>
+<li><p>For <code class="docutils literal notranslate"><span class="pre">MPI_Reduce()</span></code>, the ranks sending data finish as soon as their data is sent (asynchronous)</p></li>
+<li><p>The rank recieving data waits until it’s recieved it’s data and finished</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>This can be slow in some cases, where you want to do multiple independent Sends and Recieves</p>
+<ul>
+<li><p>Blocking calls can also cause deadlock bugs if not used carefully</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>MPI offers non-blocking calls (prefixed with “I” for “immediate”)</p>
+<ul>
+<li><p>e.g. <code class="docutils literal notranslate"><span class="pre">MPI_Isend()</span></code> and <code class="docutils literal notranslate"><span class="pre">MPI_Irecv()</span></code>.</p></li>
+<li><p>The immediate variants return an <code class="docutils literal notranslate"><span class="pre">MPI_Request</span></code>, which must be waited on to complete the send or receive.</p>
+<ul>
+<li><p>Somewhat similar to <code class="docutils literal notranslate"><span class="pre">async/await</span></code> type programming</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">MPI_Request</span><span class="w"> </span><span class="o">*</span><span class="n">requests</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calloc</span><span class="p">(</span><span class="n">num_ranks</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">MPI_Request</span><span class="p">));</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">n_requests</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">dest_rank</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">dest_rank</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num_ranks</span><span class="p">;</span><span class="w"> </span><span class="n">dest_rank</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="p">[...]</span>
+<span class="w">  </span><span class="n">MPI_Isend</span><span class="p">(</span><span class="o">&amp;</span><span class="n">chunksize</span><span class="p">,</span><span class="w">    </span><span class="p">...,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">requests</span><span class="p">[</span><span class="n">n_requests</span><span class="o">++</span><span class="p">]);</span>
+<span class="w">  </span><span class="n">MPI_Isend</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">[</span><span class="n">dest_rank</span><span class="p">],</span><span class="w"> </span><span class="p">...,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">requests</span><span class="p">[</span><span class="n">n_requests</span><span class="o">++</span><span class="p">]);</span>
+<span class="w">  </span><span class="n">MPI_Isend</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="p">[</span><span class="n">dest_rank</span><span class="p">],</span><span class="w"> </span><span class="p">...,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">requests</span><span class="p">[</span><span class="n">n_requests</span><span class="o">++</span><span class="p">]);</span>
+<span class="p">}</span>
+<span class="n">MPI_Waitall</span><span class="p">(</span><span class="n">num_ranks</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">requests</span><span class="p">,</span><span class="w"> </span><span class="n">MPI_STATUSES_IGNORE</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><img alt="send-recv" src="../../_images/mpi-send-recv.png" /></p>
+</section>
+<section id="Neighbors">
+<h2>Neighbors<a class="headerlink" href="#Neighbors" title="Link to this heading">¶</a></h2>
+<p>A common pattern involves communicating with neighbors, often many times in sequence (such as each iteration or time step).</p>
+<p><img alt="Neighbor comm" src="../../_images/mpi-neighbor-grid.png" /></p>
+<p>This can be achieved with</p>
+<ul class="simple">
+<li><p>Point-to-point: <code class="docutils literal notranslate"><span class="pre">MPI_Isend</span></code>, <code class="docutils literal notranslate"><span class="pre">MPI_Irecv</span></code>, <code class="docutils literal notranslate"><span class="pre">MPI_Waitall</span></code></p></li>
+<li><p>Persistent: <code class="docutils literal notranslate"><span class="pre">MPI_Send_init</span></code> (once), <code class="docutils literal notranslate"><span class="pre">MPI_Startall</span></code>, <code class="docutils literal notranslate"><span class="pre">MPI_Waitall</span></code>.</p>
+<ul>
+<li><p>These are more efficient by keeping the information about the communication pattern stored, so it’s not needed to process anymore</p></li>
+<li><p>Possible it also allows for more efficient system buffer allocation too</p></li>
+</ul>
+</li>
+<li><p>Neighborhood collectives (need to create special communicator)</p>
+<ul>
+<li><p>Effectively inform MPI ahead of time the exact communication graph</p></li>
+</ul>
+</li>
+<li><p>One-sided (need to manage safety yourself)</p></li>
+</ul>
+<ul class="simple">
+<li><p>Point-to-point messaging is like the assembly of parallel computing</p>
+<ul>
+<li><p>It can be good for building libraries, but it’s a headache to use directly for most purposes</p></li>
+</ul>
+</li>
+<li><p>Better to use collectives when possible, or higher level libraries (e.g. <code class="docutils literal notranslate"><span class="pre">PetscSF</span></code>, my personal favorite)</p>
+<ul>
+<li><p>Some high level libraries (such as <code class="docutils literal notranslate"><span class="pre">PetscSF</span></code>) allow you to describe the communication generically and then implement it in any of the above ways</p></li>
+<li><p>Some MPI libraries and HPC systems work better with some versions of communication than others; it just depends</p></li>
+<li><p>Flexibility is key to optimize the performance</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Advice-from-Bill-Gropp-(father-of-MPI)">
+<h2>Advice from Bill Gropp (father of MPI)<a class="headerlink" href="#Advice-from-Bill-Gropp-(father-of-MPI)" title="Link to this heading">¶</a></h2>
+<blockquote>
+<div><p>You want to think about how you decompose your data structures, how you think about them globally. […] If you were building a house, you’d start with a set of blueprints that give you a picture of what the whole house looks like. You wouldn’t start with a bunch of tiles and say. “Well I’ll put this tile down on the ground, and then I’ll find a tile to go next to it.” But all too many people try to build their parallel programs by creating the smallest possible tiles and then trying to have
+the structure of their code emerge from the chaos of all these little pieces. You have to have an organizing principle if you’re going to survive making your code parallel. – <a class="reference external" href="https://www.rce-cast.com/Podcast/rce-28-mpich2.html">https://www.rce-cast.com/Podcast/rce-28-mpich2.html</a></p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Distributed-memory parallelism lives and dies by how you distribute the memory (duh)</p></li>
+<li><p>Often needs to be done at an architectural level</p>
+<ul>
+<li><p>Can’t really start piece-by-piece</p></li>
+<li><p>Difficult to take a shared memory code and make an <strong>optimal</strong> MPI/distributed memory program without significant modifications</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../20261022-Advanced_MPI.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">20261022 Advanced MPI</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="20261015-Intro_to_MPI.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">20261015 Intro to MPI</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, James Wright
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">20261020 MPI Intro Cont.</a><ul>
+<li><a class="reference internal" href="#How-to-libraries-implement-collectives">How to libraries implement collectives</a><ul>
+<li><a class="reference internal" href="#Reduce">Reduce</a></li>
+<li><a class="reference internal" href="#Scan">Scan</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Communicators">Communicators</a></li>
+<li><a class="reference internal" href="#Blocking-and-Non-blocking-Calls">Blocking and Non-blocking Calls</a></li>
+<li><a class="reference internal" href="#Neighbors">Neighbors</a></li>
+<li><a class="reference internal" href="#Advice-from-Bill-Gropp-(father-of-MPI)">Advice from Bill Gropp (father of MPI)</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    </body>
+</html>

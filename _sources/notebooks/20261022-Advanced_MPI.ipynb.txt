@@ -1,0 +1,603 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "3248df97-a5fd-424a-86e1-d3a21d0d3c60",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "# 20261022 Advanced MPI"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "79ac8d37-a9fc-49c7-881b-c5c56cbce420",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Communication and Computation overlap\n",
+    "\n",
+    "- Latency will kill the performance of a parallel program\n",
+    "- Try and \"hide\" the latency, so that it doesn't actually impact the end runtime"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4dbe17db-54a9-4201-8c9c-ad53411d5f34",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Given non-blocking communication, it would seem we should be able to overlap this quite easily!\n",
+    "\n",
+    "```c\n",
+    "/* Process 0 sends an d Process 1 recei ves */ \n",
+    "if ( rank == 0) { \n",
+    "MPI_Isend(outbuf, n, MPI_INT , 1, 0, comm , &request); \n",
+    "else if (rank == 1) { \n",
+    "MPI_Irecv(inbuf, n, MPI_INT , 0, 0, comm , &request); \n",
+    "}\n",
+    "// Do some computations here while waiting for the messages to be sent and recieved!\n",
+    "\n",
+    "// Need communication to be done\n",
+    "MPI_Wait(&request, MPI_STATUS_IGNORE); \n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b5a315f1-db38-4c90-98ad-e0ede49591d1",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "Alas, this overly simplies the reality"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "aba17771-69cb-4409-b35a-b32520f7d7c0",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- There is work to be done that isn't strictly waiting on communication\n",
+    "    - Rank has to active pack together the data for sending\n",
+    "    - Somebody (the rank's process or some thread) has to actually recieve the data and put it into the system buffer\n",
+    "    - (Possibly) a rank has a more active role in the communication process (e.g. Reduce, where we need may need to recieve, compute, and send data)\n",
+    "    - There are different models of interaction between the CPU and the NIC (Network Interface Card)\n",
+    "\n",
+    "![mpi send recieve](./intro-mpi/LLNL_MPI_send_recieve_diagram.gif)\n",
+    "\n",
+    "The overlap is never completely free and will never be perfect in the real world!"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0c086a69-a081-492e-84eb-686f341a32dd",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "![mpi overlap demo](../img/MPI_Overlap_none_vs_perfect_MDPI.png)\n",
+    "\n",
+    "*Figure from [Towards Efficient HPC: Exploring Overlap Strategies Using MPI Non-Blocking Communication](https://doi.org/10.3390/math13111848)*\n",
+    "\n",
+    "(a) is no overlap, (b) is real-world ideal (still have work done by rank to pack/unpack data)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "46af7df7-effb-43fc-b72a-3aff2374e623",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Overlap Progression\n",
+    "- There are different ways of how the overlap can be accomplished, known as progression strategies.\n",
+    "- They fall under two categories: weak progression and strong progression"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2261dd09-4838-4180-a989-5fb2dc524005",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Weak progression refers to the user code having to periodically give time for the MPI library to but-in during running\n",
+    "    - Often done by periodically calling `MPI_Test*()` or similar to allow MPI to process some messages\n",
+    "    - This is the worst kind\n",
+    "    - How often should you call `MPI_Test*()` to ensure adequate progression? Who knows! Just have to figure it out... Gross"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d2c0fa19-2e4a-4e6c-b358-5942051e154e",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "![mpi overlap weak progression](../img/MPI_Overlap_Weak_MDPI.png)\n",
+    "\n",
+    "*Figure from [Towards Efficient HPC: Exploring Overlap Strategies Using MPI Non-Blocking Communication](https://doi.org/10.3390/math13111848)*"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "649e994a-5c35-4ea5-9fd2-85ed1e313aa5",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Strong progression refers to some other mechanism for allowing the MPI library to handle communication transparently without allowing the user code to be impacted\n",
+    "    - Can be done by spawning an extra thread to handle the communication\n",
+    "        - Possibly using SMT functionality in a compute node\n",
+    "    - Or designating a core to handle all the communications of a set of ranks\n",
+    "    - Or, ideally, offloading the work to a speciallized NIC card\n",
+    "        - This is where HPC system MPI libraries come in handy; they'll try and utilize these features automagically"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "62f9968b-6b45-4bbc-93ba-a47928a14262",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "These are particularly significant issues for non-blocking collective operations\n",
+    "- Collective operations are often implemented with more complex communication patterns which require participation from all ranks\n",
+    "    - For example, the binary tree Reduction from the previous lecture\n",
+    "- These more complex patterns will require active work done by the particpating ranks\n",
+    "    - i.e. it's not a \"send and forget\" participation"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dcc63d06-819e-4480-881e-bffe82161cb1",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "How to handle this weak/strong progression is still an active area of work.\n",
+    "See [MPI Progress For All](https://ieeexplore.ieee.org/document/10820808) as an example, presented as SC24."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f965c166-5e33-46c4-b5c3-5b211d56c27f",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "## One-Sided MPI\n",
+    "\n",
+    "- What if we didn't need a \"hand shake\" for every communication?\n",
+    "- What if we could simply \"put\" and \"get\" data in another rank's memory, like it was shared memory?"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2f8ad9f2-6e7b-4d9a-9b55-1630c145bb5d",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Rank's create \"windows\" that serve as \"public\" memory accessible by other ranks\n",
+    "    - Window is simply a buffer of memory somewhere\n",
+    "    - The program provides the buffer to be used\n",
+    "    - Window is created across all ranks which will participate\n",
+    "- A rank can `MPI_Put()` and `MPI_Get()` to other rank's windows\n",
+    "    - Must be coordination between ranks on who gets to put data in which area of window"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4d35b83c-6dca-486e-98c9-bac8a20dce9d",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "![MPI Put](../img/MPI_Put_ENCCS.svg)\n",
+    "\n",
+    "![MPI Get](../img/MPI_Get_ENCCS.svg)\n",
+    "\n",
+    "*From [ENCCS MPI Tutorial](https://enccs.github.io/intermediate-mpi/one-sided-concepts/)*"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2da3fcd9-4530-463e-89e1-8b3cda3613d0",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Synchronization\n",
+    "\n",
+    "One-sided communication runs into a pretty similar issue as shared memory: **How do we know when we can safely read or write to shared/public memory?**\n",
+    "- In other words, how do we guarantee correct ordering of the memory access?\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1aa83746-7b65-4f19-a86b-f1d433ac54f6",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- One-sided MPI requires syncronization to accomplish this\n",
+    "    - No such thing as free lunch, we'll still have to pay a bit to get our parallelization\n",
+    "- In MPI documentation, these synchronizations separate Epochs; times where windows may or may not be written to\n",
+    "\n",
+    "![MPI Sync](../img/MPI_One-Sided_Sync_ENCCS.svg)\n",
+    "- Green squiggles represent local computation\n",
+    "- Synchronizations required for 2-sided communication of windowed data as well (e.g. collectives)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a185a8bf-a48d-4669-a16d-d144feae283d",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- One-sided MPI has a few different syncronization options\n",
+    "    - `MPI_Win_fence()`: Collective operation, effectively an `MPI_Barrier()`\n",
+    "        - Every single rank with shared window synchronizes\n",
+    "    - `MPI_Win_post()`, `MPI_Win_start()`, `MPI_Win_complete()`, `MPI_Win_wait()`: collective operation, more precise (not a blunt barrier)\n",
+    "        - Allows you to differentiate between \"my window is ready to be read from\" and \"I'm accessing somebody else's window\"\n",
+    "        - Specify exactly which ranks you need to syncronize with\n",
+    "    - `MPI_Win_lock()`, `MPI_Win_unlock()`: non-collective operation, most efficient\n",
+    "        - Target buffer not involved in syncronization at all\n",
+    "        - This is NOT a lock/mutex/atomic on a remote memory region\n",
+    "            - Similar functionality by specifying the lock as `MPI_LOCK_EXCLUSIVE`\n",
+    "        - It applies to remote access only, not to the local window buffer"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e2f98af1-cba1-4a6c-b9b6-143a0eb28306",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "One-sided equivalent of the earlier non-blocking example\n",
+    "```c\n",
+    "if (rank == 0) \n",
+    "  MPI_Win_create(MPI_BOTTOM, 0, sizeof(int), MPI_INFO_NULL, comm, &win); \n",
+    "else if (rank == 1) \n",
+    "  MPI_Win_create(inbuf, n * sizeof(int), sizeof(int), MPI_INFO_NULL, comm, &win) \n",
+    "\n",
+    "MPI_Win_fence(O, win) ; \n",
+    "if (rank == 0) \n",
+    "  MPI_Put(outbuf, n, MPI_INT, 1, 0, n, MPI_INT, win); \n",
+    "// Do some computations here while waiting for the messages to be sent and recieved!\n",
+    "\n",
+    "// Need communication to be done\n",
+    "MPI_Win_fence(O, win); \n",
+    "MPI_Win_free(&win); \n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c0a9b11d-2594-4120-b804-e25c8bb8a976",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "raw_mimetype": "",
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### One-sided benefits\n",
+    "\n",
+    "- Even more fine-grain control over communication and syncronization\n",
+    "    - Allows for very specific optimizations\n",
+    "- More natural expression of communication-computation overlap\n",
+    "    - Communications occur alongside computations with little distinguishing\n",
+    "- Possibility of better communication-computation overlap, less progression issues\n",
+    "    - Particularly with `MPI_Win_lock()`, e.g. one-sided synchronization"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8d1f7717-0b8f-4e34-8019-6eaa134daa5b",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### RDMA vs RMA\n",
+    "- What we've described above uses remote memory access (RMA) semantics \n",
+    "    - The CPU (be it the target rank or a dedicated process that MPI created) still handles the communication of memory to the NIC\n",
+    "- This is better than 2-sided communication, but still not perfect\n",
+    "    - We still have the overhead of handling the communication"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "73e8ba9d-847d-4fe7-a64b-a2f52f5e5e2d",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "Luckily, technology is cool.\n",
+    "- Most modern networking solutions (for HPC, e.g. Infiniband) have remote *direct* memory access (RDMA) capability\n",
+    "- They can read straight from physical memory, bypassing the CPU entirely\n",
+    "    - Includes atomic memory operations and doing some collective operations in hardware rather than software\n",
+    "- This means one-sided reads are \"free\"\n",
+    "    - The NIC still has to process network requests, grab the data from memory, package it, and send it\n",
+    "    - But the CPU doesn't have to do a thing!\n",
+    "- RDMA is the ideal communication-computation overlap, as half the communication is completely independent of the MPI process"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ebcb50c9-dcbe-49b8-9c39-1321714fad3e",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- [Bill Gropp Slides](https://wgropp.cs.illinois.edu/courses/cs598-s16/lectures/lecture34.pdf)\n",
+    "- *Using Advanced MPI: Modern Features of the Message-Passing Interface* textbook"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "12f71e7b-b27c-4fdb-a46e-fc0b9fbfb0a4",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "## MPI+OpenMP (or MPI+Threads in general)\n",
+    "\n",
+    "- General idea is one MPI rank for each compute node (e.g. per shared memory region) and OpenMP threads for every core within that rank\n",
+    "- Memory distributed inter-node, but shared intra-node\n",
+    "- This way, we avoid the performance implications of distributed memory parallelism when on shared-memory systems!"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7b3c6dee-b112-4498-83ec-f5040fe142fc",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Sounds great, but isn't the full story"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ed8b6d2a-2f78-4f41-b68d-ef1bf4e4dbb9",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Message passing between ranks on same node sounds expensive, but it's not\n",
+    "    - MPI libraries are smart\n",
+    "    - Most MPI libraries will detect if ranks are colocated on the same rank and not use networking communication, but will (often) implement a local data copy"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4c58047a-3d33-4df2-8cb4-fca258f4c440",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Shared memory is conceptually simple, but **is still parallel programming**\n",
+    "    - Shared memory still requires synchronizations and locks to maintain ordering\n",
+    "    - Shared memory models often hide these issues, leading to many potential performance traps\n",
+    "    - Even more shared issues comes from cache coherency and false sharing\n",
+    "    - In fact, to get away from these issues, we often want there to be as little \"shared memory\" between threads as possible"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a7f9f98a-f153-4bb6-9a01-242df1332742",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Alternatives\n",
+    "- Good OpenMP code looks like normal MPI code\n",
+    "    - Every thread has it's own working memory\n",
+    "    - Data is passed to it in choreographed/synchronized patterns\n",
+    "    - Synchronization between threads it kept to the absolute minimum"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "238f0a80-6fa8-4e36-918f-dd0d5e1d4912",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "- We can implement shared memory using MPI\n",
+    "  - Create a MPI_Comm based on the shared memory ranks\n",
+    "  - Can create windows based on that comm (same one-sided communication windows as we mentioned before)\n",
+    "  - See [Gropp Slides](https://cse.buffalo.edu/~knepley/presentations/SIAMPP2016_4.pdf), slide 13 specifically"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dd8bd14c-f8bd-4746-a5be-2d5de546037e",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Entire [minisymposium](https://cse.buffalo.edu/~knepley/relacs.html#workshop-siam-pp-2016) discussing the merits (or lack there of) of hybrid programming in this way."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.14.8"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
