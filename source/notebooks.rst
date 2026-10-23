@@ -21,3 +21,5 @@ Introduction
    notebooks/20260929_Parallel_Hardware.ipynb
    notebooks/20261006-Distributed_Memory_Parallelism.ipynb
    notebooks/intro-mpi/20261015-Intro_to_MPI.ipynb
+   notebooks/intro-mpi/20261020-MPI_Continued.ipynb
+   notebooks/20261022-Advanced_MPI.ipynb
