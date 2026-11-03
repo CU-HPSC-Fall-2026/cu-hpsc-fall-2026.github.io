@@ -23,3 +23,5 @@ Introduction
    notebooks/intro-mpi/20261015-Intro_to_MPI.ipynb
    notebooks/intro-mpi/20261020-MPI_Continued.ipynb
    notebooks/20261022-Advanced_MPI.ipynb
+   notebooks/20261029-Linear_Algebra.ipynb
+   notebooks/20261103-Intro_to_Accelerators.ipynb

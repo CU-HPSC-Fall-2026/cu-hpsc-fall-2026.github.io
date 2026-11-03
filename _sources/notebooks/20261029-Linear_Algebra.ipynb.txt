@@ -1,0 +1,800 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "bcc32393-51cc-40f6-ab6c-a66e1e6c8b62",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "# 20261029 - Linear Algebra"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ea8fd17e-ec00-4c23-83b4-70a81e5c6749",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "- As we've seen, executing even basic mathematical operations at max performance on hardware is *hard*\n",
+    "\t- Many different moving parts\n",
+    "        - Cache sizes, vector instruction widths, memory access patterns, instruction level-parallelism\n",
+    "\t- Plenty of \"gotchas\"\n",
+    "        - Cache coherency, cache thrashing, uncooperative compilers\n",
+    "- Luckily, there is a lot of overlap between the work that scientific codes do.\n",
+    "- Today, we'll talk about the most fundamental building blocks that you can do: Linear Algebra\n",
+    "\t- and specifically how you should nearly always use a library to handle them."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e042a38d-2554-41c9-8742-6e3377901b87",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "## BLAS (Basic Linear Algebra Subprograms)\n",
+    "- Originally released in the late 70s as a Fortran library\n",
+    "- Available through the legendary [netlib website](https://netlib.org/)\n",
+    "- BLAS is what powers many of the most popular \"array\" libraries out there\n",
+    "    - Julia has BLAS built right into the language\n",
+    "    - Numpy makes [heavy usage of BLAS](https://numpy.org/doc/stable/building/blas_lapack.html) in the backend"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "2eb3cd9e-fca7-4ad2-bcf4-c59279f5a8a7",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Build Dependencies:\n",
+      "  blas:\n",
+      "    detection method: pkgconfig\n",
+      "    found: true\n",
+      "    include directory: /opt/_internal/cpython-3.14.3/lib/python3.14/site-packages/scipy_openblas64/include\n",
+      "    lib directory: /opt/_internal/cpython-3.14.3/lib/python3.14/site-packages/scipy_openblas64/lib\n",
+      "    name: scipy-openblas\n",
+      "    openblas configuration: OpenBLAS 0.3.33.112.0  USE64BITINT DYNAMIC_ARCH NO_AFFINITY\n",
+      "      Haswell MAX_THREADS=64\n",
+      "    pc file directory: /project/.openblas\n",
+      "    version: 0.3.33.112.0\n",
+      "  lapack:\n",
+      "    detection method: pkgconfig\n",
+      "    found: true\n",
+      "    include directory: /opt/_internal/cpython-3.14.3/lib/python3.14/site-packages/scipy_openblas64/include\n",
+      "    lib directory: /opt/_internal/cpython-3.14.3/lib/python3.14/site-packages/scipy_openblas64/lib\n",
+      "    name: scipy-openblas\n",
+      "    openblas configuration: OpenBLAS 0.3.33.112.0  USE64BITINT DYNAMIC_ARCH NO_AFFINITY\n",
+      "      Haswell MAX_THREADS=64\n",
+      "    pc file directory: /project/.openblas\n",
+      "    version: 0.3.33.112.0\n",
+      "Compilers:\n",
+      "  c:\n",
+      "    commands: cc\n",
+      "    linker: ld.bfd\n",
+      "    name: gcc\n",
+      "    version: 14.2.1\n",
+      "  c++:\n",
+      "    commands: c++\n",
+      "    linker: ld.bfd\n",
+      "    name: gcc\n",
+      "    version: 14.2.1\n",
+      "  cython:\n",
+      "    commands: cython\n",
+      "    linker: cython\n",
+      "    name: cython\n",
+      "    version: 3.2.8\n",
+      "Machine Information:\n",
+      "  build:\n",
+      "    cpu: x86_64\n",
+      "    endian: little\n",
+      "    family: x86_64\n",
+      "    system: linux\n",
+      "  host:\n",
+      "    cpu: x86_64\n",
+      "    endian: little\n",
+      "    family: x86_64\n",
+      "    system: linux\n",
+      "Python Information:\n",
+      "  path: /tmp/build-env-phs97gf4/bin/python\n",
+      "  version: '3.14'\n",
+      "SIMD Extensions:\n",
+      "  baseline:\n",
+      "  - X86_V2\n",
+      "  found:\n",
+      "  - X86_V3\n",
+      "  - X86_V4\n",
+      "  - AVX512_ICL\n",
+      "  not found:\n",
+      "  - AVX512_SPR\n",
+      "\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "'2.5.1'"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import numpy as np\n",
+    "np.__config__.show()\n",
+    "np.__version__"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "95eb178e-252b-41ad-8f89-c155a6068e95",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Basic functionality on [3 levels](https://netlib.org/blas/index.html#_reference_blas_now_part_of_lapack_release)\n",
+    "    - Level 1: Vector Operations\n",
+    "        - Dot product, scaled vector addition\n",
+    "    - Level 2: Generalized Matrx-Vector (gemv)\n",
+    "    - Level 3: Generalized Matrix-Matrix (gemm)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ea846435-a5c6-48b4-83b3-a597a57d6ce5",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "- The naming of the operations in this library have (in some cases) become universal\n",
+    "    - Notably, `AXPY` to denote $\\mathbf{y} = \\alpha \\mathbf{x} + \\mathbf{y}, \\quad \\alpha \\in \\mathbb{F} \\text{ and } \\mathbf{x}, \\mathbf{y} \\in \\mathbb{F}^n$"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c3ac4343-66f1-492c-83ab-2449ecc976e9",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Many Implementations\n",
+    "    - Many add multi-threaded functionality\n",
+    "    - Some have extra functions beyond the BLAS standard\n",
+    "    - May have different numerical precision options available\n",
+    "   "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "902544b9-6871-4cb8-9dfa-534fd82c1cef",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Examples:\n",
+    "    - [BLIS](https://github.com/flame/blis)\n",
+    "        - Portable, high performance library built on micro-kernels (we'll talk about that in a bit)\n",
+    "    - [Intel MKL](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl.html) (Math Kernel Library)\n",
+    "        - Intel-specialized BLAS-like library\n",
+    "    - [cuBLAS](https://developer.nvidia.com/cublas)\n",
+    "        - BLAS, but for NVIDIA GPUs and CUDA\n",
+    "    - [libXSMM](https://libxsmm.readthedocs.io/en/latest/)\n",
+    "        - Specializes in matrix-matrix multiplication\n",
+    "        - Uses compiler-independent Just-in-Time compilation to create custom kernels depending on the matrix size"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "292dcd72-b536-483a-9197-334788e2c252",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### BLIS microkernels\n",
+    "\n",
+    "![BLIS cache](../img/blis-cache.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6a1d04dd-9654-4d1b-a796-3896065e1669",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "![BLIS gemm kernel](../img/blis-gemm-kernels.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ea941da5-dedb-4588-9025-e269cb78e22f",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "## LAPACK (Linear Algebra Package)\n",
+    "- Above the normal matrix operations are\n",
+    "- But there are other common matrix algebra operations that are quite common as well\n",
+    "    - Solving linear system of equations, $\\mathbf{Ax} = \\mathbf{y}$\n",
+    "    - Eigenvalue or singular value decompositions\n",
+    "    - Matrix factorizations (LU, QR, Choelsky)\n",
+    "These are often grouped together in LAPACK"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f95acf27-3a1e-4d66-bded-dd21bf5e3cd8",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Similar origin story as BLAS\n",
+    "    - Descended in University of Tennessee\n",
+    "    - Hosted on netlib\n",
+    "    - Originally in Fortran\n",
+    "    - Many libraries implementing similar functionality often use the same function [naming scheme](https://en.wikipedia.org/wiki/LAPACK#Naming_scheme)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "04cac599-f36a-40ec-b77c-ebd084256def",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- In a similar vein, many other implementations (or sub implementations) have been released\n",
+    "    - [LAPACK](https://netlib.org/lapack/)\n",
+    "        - The original Fortran, still available\n",
+    "    - [MAGMA](https://icl.utk.edu/magma/) (Matrix Algebra on GPU and Multicore Architectures)\n",
+    "    \t- heterogenous (CPU and GPU together) BLAS/LAPACK\n",
+    "    - [Kokkos-Kernels](https://kokkos.org/kokkos-kernels/docs/)\n",
+    "        - Portable LAPACK/BLAS kernels written in Kokkos (GPU-capable programming model)\n",
+    "    - [Eigen](https://libeigen.gitlab.io/)\n",
+    "        - Standard C++ matrix-algebra library (equivalent to `numpy` for Python, but not as universal)\n",
+    "    - Many of the above mentioned \"BLAS\" libraries also implement some LAPACK functionality"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f1eda0d8-567b-45d9-ae86-9786fcc59de0",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Dense vs Sparse Matrix\n",
+    "- Vectors (nearly) always treated as dense\n",
+    "    - Perhaps banded, but underlying data structure is contiguous\n",
+    "- Many/most scientific matrices are sparse\n",
+    "    - Contain many, many more zeros than they do\n",
+    "    - Exact definition of \"sparse\" is ambiguous, but at least 99% zero elements\n",
+    "- Dense matrices exist in scientific computing, but are usually much smaller than the problem size"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a008f4e2-5bf6-40c4-b492-48ce59847a35",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Aside: Nomenclature\n",
+    "- There are two different concepts when we talk about dense and sparse matrices\n",
+    "1. The character of the matrix entries (e.g. how many non-zero values are there)\n",
+    "2. The format a matrix is stored in a computer\n",
+    "\n",
+    "It is possible to store a sparse matrix (in character) using a dense matrix format."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "859d6a8e-879e-4c30-8931-a81131a2fd5c",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Dense Matrix Storage\n",
+    "- Easiest way to store a matrix is as a dense, contiguous array of memory\n",
+    "- C standard is row-major ordering (list of lists), while Fortran standard is column-major ordering\n",
+    "    - Performance implications for either choice, one is not worse than the other\n",
+    "    - Row-major ordering is more popular"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6d6bebf4-cb5a-4524-bb20-68cd264e8256",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "![wiki row-major](https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/Row_and_column_major_order.svg/960px-Row_and_column_major_order.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b56efc40-67a4-48ac-9f73-2ec4c14076aa",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "Algorithm for densely stored matrix:\n",
+    "\n",
+    "```c\n",
+    "aptr = 0;\n",
+    "for (row=0; row<nrows; row++) {\n",
+    "  s = 0;\n",
+    "  for (col=0; col<ncols; col++) {\n",
+    "    s += a[aptr] * x[col];\n",
+    "    aptr++;\n",
+    "  }\n",
+    "  y[row] = s;\n",
+    "}\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "903d1a81-97fe-4af3-a579-92a0b3e2423f",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "- If `a` is mostly zeros, then we do a lot of work for nothing\n",
+    "- Additionally, `a` is wasting space in general"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "36d65622-f12e-4d0b-8e1a-741ee2d26c48",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Sparse Matrix Storage\n",
+    "- We have two primary concerns\n",
+    "    - Space savings\n",
+    "    - Computational efficiency\n",
+    "- If we only cared about space savings, this becomes a pure data-compression problem\n",
+    "- We really want to handle both"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f1428421-44d1-4ac2-af6a-88299ec336b4",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "General idea:\n",
+    "![image](../img/sparse_matrix_diagram_ArtOfHPC.png)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "ccf90594-68cd-4f49-99f1-ce7c8945fb4a",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "%matplotlib inline\n",
+    "import scipy as sp\n",
+    "import scipy.sparse as sparse\n",
+    "import scipy.sparse.linalg as sla"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "26b2d8ba-62a7-4096-af2b-38cead08dc46",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Coordinate format (COO)\n",
+    "- By far the simplest, not always the best\n",
+    "- Store the following triple for each non-zero entry: `value, row, column`\n",
+    "    - `value` is the actual matrix entry value\n",
+    "    - `row` and `column` denote the location (coordinate) where the value should go"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "487b9f9a-337b-42ee-bae3-e20f1b76268b",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[1, 0, 0],\n",
+       "       [0, 1, 0],\n",
+       "       [0, 0, 1]])"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "row  = [0,2,1]\n",
+    "col  = [0,2,1]\n",
+    "val  = [1,1,1]\n",
+    "\n",
+    "S = sparse.coo_matrix((val, (row,col)), shape=(3,3))\n",
+    "S.toarray()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "486ae3e7-a2c7-456a-b8ca-194f253e5425",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "Easy to add on new values"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "f5b0773c-564e-47ce-9926-22acdc9e9c44",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": ""
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[1, 0, 0],\n",
+       "       [0, 1, 0],\n",
+       "       [2, 0, 1]])"
+      ]
+     },
+     "execution_count": 15,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "row  = [0,1,2,2]\n",
+    "col  = [0,1,2,0]\n",
+    "val  = [1,1,1,2]\n",
+    "\n",
+    "S = sparse.coo_matrix((val, (row,col)), shape=(3,3))\n",
+    "S.toarray()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d8a6fd39-8aab-4739-b4f4-b169a5337252",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "Visualize the sparsity pattern using `spy`:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "1c558e53-5d7d-4329-b760-ae32dc3008b3",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": ""
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "image/png": "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BrqwbXRTNUa6e/o0RoZr2+imHk8Ea4+364cubN+6uR7ct9vnwcAKBAa6tH3rZqGAFThFBkCEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQMdLvAdaTk7Nna+bM8x2vt210U23fujkwEdALntvdEZgeOTl7tq77xtFqLyx2vG5jZLge3Lf7vP5BhLXKc7t7XZ0iO336dE1PT9fiYuff8PVq5szzXf0AVlW1Fxa7+t8RkOe53b2OAvP973+/3vjGN9bll19eV199dY2Pj9fhw4dTswEwwDoKzG9/+9u699576/Tp03Xy5Mn6whe+UDfffHNNTU2l5gNgQHUUmDvuuKMmJyeX73/uc5+rqqqHH364t1MBMPD+p5cp/+53v6u///3v9ZrXvKZX8wCwTnT9KrJ2u1233nprXXXVVfWud71rxce12+3l+61Wq9tNAjBAujqCWVhYqI985CN1+vTpuvvuu2vDhg0v+dgDBw5Us9lcvk1MTHQ9LACDo+PALCws1Ec/+tH69a9/XQ899FCNj4+v+Pj9+/fX3Nzc8m16errrYQEYHB2dIltYWKiPfexj9ctf/rKOHj1ar33ta//rOo1GoxqNRrfzATCgOgrMJz7xibrvvvvq0KFDNTs7W8eOHauqqosuuqguuuiixHwADKiOAnP8+PHasWNH3X777ecsv+222+q2227r5VwADLiOAvPoo4+m5gBgnfF2/QBECEyPbBvdVI2R7r6djZHh2ja6qccTAb3gud29oaWlpaXV3GCr1apms1lzc3M1Nja2mpuO85kRsD55bv+/Tn6H+zyYHtq+dfO6+2ECPLe75RQZABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0CEwAAQITAARAgMABECA0DEyGpvcGlpqaqqWq3Wam8agP/Ri7+7X/xdvpJVD8z8/HxVVU1MTKz2pgHokfn5+Wo2mys+Zmjp5WSohxYXF+vUqVO1ZcuWGhoaWs1N902r1aqJiYmanp6usbGxfo9DmP19/jgf9/XS0lLNz8/XxRdfXMPDK19lWfUjmOHh4RofH1/tza4JY2Nj580PIfb3+eR829f/7cjlRS7yAxAhMABECMwqaDQa9ZWvfKUajUa/R2EV2N/nD/t6Zat+kR+A84MjGAAiBAaACIEBIEJgAIgQGAAiBAaACIEBIEJgAIj4P88TSOd7fAUnAAAAAElFTkSuQmCC",
+      "text/plain": [
+       "<Figure size 640x480 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "plt.spy(S)\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4a46c90d-a1b2-40c7-af13-9e6cbfa96688",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "Pros and cons of coordinate sparse format\n",
+    "- Pro:\n",
+    "    - Coordinate format is incredibly flexible, doesn't require any knowledge of the sparsity pattern of the matrix\n",
+    "- Con:\n",
+    "    - Poor computational efficiency (data can be located anywhere, no hope or guarantee of cache locality or vectorization)\n",
+    "    - Poor storage efficiency (if I have many values in a compact space, I still need 3 values for each of them)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "88a0a4cb-737b-40f7-96b0-6a6c37f02014",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Compressed Sparse Row (CSR)\n",
+    "\n",
+    "- Store contiguous rows of the data, and provide coordinate for where they need to go \n",
+    "    - Can also do contiguous columns of data, called CSC\n",
+    "\n",
+    "![CSR](../img/Illustration-of-the-CSR-storage-format.png)\n",
+    "\n",
+    "*From [here](https://www.researchgate.net/figure/Illustration-of-the-CSR-storage-format_fig4_381005380)*\n",
+    "\n",
+    "- Contiguous rows allows for best cache locality in matrix-vector product\n",
+    "    - CSC best for matrix-transpose-vector product"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "0e8bf588-6438-4169-9378-2f6d7c1db131",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[1, 0, 2],\n",
+       "       [3, 1, 0],\n",
+       "       [0, 0, 1]])"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ptr = [0,2,4,5]\n",
+    "col = [0,2,0,1,2]\n",
+    "val = [1,2,3,1,1]\n",
+    "\n",
+    "S = sparse.csr_matrix((val, col, ptr), shape=(3,3))\n",
+    "S.toarray()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "88f836f4-074a-402e-89ac-4b42fb8c3372",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "Matrix-Vector product using a sparse matrix representation\n",
+    "\n",
+    "```c\n",
+    "aptr = 0;\n",
+    "for (row=0; row<nrows; row++) {\n",
+    "  s = 0;\n",
+    "  for (icol=ptr[row]; icol<ptr[row+1]; icol++) {\n",
+    "    int col = ind[icol];\n",
+    "    s += a[aptr] * x[col];\n",
+    "    aptr++;\n",
+    "  }\n",
+    "  y[row] = s;\n",
+    "}\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "30fa9ccb-a9ba-46f5-b641-1f45969e2b1c",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "- We have non-uniform memory access\n",
+    "    - Potentially poor cache locality\n",
+    "    - Really difficult/impossible to vectorize"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.14.8"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

@@ -1,0 +1,553 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "af3d2f46-fd5a-4311-8dc4-d82200edef0e",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "# 20261103 - Intro to Accelerators (e.g. GPUs)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8282877d-f799-46d5-a981-1eebf089d68e",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Computing Hardware Manufacturing Background\n",
+    "\n",
+    "- Lots of constraints go into making of silicon integrated circuits\n",
+    "- Biggest amongst them is area\n",
+    "    - Silicon fabrication companies (\"fabs\") charge by the wafer\n",
+    "    - Wafer has set size\n",
+    "    - Manufacturing can only fit so many chips onto a single wafer"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "52b29095-9314-4c85-8f98-422a0f48fe8d",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Can't \"just have more ____\"\n",
+    "    - Adding to one takes away from something else\n",
+    "    - Chiplet/multi-die design alleviates this somewhat, but you will then run into physics (speed of light latency)\n",
+    "   "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7c43c806-2b65-4f44-a312-4300a914c31b",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Not all CPU components take up the same space\n",
+    "    - A single logic transitor uses at least 2 actual transistors (e.g. a CMOS)\n",
+    "    - A single bit of SRAM (used for cache) requires 4-10 transistors\n",
+    "    - Additionally, SRAM can't use as small of transistors as logic\n",
+    "        - Put simply, SRAM needs to *stably* store energy, while logic simply needs to switch\n",
+    "- Thus, its not even a one-for-one trade between logic vs cache"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8e2e5135-0b70-4a96-86f0-efef5c90e694",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "Modern CPUs have:\n",
+    "- Cache hierarchies\n",
+    "- Pipelining and multiple issue\n",
+    "- Branch predicition\n",
+    "- Super-scalar architectures (multiple execution units)\n",
+    "- Out-of-order execution"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "151ca348-b9a6-42f9-9fea-61f745bb6fa2",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "Their \"die budget\" is broken down like\n",
+    "\n",
+    "| Item | Die Area (%) |\n",
+    "| --- | --- |\n",
+    "| L3 Cache | 18.8 |\n",
+    "| L2 Cache | 6.17 |\n",
+    "| L1 Cache | 1.44 |\n",
+    "| ALU (integer and floating point) | 2.82 |\n",
+    "| Load/Store | 2.46 |\n",
+    "| Execution control logic | 7.26 |\n",
+    "| Misc Connection logic | 15.94 |\n",
+    "| Misc I/O handling | 46.8 |"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5cb7191a-f23d-41cb-b045-9a12e0b814cd",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "**Why do we put so little in ALU and so much in everything else?**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ae7b4074-814a-4b75-a0aa-763758efb237",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "Because CPUs are designed for complicated logic execution, with many unknowns\n",
+    "- We don't know what memory we need next, so we need caches\n",
+    "- We don't know what instructions are coming up, so we need pipelining and branch prediction\n",
+    "- We don't know what kind of instructions we'll run, so we need lots of different execution units"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "05fb9945-092b-4150-898a-2833b72ec225",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "**But what if we did know and could specialize?**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bfa06ab1-6570-4a19-89b1-86108d2c2561",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "## CPU-Accelerator Offloading\n",
+    "\n",
+    "- We still want to run complicated, poorly predicted workloads well\n",
+    "    - e.g. we still want flexibility in our compute\n",
+    "- But there are many operations that are *very* predictable\n",
+    "- So predictable, that they can be run with an entirely different hardware design\n",
+    "- What if we just had a dedicated hardware chip handle the super predictable work?"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c56051d7-534f-418b-9b4b-c5521e8c0b7d",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "The idea:\n",
+    "- CPU is still the \"master\" device\n",
+    "    - It dictates who does what\n",
+    "- The CPU offloads tasks to the accelerator\n",
+    "- The accelerator communicates results back to CPU"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "235144f4-749c-4382-906a-675752400182",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Examples\n",
+    "- GPUs (duh)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "893b1018-af13-4737-a707-458e0cf8ba09",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Network Interface Cards\n",
+    "    - Beyond the analog to digital hardware, CPUs *could* perform the exact same function\n",
+    "    - But a dedicated NIC is significantly more efficient\n",
+    "- Sound cards\n",
+    "    - CPUs *could* do all of the digital signal processing necessary\n",
+    "    - But dedciated sound cards are *way* more efficient at it\n",
+    "    - A cheap $20 external sound card can easily outperform a much more expensive CPU (and GPU for that matter)\n",
+    "- (Sometime in the future) Quantum Computing\n",
+    "    - Modern computers can simulate quantum systems\n",
+    "    - Actual quantum systems are much more efficient"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f2f25ad8-b209-40f3-bd49-1429aeb9676d",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Devil in the details\n",
+    "\n",
+    "- Sounds ideal! Let everyone do what their best at!\n",
+    "- But reality (and physics) can ruin things"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "97faac59-7e70-4ce2-8968-6052a0da4471",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Latency: How long will it take for CPU to get results back?\n",
+    "    - Does that latency outweigh the performance gains?"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bfd308b6-ed48-4eb5-b22a-5f948645b5e6",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Code complexity: How easy is it to offload tasks to accelerator?\n",
+    "    - Can I just tell the accelerator \"run this CPU task\"?\n",
+    "    - Do I need to translate the task into a form that the accelerator can work with?\n",
+    "        - Just a new language?\n",
+    "        - Or do I need an entirely new algorithm?"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a2101b0d-cd29-479f-a5d7-a77f5674c5ff",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Complexities of the accelerator itself\n",
+    "    - How much work can it take?\n",
+    "    - Does it have enough memory to hold the entire problem?\n",
+    "    - How often does it need the CPU to intervene?"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e1a893e5-d8db-412a-b045-44197811469f",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Why not just tweak the CPU?\n",
+    "\n",
+    "We have a spectrum of maximally flexible (CPU) to maximally performant (accelerator/ASIC).\n",
+    "\n",
+    "**Why not have something in the middle?**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c227c68e-33dd-4228-a049-4cff8da1ccf9",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "Short answer: economics\n",
+    "- A much larger market working in the extremes\n",
+    "    - Need flexibility? Get the best, most flexible thing out there\n",
+    "    - Need max performance? Get the best performing hardware\n",
+    "- You can get something \"kinda\" in between by just having the CPU+accelerator offloading system"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "620bf5f2-abd0-405e-a252-138f9bc8b671",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "#### Noteworthy Exceptions\n",
+    "**Mainframes**\n",
+    "- These are (IBM) machines which are built for max uptime, but for very specific workloads (namely real-time financial processing)\n",
+    "- They're still flexibly programmable, but with bespoke OS, compilers, and architecture (IBM's Z architecture)\n",
+    "    - Though the latest IBM mainframes can [run ARM and Z instructions on the same CPU](https://newsroom.ibm.com/2026-08-24-ibm-unveils-next-generation-dual-architecture-processor-for-ibm-z-and-linuxone)\n",
+    "   "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7a45a48d-6434-4b14-9730-4c8479d567b2",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "**ARM CPUs (e.g. the future ideal for scientific workloads IMO)**\n",
+    "- ARM is a licensed instruction set architecture\n",
+    "- Also provides pre-designed core designs\n",
+    "- Allows for gluing together custom designed chips to orient towards specific workloads\n",
+    "- This powers the fastest machine in the world\n",
+    "    - LineShine (China) is an ARM based machine\n",
+    "    - Fugaku (Japan), previous #1, also ARM based machine\n",
+    "    - Both use custom ARM chips with more die area towards vector instructions\n",
+    "- Fugaku chip has a heterogenous CPU architecture\n",
+    "    - Has 48 vector-heavy CPU cores, and 2 \"assistant\" cores for handling overhead\n",
+    "    "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "add88979-2926-4525-baac-1568df510c80",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Caution When Comparing Hardware\n",
+    "\n",
+    "- Comparing \"speed\" and \"performance\" between different hardware is hard\n",
+    "- You can't just say \"I went 20x faster on GPUs\"\n",
+    "    - This is a non-sense statement without further context\n",
+    "    - Equivalent of saying \"I was 20x faster on a train than driving\"\n",
+    "        - Driving what? Around where? How far? What train were you on?"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9f8967c9-af6b-4b30-84d2-998b5a8f7c9f",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "**Need to constrain some factors before doing a comparison**\n",
+    "- General comparison\n",
+    "    - Performance per watt\n",
+    "    - Performance per $\n",
+    "- Situational comparison\n",
+    "    - Performance per node\n",
+    "    - Performance per throughput on Supercomputing machine\n",
+    "        - More nodes maybe faster, but wait longer in queue\n",
+    "        - Especially true if GPU/accelerators are limited\n",
+    "    - Performance per allocation cost metric\n",
+    "        - Supercomputer allocation costs don't necessarily line up with hardware or energy cost"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c352f879-0936-48f9-b4f0-95b6424a9800",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Still not always a fair race (depending on your comparison goal)\n",
+    "- We've shown memory bandwidth can be a hugebottle neck\n",
+    "- GPUs always have on package, high bandwidth memory\n",
+    "    - (This is a requirement for their architecture, we'll talk about later)\n",
+    "- CPUs don't normally have this\n",
+    "- Thus, in some cases, it's less \"GPUs are faster than CPUs\" and more \"GPUs have faster memory than CPUs\"\n",
+    "- Some CPUs now have HBM"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ebb372c4-816b-48b7-8b9b-b0cb3c0d402a",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "## GPUs - A short history\n",
+    "\n",
+    "- GPUs pre-2000 were *very* specialized hardware, basically a modern ASIC (application specific integrated circuit)\n",
+    "    - Near zero execution control logic\n",
+    "    - Hardwired functionality, fixed pipeline\n",
+    "        - \"take triangle, take 64x64 texture, apply to triangle, run specific lighting algorithm\"\n",
+    "        - Want to use a 128x128 texture? Apply to a rectangle? Have a new lighting algorithm? Too bad, can't do it\n",
+    "       "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6ab47769-349d-4251-8e7f-e794c608b4df",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- GPUs then got \"programmable shaders\" in early 2000s\n",
+    "    - You can run the pipeline in different orders\n",
+    "    - Have some control over specific parts of the pipeline\n",
+    "    - Still a collection of fixed function hardware\n",
+    "        - Want to devote more resources to lighting than textures? Too bad, can't do it"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "998d9143-e1e7-42ca-bcf0-ea60cc9e56da",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- NVIDIA introduced \"unified shaders\" in 2006\n",
+    "    - Also called Streaming Multiprocessor (SM, NVIDIA), Compute Units (AMD), or a XeCore (Intel)\n",
+    "    - A collection of general purpose math processors that could be programmed arbitrarily\n",
+    "    - Graphics engines could now dictate which operations to devote more hardware towards"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.14.9"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

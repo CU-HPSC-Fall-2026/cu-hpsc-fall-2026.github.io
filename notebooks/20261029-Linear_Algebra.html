@@ -1,0 +1,821 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="20261103 - Intro to Accelerators (e.g. GPUs)" href="20261103-Intro_to_Accelerators.html"><link rel="prev" title="20261022 Advanced MPI" href="20261022-Advanced_MPI.html">
+
+    <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
+        <title>20261029 - Linear Algebra</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">CSCI 5576/4576</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">CSCI 5576/4576</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../syllabus.html">Course Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ungrading.html">Ungrading</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../notebooks.html">Class Notes</a><input aria-label="Toggle navigation of Class Notes" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="20260820-CPU_Basics.html">20260820 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260825-HPC_in_Science_and_Vectorization.html">20260825 - What is HPSC? And Vectorization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260827-CPUs_lie_to_you.html">20260827 - CPUs Lie to You</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260901-Observing_Memory_and_Compute_Bounds_Plus_How_Vectorization_Fails.html">20260901 - Memory- and Compute-Bound Applications and How Vectorization Fails</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260903-08-Modeling_and_Scaling/20260903-08-Modeling_and_Scaling.html">20260903-08 Modeling and Scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260908-10-OpenMP_Intro/20260908-10-OpenMP_Intro.html">20260908-10 OpenMP Intro</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260915-OpenMP_cont/20260915-OpenMP_cont.html">20260915-OpenMP continued</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260917-TMA_perf_lab3/20260917-TMA_perf_lab3.html">20260917 - Perf and Topdown Microarchitecture Analysis (Lab 3)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260925-OpenMP_Tasks/20260925-OpenMP_Tasks.html">20260925 OpenMP Memory Semantics and Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260929_Parallel_Hardware.html">20260929 Parallel Computing Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261006-Distributed_Memory_Parallelism.html">20261006 - Distributed-Memory Parallelism</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-mpi/20261015-Intro_to_MPI.html">20261015 Intro to MPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-mpi/20261020-MPI_Continued.html">20261020 MPI Intro Cont.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261022-Advanced_MPI.html">20261022 Advanced MPI</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">20261029 - Linear Algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261103-Intro_to_Accelerators.html">20261103 - Intro to Accelerators (e.g. GPUs)</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../homework.html">Homework</a><input aria-label="Toggle navigation of Homework" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/notebooks/20261029-Linear_Algebra.ipynb.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="20261029---Linear-Algebra">
+<h1>20261029 - Linear Algebra<a class="headerlink" href="#20261029---Linear-Algebra" title="Link to this heading">¶</a></h1>
+<ul class="simple">
+<li><p>As we’ve seen, executing even basic mathematical operations at max performance on hardware is <em>hard</em></p>
+<ul>
+<li><p>Many different moving parts</p>
+<ul>
+<li><p>Cache sizes, vector instruction widths, memory access patterns, instruction level-parallelism</p></li>
+</ul>
+</li>
+<li><p>Plenty of “gotchas”</p>
+<ul>
+<li><p>Cache coherency, cache thrashing, uncooperative compilers</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Luckily, there is a lot of overlap between the work that scientific codes do.</p></li>
+<li><p>Today, we’ll talk about the most fundamental building blocks that you can do: Linear Algebra</p>
+<ul>
+<li><p>and specifically how you should nearly always use a library to handle them.</p></li>
+</ul>
+</li>
+</ul>
+<section id="BLAS-(Basic-Linear-Algebra-Subprograms)">
+<h2>BLAS (Basic Linear Algebra Subprograms)<a class="headerlink" href="#BLAS-(Basic-Linear-Algebra-Subprograms)" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Originally released in the late 70s as a Fortran library</p></li>
+<li><p>Available through the legendary <a class="reference external" href="https://netlib.org/">netlib website</a></p></li>
+<li><p>BLAS is what powers many of the most popular “array” libraries out there</p>
+<ul>
+<li><p>Julia has BLAS built right into the language</p></li>
+<li><p>Numpy makes <a class="reference external" href="https://numpy.org/doc/stable/building/blas_lapack.html">heavy usage of BLAS</a> in the backend</p></li>
+</ul>
+</li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
+np.__config__.show()
+np.__version__
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Build Dependencies:
+  blas:
+    detection method: pkgconfig
+    found: true
+    include directory: /opt/_internal/cpython-3.14.3/lib/python3.14/site-packages/scipy_openblas64/include
+    lib directory: /opt/_internal/cpython-3.14.3/lib/python3.14/site-packages/scipy_openblas64/lib
+    name: scipy-openblas
+    openblas configuration: OpenBLAS 0.3.33.112.0  USE64BITINT DYNAMIC_ARCH NO_AFFINITY
+      Haswell MAX_THREADS=64
+    pc file directory: /project/.openblas
+    version: 0.3.33.112.0
+  lapack:
+    detection method: pkgconfig
+    found: true
+    include directory: /opt/_internal/cpython-3.14.3/lib/python3.14/site-packages/scipy_openblas64/include
+    lib directory: /opt/_internal/cpython-3.14.3/lib/python3.14/site-packages/scipy_openblas64/lib
+    name: scipy-openblas
+    openblas configuration: OpenBLAS 0.3.33.112.0  USE64BITINT DYNAMIC_ARCH NO_AFFINITY
+      Haswell MAX_THREADS=64
+    pc file directory: /project/.openblas
+    version: 0.3.33.112.0
+Compilers:
+  c:
+    commands: cc
+    linker: ld.bfd
+    name: gcc
+    version: 14.2.1
+  c++:
+    commands: c++
+    linker: ld.bfd
+    name: gcc
+    version: 14.2.1
+  cython:
+    commands: cython
+    linker: cython
+    name: cython
+    version: 3.2.8
+Machine Information:
+  build:
+    cpu: x86_64
+    endian: little
+    family: x86_64
+    system: linux
+  host:
+    cpu: x86_64
+    endian: little
+    family: x86_64
+    system: linux
+Python Information:
+  path: /tmp/build-env-phs97gf4/bin/python
+  version: &#39;3.14&#39;
+SIMD Extensions:
+  baseline:
+  - X86_V2
+  found:
+  - X86_V3
+  - X86_V4
+  - AVX512_ICL
+  not found:
+  - AVX512_SPR
+
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;2.5.1&#39;
+</pre></div></div>
+</div>
+<ul class="simple">
+<li><p>Basic functionality on <a class="reference external" href="https://netlib.org/blas/index.html#_reference_blas_now_part_of_lapack_release">3 levels</a></p>
+<ul>
+<li><p>Level 1: Vector Operations</p>
+<ul>
+<li><p>Dot product, scaled vector addition</p></li>
+</ul>
+</li>
+<li><p>Level 2: Generalized Matrx-Vector (gemv)</p></li>
+<li><p>Level 3: Generalized Matrix-Matrix (gemm)</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>The naming of the operations in this library have (in some cases) become universal</p>
+<ul>
+<li><p>Notably, <code class="docutils literal notranslate"><span class="pre">AXPY</span></code> to denote <span class="math notranslate nohighlight">\(\mathbf{y} = \alpha \mathbf{x} + \mathbf{y}, \quad \alpha \in \mathbb{F} \text{ and } \mathbf{x}, \mathbf{y} \in \mathbb{F}^n\)</span></p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>Many Implementations</p>
+<ul>
+<li><p>Many add multi-threaded functionality</p></li>
+<li><p>Some have extra functions beyond the BLAS standard</p></li>
+<li><p>May have different numerical precision options available</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>Examples:</p>
+<ul>
+<li><p><a class="reference external" href="https://github.com/flame/blis">BLIS</a></p>
+<ul>
+<li><p>Portable, high performance library built on micro-kernels (we’ll talk about that in a bit)</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl.html">Intel MKL</a> (Math Kernel Library)</p>
+<ul>
+<li><p>Intel-specialized BLAS-like library</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://developer.nvidia.com/cublas">cuBLAS</a></p>
+<ul>
+<li><p>BLAS, but for NVIDIA GPUs and CUDA</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://libxsmm.readthedocs.io/en/latest/">libXSMM</a></p>
+<ul>
+<li><p>Specializes in matrix-matrix multiplication</p></li>
+<li><p>Uses compiler-independent Just-in-Time compilation to create custom kernels depending on the matrix size</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<section id="BLIS-microkernels">
+<h3>BLIS microkernels<a class="headerlink" href="#BLIS-microkernels" title="Link to this heading">¶</a></h3>
+<p><img alt="BLIS cache" src="../_images/blis-cache.png" /></p>
+<p><img alt="BLIS gemm kernel" src="../_images/blis-gemm-kernels.png" /></p>
+</section>
+</section>
+<section id="LAPACK-(Linear-Algebra-Package)">
+<h2>LAPACK (Linear Algebra Package)<a class="headerlink" href="#LAPACK-(Linear-Algebra-Package)" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Above the normal matrix operations are</p></li>
+<li><p>But there are other common matrix algebra operations that are quite common as well</p>
+<ul>
+<li><p>Solving linear system of equations, <span class="math notranslate nohighlight">\(\mathbf{Ax} = \mathbf{y}\)</span></p></li>
+<li><p>Eigenvalue or singular value decompositions</p></li>
+<li><p>Matrix factorizations (LU, QR, Choelsky) These are often grouped together in LAPACK</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>Similar origin story as BLAS</p>
+<ul>
+<li><p>Descended in University of Tennessee</p></li>
+<li><p>Hosted on netlib</p></li>
+<li><p>Originally in Fortran</p></li>
+<li><p>Many libraries implementing similar functionality often use the same function <a class="reference external" href="https://en.wikipedia.org/wiki/LAPACK#Naming_scheme">naming scheme</a></p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>In a similar vein, many other implementations (or sub implementations) have been released</p>
+<ul>
+<li><p><a class="reference external" href="https://netlib.org/lapack/">LAPACK</a></p>
+<ul>
+<li><p>The original Fortran, still available</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://icl.utk.edu/magma/">MAGMA</a> (Matrix Algebra on GPU and Multicore Architectures)</p>
+<ul>
+<li><p>heterogenous (CPU and GPU together) BLAS/LAPACK</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://kokkos.org/kokkos-kernels/docs/">Kokkos-Kernels</a></p>
+<ul>
+<li><p>Portable LAPACK/BLAS kernels written in Kokkos (GPU-capable programming model)</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://libeigen.gitlab.io/">Eigen</a></p>
+<ul>
+<li><p>Standard C++ matrix-algebra library (equivalent to <code class="docutils literal notranslate"><span class="pre">numpy</span></code> for Python, but not as universal)</p></li>
+</ul>
+</li>
+<li><p>Many of the above mentioned “BLAS” libraries also implement some LAPACK functionality</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Dense-vs-Sparse-Matrix">
+<h2>Dense vs Sparse Matrix<a class="headerlink" href="#Dense-vs-Sparse-Matrix" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Vectors (nearly) always treated as dense</p>
+<ul>
+<li><p>Perhaps banded, but underlying data structure is contiguous</p></li>
+</ul>
+</li>
+<li><p>Many/most scientific matrices are sparse</p>
+<ul>
+<li><p>Contain many, many more zeros than they do</p></li>
+<li><p>Exact definition of “sparse” is ambiguous, but at least 99% zero elements</p></li>
+</ul>
+</li>
+<li><p>Dense matrices exist in scientific computing, but are usually much smaller than the problem size</p></li>
+</ul>
+<section id="Aside:-Nomenclature">
+<h3>Aside: Nomenclature<a class="headerlink" href="#Aside:-Nomenclature" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>There are two different concepts when we talk about dense and sparse matrices</p></li>
+</ul>
+<ol class="arabic simple">
+<li><p>The character of the matrix entries (e.g. how many non-zero values are there)</p></li>
+<li><p>The format a matrix is stored in a computer</p></li>
+</ol>
+<p>It is possible to store a sparse matrix (in character) using a dense matrix format.</p>
+</section>
+<section id="Dense-Matrix-Storage">
+<h3>Dense Matrix Storage<a class="headerlink" href="#Dense-Matrix-Storage" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Easiest way to store a matrix is as a dense, contiguous array of memory</p></li>
+<li><p>C standard is row-major ordering (list of lists), while Fortran standard is column-major ordering</p>
+<ul>
+<li><p>Performance implications for either choice, one is not worse than the other</p></li>
+<li><p>Row-major ordering is more popular</p></li>
+</ul>
+</li>
+</ul>
+<p><img alt="wiki row-major" src="https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/Row_and_column_major_order.svg/960px-Row_and_column_major_order.svg.png?utm_source=en.wikipedia.org&amp;utm_campaign=imageinfo&amp;utm_content=thumbnail" /></p>
+<p>Algorithm for densely stored matrix:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">aptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">row</span><span class="o">&lt;</span><span class="n">nrows</span><span class="p">;</span><span class="w"> </span><span class="n">row</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">col</span><span class="o">&lt;</span><span class="n">ncols</span><span class="p">;</span><span class="w"> </span><span class="n">col</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">s</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">aptr</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">col</span><span class="p">];</span>
+<span class="w">    </span><span class="n">aptr</span><span class="o">++</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">y</span><span class="p">[</span><span class="n">row</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">a</span></code> is mostly zeros, then we do a lot of work for nothing</p></li>
+<li><p>Additionally, <code class="docutils literal notranslate"><span class="pre">a</span></code> is wasting space in general</p></li>
+</ul>
+</section>
+<section id="Sparse-Matrix-Storage">
+<h3>Sparse Matrix Storage<a class="headerlink" href="#Sparse-Matrix-Storage" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>We have two primary concerns</p>
+<ul>
+<li><p>Space savings</p></li>
+<li><p>Computational efficiency</p></li>
+</ul>
+</li>
+<li><p>If we only cared about space savings, this becomes a pure data-compression problem</p></li>
+<li><p>We really want to handle both</p></li>
+</ul>
+<p>General idea: <img alt="image" src="../_images/sparse_matrix_diagram_ArtOfHPC.png" /></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%matplotlib inline
+import scipy as sp
+import scipy.sparse as sparse
+import scipy.sparse.linalg as sla
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Coordinate-format-(COO)">
+<h3>Coordinate format (COO)<a class="headerlink" href="#Coordinate-format-(COO)" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>By far the simplest, not always the best</p></li>
+<li><p>Store the following triple for each non-zero entry: <code class="docutils literal notranslate"><span class="pre">value,</span> <span class="pre">row,</span> <span class="pre">column</span></code></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code> is the actual matrix entry value</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">row</span></code> and <code class="docutils literal notranslate"><span class="pre">column</span></code> denote the location (coordinate) where the value should go</p></li>
+</ul>
+</li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>row  = [0,2,1]
+col  = [0,2,1]
+val  = [1,1,1]
+
+S = sparse.coo_matrix((val, (row,col)), shape=(3,3))
+S.toarray()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([[1, 0, 0],
+       [0, 1, 0],
+       [0, 0, 1]])
+</pre></div></div>
+</div>
+<p>Easy to add on new values</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>row  = [0,1,2,2]
+col  = [0,1,2,0]
+val  = [1,1,1,2]
+
+S = sparse.coo_matrix((val, (row,col)), shape=(3,3))
+S.toarray()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([[1, 0, 0],
+       [0, 1, 0],
+       [2, 0, 1]])
+</pre></div></div>
+</div>
+<p>Visualize the sparsity pattern using <code class="docutils literal notranslate"><span class="pre">spy</span></code>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plt.spy(S)
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_20261029-Linear_Algebra_27_0.png" src="../_images/notebooks_20261029-Linear_Algebra_27_0.png" />
+</div>
+</div>
+<p>Pros and cons of coordinate sparse format</p>
+<ul class="simple">
+<li><p>Pro:</p>
+<ul>
+<li><p>Coordinate format is incredibly flexible, doesn’t require any knowledge of the sparsity pattern of the matrix</p></li>
+</ul>
+</li>
+<li><p>Con:</p>
+<ul>
+<li><p>Poor computational efficiency (data can be located anywhere, no hope or guarantee of cache locality or vectorization)</p></li>
+<li><p>Poor storage efficiency (if I have many values in a compact space, I still need 3 values for each of them)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Compressed-Sparse-Row-(CSR)">
+<h3>Compressed Sparse Row (CSR)<a class="headerlink" href="#Compressed-Sparse-Row-(CSR)" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Store contiguous rows of the data, and provide coordinate for where they need to go</p>
+<ul>
+<li><p>Can also do contiguous columns of data, called CSC</p></li>
+</ul>
+</li>
+</ul>
+<p><img alt="CSR" src="../_images/Illustration-of-the-CSR-storage-format.png" /></p>
+<p><em>From</em> <a class="reference external" href="https://www.researchgate.net/figure/Illustration-of-the-CSR-storage-format_fig4_381005380">here</a></p>
+<ul class="simple">
+<li><p>Contiguous rows allows for best cache locality in matrix-vector product</p>
+<ul>
+<li><p>CSC best for matrix-transpose-vector product</p></li>
+</ul>
+</li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ptr = [0,2,4,5]
+col = [0,2,0,1,2]
+val = [1,2,3,1,1]
+
+S = sparse.csr_matrix((val, col, ptr), shape=(3,3))
+S.toarray()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([[1, 0, 2],
+       [3, 1, 0],
+       [0, 0, 1]])
+</pre></div></div>
+</div>
+<p>Matrix-Vector product using a sparse matrix representation</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">aptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">row</span><span class="o">&lt;</span><span class="n">nrows</span><span class="p">;</span><span class="w"> </span><span class="n">row</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">icol</span><span class="o">=</span><span class="n">ptr</span><span class="p">[</span><span class="n">row</span><span class="p">];</span><span class="w"> </span><span class="n">icol</span><span class="o">&lt;</span><span class="n">ptr</span><span class="p">[</span><span class="n">row</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span><span class="w"> </span><span class="n">icol</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ind</span><span class="p">[</span><span class="n">icol</span><span class="p">];</span>
+<span class="w">    </span><span class="n">s</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">aptr</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">col</span><span class="p">];</span>
+<span class="w">    </span><span class="n">aptr</span><span class="o">++</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">y</span><span class="p">[</span><span class="n">row</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>We have non-uniform memory access</p>
+<ul>
+<li><p>Potentially poor cache locality</p></li>
+<li><p>Really difficult/impossible to vectorize</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="20261103-Intro_to_Accelerators.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">20261103 - Intro to Accelerators (e.g. GPUs)</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="20261022-Advanced_MPI.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">20261022 Advanced MPI</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, James Wright
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">20261029 - Linear Algebra</a><ul>
+<li><a class="reference internal" href="#BLAS-(Basic-Linear-Algebra-Subprograms)">BLAS (Basic Linear Algebra Subprograms)</a><ul>
+<li><a class="reference internal" href="#BLIS-microkernels">BLIS microkernels</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#LAPACK-(Linear-Algebra-Package)">LAPACK (Linear Algebra Package)</a></li>
+<li><a class="reference internal" href="#Dense-vs-Sparse-Matrix">Dense vs Sparse Matrix</a><ul>
+<li><a class="reference internal" href="#Aside:-Nomenclature">Aside: Nomenclature</a></li>
+<li><a class="reference internal" href="#Dense-Matrix-Storage">Dense Matrix Storage</a></li>
+<li><a class="reference internal" href="#Sparse-Matrix-Storage">Sparse Matrix Storage</a></li>
+<li><a class="reference internal" href="#Coordinate-format-(COO)">Coordinate format (COO)</a></li>
+<li><a class="reference internal" href="#Compressed-Sparse-Row-(CSR)">Compressed Sparse Row (CSR)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    </body>
+</html>
