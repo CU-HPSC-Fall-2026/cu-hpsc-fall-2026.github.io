@@ -1,0 +1,626 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="20261117 - Linear Systems" href="20261117-Linear_Systems.html"><link rel="prev" title="20261105 - Intro to GPUs" href="20261105-Intro_to_GPUs.html">
+
+    <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
+        <title>20261112 - Parallel Distribution</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">CSCI 5576/4576</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">CSCI 5576/4576</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../syllabus.html">Course Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ungrading.html">Ungrading</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../notebooks.html">Class Notes</a><input aria-label="Toggle navigation of Class Notes" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="20260820-CPU_Basics.html">20260820 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260825-HPC_in_Science_and_Vectorization.html">20260825 - What is HPSC? And Vectorization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260827-CPUs_lie_to_you.html">20260827 - CPUs Lie to You</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260901-Observing_Memory_and_Compute_Bounds_Plus_How_Vectorization_Fails.html">20260901 - Memory- and Compute-Bound Applications and How Vectorization Fails</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260903-08-Modeling_and_Scaling/20260903-08-Modeling_and_Scaling.html">20260903-08 Modeling and Scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260908-10-OpenMP_Intro/20260908-10-OpenMP_Intro.html">20260908-10 OpenMP Intro</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260915-OpenMP_cont/20260915-OpenMP_cont.html">20260915-OpenMP continued</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260917-TMA_perf_lab3/20260917-TMA_perf_lab3.html">20260917 - Perf and Topdown Microarchitecture Analysis (Lab 3)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260925-OpenMP_Tasks/20260925-OpenMP_Tasks.html">20260925 OpenMP Memory Semantics and Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260929_Parallel_Hardware.html">20260929 Parallel Computing Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261006-Distributed_Memory_Parallelism.html">20261006 - Distributed-Memory Parallelism</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-mpi/20261015-Intro_to_MPI.html">20261015 Intro to MPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-mpi/20261020-MPI_Continued.html">20261020 MPI Intro Cont.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261022-Advanced_MPI.html">20261022 Advanced MPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261029-Linear_Algebra.html">20261029 - Linear Algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261103-Intro_to_Accelerators.html">20261103 - Intro to Accelerators (e.g. GPUs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261105-Intro_to_GPUs.html">20261105 - Intro to GPUs</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">20261112 - Parallel Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261117-Linear_Systems.html">20261117 - Linear Systems</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../homework.html">Homework</a><input aria-label="Toggle navigation of Homework" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/notebooks/20261112-Parallel_Distribution.ipynb.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="20261112---Parallel-Distribution">
+<h1>20261112 - Parallel Distribution<a class="headerlink" href="#20261112---Parallel-Distribution" title="Link to this heading">¶</a></h1>
+<section id="What-does-this-mean?-(Copied-from-distributed-memory-parallelism-notes)">
+<h2>What does this mean? <em>(Copied from distributed memory parallelism notes)</em><a class="headerlink" href="#What-does-this-mean?-(Copied-from-distributed-memory-parallelism-notes)" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>We should reduce the total amount of communications necessary (<em>not</em> necessarily require less data communicated)</p>
+<ul class="simple">
+<li><p>Choose algorithms that are <em>communication avoiding</em></p></li>
+<li><p>Remove any unnecessary communications, particularly in “hot loops”</p></li>
+</ul>
+</li>
+</ol>
+<ol class="arabic simple" start="2">
+<li><p>We should “hide” the latency if we can</p>
+<ul class="simple">
+<li><p>Overlap communication with other useful work</p></li>
+<li><p>Computing while communicating</p></li>
+<li><p>Batching communication together (where it makes sense)</p></li>
+</ul>
+</li>
+</ol>
+<section id="Advice-from-Bill-Gropp-(father-of-MPI)">
+<h3>Advice from Bill Gropp (father of MPI)<a class="headerlink" href="#Advice-from-Bill-Gropp-(father-of-MPI)" title="Link to this heading">¶</a></h3>
+<blockquote>
+<div><p>You want to think about how you decompose your data structures, how you think about them globally. […] If you were building a house, you’d start with a set of blueprints that give you a picture of what the whole house looks like. You wouldn’t start with a bunch of tiles and say. “Well I’ll put this tile down on the ground, and then I’ll find a tile to go next to it.” But all too many people try to build their parallel programs by creating the smallest possible tiles and then trying to have
+the structure of their code emerge from the chaos of all these little pieces. You have to have an organizing principle if you’re going to survive making your code parallel. – <a class="reference external" href="https://www.rce-cast.com/Podcast/rce-28-mpich2.html">https://www.rce-cast.com/Podcast/rce-28-mpich2.html</a></p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Distributed-memory parallelism lives and dies by how you distribute the memory (duh)</p></li>
+<li><p>Often needs to be done at an architectural level</p>
+<ul>
+<li><p>Can’t really start piece-by-piece</p></li>
+<li><p>Difficult to take a shared memory code and make an <strong>optimal</strong> MPI/distributed memory program without significant modifications</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="How-do-we-want-to-distribute-our-problem-across-multiple-ranks?">
+<h3>How do we want to distribute our problem across multiple ranks?<a class="headerlink" href="#How-do-we-want-to-distribute-our-problem-across-multiple-ranks?" title="Link to this heading">¶</a></h3>
+<p>Two goals:</p>
+<ul class="simple">
+<li><p>Distribute the total computation evenly across processors</p>
+<ul>
+<li><p>We’re only as fast as the slowest process</p></li>
+</ul>
+</li>
+<li><p>Minimize communication as much as possible</p>
+<ul>
+<li><p>Both in number of communciation and amount of data to be communicated</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="Simplest-example:-Sparse-matrix-vector-multiply">
+<h2>Simplest example: Sparse matrix-vector multiply<a class="headerlink" href="#Simplest-example:-Sparse-matrix-vector-multiply" title="Link to this heading">¶</a></h2>
+<p>Say we have a (sparse) matrix that we want to have distributed across ranks.</p>
+<ul class="simple">
+<li><p>How should we distribute the matrix?</p></li>
+<li><p>How should we distribute the vector?</p></li>
+</ul>
+<p>Easiest way is to parallelize by</p>
+<ul class="simple">
+<li><p>Assigning rows of the vector and matrix to each rank</p></li>
+<li><p>Each rank holds the matrix entries for those rows <img alt="dense matvec parallel" src="../_images/05-matvec-row-dense.png" /></p></li>
+</ul>
+<p>See <a class="reference external" href="https://www.sandia.gov/app/uploads/sites/197/2022/06/CS591MH_20070913.pdf">step-by-step workout of how the mat-vec product happens</a></p>
+<p><img alt="image.png" src="data:image/png;base64,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szc3K0GGjVmzZs2aNWsmjqmrq6urq5s4prq6+oUXXpg4hogmGTM2NsYabeXKlRs3bpyYfHBwkJXmggULWGUMDw+zgigsLCwsLCQiRVHOnDlDRHPmzGGFeP78ebbyO2vWrNTK73vvvccGFi5cyAYGBgZYi/E8zxrq3XffZTMvKytjs+rr62PZSktL2R0HBwfZH55ery8rK2OR3n33XSKaO3duZWUlC5D6nuHWW29lA0ePHmV1f8cdd7BlOX78OMu5ePFig8FARG+//fbp06eJqKKi4uabb2aR2GtnMBgWL17MArz++uss9tKlS9kzkPpq8u6772YDzz33HBuor69nT9ShQ4fYR+A999wzODj4ne98Z2xsLJFIsCeHvS7vvfceGzMwMPCJMRzHsTFnzpz505/+xF6U1KvZ2dnJBm655ZYFCxYQ0csvv8xelxtuuIG15+uvv/72228TEfv4IaI33ngjEomwZ4C9Um+//TabVVlZ2d///d+z5f3Vr37FnnC25UREbLWAiH7wgx+wgV27drFX6pFHHmFP3XPPPcdel69+9avsiTp06BDr387OTlaaR44cYW85tj5BM9+H6x2q2LZtG/sDuJpnnnnmN7/5TdbyZNxXv/rV//7v/2a9SUSCINx5553/+I//ePTo0X/913/NcphQKPTUU08tXbrU4/Fk+aG1qbu7+zvf+U5paekjjzyiqePbL168WF9fPzo6Onv2bLWzfJLP51u0aNEkEzz11FMvvvji5DPB3vMpdN999xUXF7PtRCJasGDB/v371Y3Etkwhay5cuMBW9CBnoDSnxO7du7/whS/84he/+I//+A/2eZuXl5cb2yYAGodDjjJs9+7d27dvFwThySefrKur+/Of/zxr1qzCwsJt27bddtttaqcjtgMBsiY/P599Two5A6WZMZ+oy9T4sbGxf/7nf163blr8bprtMYes0el0q1atUjsFZBJKMwOuVpfM4sWLU3vPAWCmQ2l+Jrt27dq+fbvBYLhiXRLRLbfc0tXVlf1gV8MOTIGsGR0dffvtt7GFnks0tyMo2d9/zZeZ6e9PXPW2Xbt2LV68eN++fVu3bj106NAVG3MaYgcnQ9aMjIy8/PLLaqeATNJYaXZtMVt90WuaNNHWKDpDVy7YJ598csbVJQBkhMY2z5WYrPCfPhkREclx+Wo3fetb33r00UczlCmr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" /></p>
+<p>from <a class="reference external" href="https://arxiv.org/pdf/2510.13427v1">Verification Challenges in Sparse Matrix Vector Multiplication in High Performance Computing: Part I</a></p>
+</section>
+<section id="Example-matrix">
+<h2>Example matrix<a class="headerlink" href="#Example-matrix" title="Link to this heading">¶</a></h2>
+<p><img alt="cuthill-mckee reordering" src="../_images/cuthill-mckee-reordering-reordered.png" /></p>
+<p><em>from</em> <a class="reference external" href="https://arxiv.org/abs/2409.04171">RCM++:Reverse Cuthill-McKee ordering with Bi-Criteria Node Finder</a></p>
+<ul class="simple">
+<li><p>First few ranks recieve small (contiguous) portion of the vector</p>
+<ul>
+<li><p>Probably only has to communicate with one rank</p></li>
+<li><p>Very possibly doesn’t have to communciate with any ranks at all (vector entries are collocated with matrix entries)</p></li>
+</ul>
+</li>
+<li><p>Next few ranks recieve many different small portions from different areas of the vector</p>
+<ul>
+<li><p>Requires recieving communication from many different ranks</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>The amount of data which needs to be transfered is dependent on the layout of the matrix</strong></p>
+<p>How do we fix this?</p>
+<ul class="simple">
+<li><p>Just reorder the matrix entries</p>
+<ul>
+<li><p>If we apply a permutation to the rows and columns of the matrix, and to the vector, the result is identical</p></li>
+</ul>
+</li>
+</ul>
+<p>One reordering method is to use the <a class="reference external" href="https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm">CutHill-McKee</a> algorithm</p>
+<ul class="simple">
+<li><p>Reduces the “bandwidth” of the matrix</p>
+<ul>
+<li><p>e.g. the maximum “distance” between non-zero entries of a row</p></li>
+</ul>
+</li>
+</ul>
+<p><img alt="cuthill-mckee reordering" src="../_images/cuthill-mckee-reordering-reordered.png" /></p>
+<p><em>from</em> <a class="reference external" href="https://arxiv.org/abs/2409.04171">RCM++:Reverse Cuthill-McKee ordering with Bi-Criteria Node Finder</a></p>
+<p>Another way to reorder to use graph-based partitioners</p>
+<ul class="simple">
+<li><p>Examples are ParMeTiS, PTSCOTCH, or Chaco</p></li>
+<li><p>These interpret the non-zero pattern of the matrix as a graph via an <a class="reference external" href="https://en.wikipedia.org/wiki/Adjacency_matrix">adjacency matrix</a></p></li>
+<li><p>The graph is then split into subsets of nodes, while trying to minimize edge cuts</p></li>
+<li><p>Edges can be weighted favor some edge cuts over others</p>
+<ul>
+<li><p>For matrices, mostly interesting for parallel preconditioning performance (e.g. performance of additive Schwartz methods)</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>Graph partitioning usually better than “naive” Cuthill-McKee application</p>
+<ul>
+<li><p>It tries to directly solve the problem</p></li>
+<li><p>But the problem to be solved isn’t possible to solve exactly</p></li>
+<li><p>Literally NP-complete problem</p></li>
+</ul>
+</li>
+</ul>
+<section id="Physical-domain-partitioning-(domain-decomposition)">
+<h3>Physical domain partitioning (domain decomposition)<a class="headerlink" href="#Physical-domain-partitioning-(domain-decomposition)" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>For many scientific problems, governed by partial differential equations (PDEs)</p></li>
+<li><p>Defined on a domain, which is then discretized (split into finite parts)</p></li>
+<li><p>How we split these apart matters</p></li>
+</ul>
+</section>
+</section>
+<section id="Example:-finite-different,-5-point-stencil">
+<h2>Example: finite different, 5 point stencil<a class="headerlink" href="#Example:-finite-different,-5-point-stencil" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Take domain (large rectangle) and discretize evenly into rows and columns of points</p></li>
+<li><p>We partition those points into small blocks</p></li>
+<li><p>Each parallel process “holds” one partition</p></li>
+</ul>
+<p><img alt="parallel split of FD grid" src="../_images/stencil-parallel-Eijkhout.png" /></p>
+<ul class="simple">
+<li><p>To compute the stencil, we need the points to the left, right, top, and bottom of each point we have</p></li>
+<li><p>At the edge, these needed points are owned by other processes</p></li>
+<li><p>So we need to communicate them somehow</p></li>
+</ul>
+<ul class="simple">
+<li><p>On each rank, we create a “halo” ring of points we need, but we do not own</p>
+<ul>
+<li><p>Sometimes also called ghost cells, rind, or shared points</p></li>
+</ul>
+</li>
+<li><p>These halo points them must be communicated around</p></li>
+</ul>
+<p><img alt="parallel halo of FD grid" src="../_images/stencil-halo-Eijkhout.png" /></p>
+</section>
+<section id="More-detailed-example:">
+<h2>More detailed example:<a class="headerlink" href="#More-detailed-example:" title="Link to this heading">¶</a></h2>
+<p>Same example as before, just more noisy (but more realistic)</p>
+<p><img alt="FEM partitioning" src="../_images/FEM-partition-communication-nakajima.png" /></p>
+<p><em>from</em> Parallel Iterative Solvers of GeoFEM with Selective Blocking Preconditioning for Nonlinear Contact Problems on the Earth Simulator* by Kengo Nakajima*</p>
+<p><img alt="FEM partitioning" src="../_images/FEM-partition-communication-nakajima.png" /> <em>from</em> Parallel Iterative Solvers of GeoFEM with Selective Blocking Preconditioning for Nonlinear Contact Problems on the Earth Simulator* by Kengo Nakajima*</p>
+</section>
+<section id="How-do-we-split-the-domain?">
+<h2>How do we split the domain?<a class="headerlink" href="#How-do-we-split-the-domain?" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>What we do we want in our partitioning?</p>
+<ul>
+<li><p>This can sometimes change depending on what problem you’re doing, what algorithms you use, etc.</p></li>
+</ul>
+</li>
+<li><p>Generally:</p>
+<ul>
+<li><p>Give each rank approximately the same amount of “owned” data (analgous to how much work each rank does)</p></li>
+<li><p>Reduce the communication between them</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>The physical way of thinking about this is to evenly distribute volume, while minimizing surface area for each rank</p>
+<ul>
+<li><p>Volume kinda equals the total amount of points in a partition</p></li>
+<li><p>Surface area kinda means the amount of communication that needs to be done</p></li>
+</ul>
+</li>
+<li><p>The partitions, physically, should look “ball-like”</p>
+<ul>
+<li><p>Obviously not possible for every partition, otherwise there would be gaps (see <a class="reference external" href="https://en.wikipedia.org/wiki/Sphere_packing">packing factor</a>)</p></li>
+</ul>
+</li>
+</ul>
+<p>Again, we use graph partitioners to do this</p>
+<ul class="simple">
+<li><p>Graph describes the connectivity between each point</p></li>
+<li><p>Graph partitioner creates even subsets (partitions) while minimizing edge cut of the graph</p></li>
+<li><p>Example partitioners: ParMETIS, PTSCOTCH, etc.</p></li>
+</ul>
+</section>
+<section id="Matrices-based-on-Physical-Domain">
+<h2>Matrices based on Physical Domain<a class="headerlink" href="#Matrices-based-on-Physical-Domain" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>If we want to create a matrix based on the physical domain discretization, do we need to do more partitioning?</p></li>
+<li><p>Not really…</p>
+<ul>
+<li><p>The graph used for domain partitioning is usually heavily related (if not identical) to the graph used for matrix partitioning</p></li>
+<li><p>We normally just use the row or column -based matrix partitioning method after that</p></li>
+</ul>
+</li>
+</ul>
+<section id="Hierarchical-Partitioning">
+<h3>Hierarchical Partitioning<a class="headerlink" href="#Hierarchical-Partitioning" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>As previously discussed, not all communication is equal</p>
+<ul>
+<li><p>Intra NUMA <span class="math notranslate nohighlight">\(\neq\)</span> inter NUMA <span class="math notranslate nohighlight">\(\neq\)</span> inter compute node <span class="math notranslate nohighlight">\(\neq\)</span> inter-rack (networking)</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>Thus, for partitioning work, some edge cuts are not the same as others</p>
+<ul>
+<li><p>We want to minimize edge cuts between nodes more than we want to minimize overall</p></li>
+</ul>
+</li>
+<li><p>Can’t use the normal edge weights of graph partitioners</p>
+<ul>
+<li><p>These weights are about the graph itself</p></li>
+<li><p>We care about the <em>partitions</em></p></li>
+</ul>
+</li>
+</ul>
+<p>Solution is hierarchical partitioning</p>
+<ul class="simple">
+<li><p>Split matrix/domain into partitions, one for each compute node</p></li>
+<li><p>Then split those compute node partitions</p></li>
+</ul>
+<p>Example: If we have 6 compute nodes, with 12 cores each, then</p>
+<ul class="simple">
+<li><p>Partition into 6 chunks</p>
+<ul>
+<li><p>This minimizes the communication cuts between nodes</p></li>
+</ul>
+</li>
+<li><p>Partition each of the 6 chunks into 12 sub-chunks</p>
+<ul>
+<li><p>This minimizes the communication within each node</p></li>
+</ul>
+</li>
+</ul>
+<p>Can do this on higher levels too</p>
+<ul class="simple">
+<li><p>Partition for each rack, then each node, then individual cores</p></li>
+</ul>
+<p>Important for multi-GPU too</p>
+<ul class="simple">
+<li><p>Recall the communication networks on the same node between GPUs</p></li>
+</ul>
+<p><img alt="hierarchical partition matrix-vector product" src="https://sandialabs.github.io/Zoltan/ug_html/Structural_MATVEC_Avg_Time.jpg" /></p>
+<p><em>From</em> <a class="reference external" href="https://sandialabs.github.io/Zoltan/ug_html/ug_alg_hier.html">Zoltan guide</a></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="20261117-Linear_Systems.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">20261117 - Linear Systems</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="20261105-Intro_to_GPUs.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">20261105 - Intro to GPUs</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, James Wright
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">20261112 - Parallel Distribution</a><ul>
+<li><a class="reference internal" href="#What-does-this-mean?-(Copied-from-distributed-memory-parallelism-notes)">What does this mean? <em>(Copied from distributed memory parallelism notes)</em></a><ul>
+<li><a class="reference internal" href="#Advice-from-Bill-Gropp-(father-of-MPI)">Advice from Bill Gropp (father of MPI)</a></li>
+<li><a class="reference internal" href="#How-do-we-want-to-distribute-our-problem-across-multiple-ranks?">How do we want to distribute our problem across multiple ranks?</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Simplest-example:-Sparse-matrix-vector-multiply">Simplest example: Sparse matrix-vector multiply</a></li>
+<li><a class="reference internal" href="#Example-matrix">Example matrix</a><ul>
+<li><a class="reference internal" href="#Physical-domain-partitioning-(domain-decomposition)">Physical domain partitioning (domain decomposition)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Example:-finite-different,-5-point-stencil">Example: finite different, 5 point stencil</a></li>
+<li><a class="reference internal" href="#More-detailed-example:">More detailed example:</a></li>
+<li><a class="reference internal" href="#How-do-we-split-the-domain?">How do we split the domain?</a></li>
+<li><a class="reference internal" href="#Matrices-based-on-Physical-Domain">Matrices based on Physical Domain</a><ul>
+<li><a class="reference internal" href="#Hierarchical-Partitioning">Hierarchical Partitioning</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    </body>
+</html>

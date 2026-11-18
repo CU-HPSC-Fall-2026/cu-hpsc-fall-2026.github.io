@@ -25,3 +25,6 @@ Introduction
    notebooks/20261022-Advanced_MPI.ipynb
    notebooks/20261029-Linear_Algebra.ipynb
    notebooks/20261103-Intro_to_Accelerators.ipynb
+   notebooks/20261105-Intro_to_GPUs.ipynb
+   notebooks/20261112-Parallel_Distribution.ipynb
+   notebooks/20261117-Linear_Systems.ipynb

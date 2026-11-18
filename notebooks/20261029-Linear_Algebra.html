@@ -212,6 +212,9 @@
 <li class="toctree-l2"><a class="reference internal" href="20261022-Advanced_MPI.html">20261022 Advanced MPI</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">20261029 - Linear Algebra</a></li>
 <li class="toctree-l2"><a class="reference internal" href="20261103-Intro_to_Accelerators.html">20261103 - Intro to Accelerators (e.g. GPUs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261105-Intro_to_GPUs.html">20261105 - Intro to GPUs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261112-Parallel_Distribution.html">20261112 - Parallel Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261117-Linear_Systems.html">20261117 - Linear Systems</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../homework.html">Homework</a><input aria-label="Toggle navigation of Homework" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
@@ -560,7 +563,7 @@ SIMD Extensions:
 </ul>
 <p>General idea: <img alt="image" src="../_images/sparse_matrix_diagram_ArtOfHPC.png" /></p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%matplotlib inline
@@ -682,27 +685,47 @@ plt.show()
 </li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ptr = [0,2,4,5]
 col = [0,2,0,1,2]
 val = [1,2,3,1,1]
 
-S = sparse.csr_matrix((val, col, ptr), shape=(3,3))
+S = sparse.csc_matrix((val, row, ptr), shape=(3,3))
 S.toarray()
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-array([[1, 0, 2],
-       [3, 1, 0],
-       [0, 0, 1]])
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[17]</span><span class="ansi-green-fg">, line 5</span>
+<span class="ansi-green-fg">      1</span> ptr = [<span class="ansi-green-fg">0</span>,<span class="ansi-green-fg">2</span>,<span class="ansi-green-fg">4</span>,<span class="ansi-green-fg">5</span>]
+<span class="ansi-green-fg">      2</span> col = [<span class="ansi-green-fg">0</span>,<span class="ansi-green-fg">2</span>,<span class="ansi-green-fg">0</span>,<span class="ansi-green-fg">1</span>,<span class="ansi-green-fg">2</span>]
+<span class="ansi-green-fg">      3</span> val = [<span class="ansi-green-fg">1</span>,<span class="ansi-green-fg">2</span>,<span class="ansi-green-fg">3</span>,<span class="ansi-green-fg">1</span>,<span class="ansi-green-fg">1</span>]
+<span class="ansi-green-fg">      4</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> S = sparse.csc_matrix((val, row, ptr), shape=(<span class="ansi-green-fg">3</span>,<span class="ansi-green-fg">3</span>))
+<span class="ansi-green-fg">      6</span> S.toarray()
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/gitRepos/csci-5576-hpsc-fall-2026/.venv/lib/python3.14/site-packages/scipy/sparse/_compressed.py:116</span>, in <span class="ansi-cyan-fg">_cs_matrix.__init__</span><span class="ansi-blue-fg">(self, arg1, shape, dtype, copy, maxprint)</span>
+<span class="ansi-green-fg">    113</span>     newdtype = getdtype(dtype)
+<span class="ansi-green-fg">    114</span>     <span style="color: rgb(0,135,0)">self</span>.data = <span style="color: rgb(0,135,0)">self</span>.data.astype(newdtype, copy=<span class="ansi-bold" style="color: rgb(0,135,0)">False</span>)
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">116</span> <span class="ansi-black-fg ansi-yellow-bg">self</span><span class="ansi-black-fg ansi-yellow-bg">.</span><span class="ansi-black-fg ansi-yellow-bg">check_format</span><span class="ansi-black-fg ansi-yellow-bg">(</span><span class="ansi-black-fg ansi-yellow-bg">full_check</span><span class="ansi-black-fg ansi-yellow-bg">=</span><span class="ansi-black-intense-fg ansi-yellow-bg ansi-bold">False</span><span class="ansi-black-fg ansi-yellow-bg">)</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/gitRepos/csci-5576-hpsc-fall-2026/.venv/lib/python3.14/site-packages/scipy/sparse/_compressed.py:201</span>, in <span class="ansi-cyan-fg">_cs_matrix.check_format</span><span class="ansi-blue-fg">(self, full_check)</span>
+<span class="ansi-green-fg">    199</span> <span style="color: rgb(95,135,135)"># check index and data arrays</span>
+<span class="ansi-green-fg">    200</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> (<span style="color: rgb(0,135,0)">len</span>(<span style="color: rgb(0,135,0)">self</span>.indices) != <span style="color: rgb(0,135,0)">len</span>(<span style="color: rgb(0,135,0)">self</span>.data)):
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">201</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">indices and data should have the same size</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">    202</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> (<span style="color: rgb(0,135,0)">self</span>.indptr[-<span class="ansi-green-fg">1</span>] &gt; <span style="color: rgb(0,135,0)">len</span>(<span style="color: rgb(0,135,0)">self</span>.indices)):
+<span class="ansi-green-fg">    203</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Last value of index pointer should be less than </span><span class="ansi-yellow-fg">&#34;</span>
+<span class="ansi-green-fg">    204</span>                      <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">the size of index and data arrays</span><span class="ansi-yellow-fg">&#34;</span>)
+
+<span class="ansi-red-fg">ValueError</span>: indices and data should have the same size
 </pre></div></div>
 </div>
 <p>Matrix-Vector product using a sparse matrix representation</p>

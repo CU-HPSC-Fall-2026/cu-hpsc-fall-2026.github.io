@@ -1,0 +1,688 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Homework" href="../homework.html"><link rel="prev" title="20261112 - Parallel Distribution" href="20261112-Parallel_Distribution.html">
+
+    <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
+        <title>20261117 - Linear Systems</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">CSCI 5576/4576</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">CSCI 5576/4576</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../syllabus.html">Course Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ungrading.html">Ungrading</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../notebooks.html">Class Notes</a><input aria-label="Toggle navigation of Class Notes" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="20260820-CPU_Basics.html">20260820 - Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260825-HPC_in_Science_and_Vectorization.html">20260825 - What is HPSC? And Vectorization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260827-CPUs_lie_to_you.html">20260827 - CPUs Lie to You</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260901-Observing_Memory_and_Compute_Bounds_Plus_How_Vectorization_Fails.html">20260901 - Memory- and Compute-Bound Applications and How Vectorization Fails</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260903-08-Modeling_and_Scaling/20260903-08-Modeling_and_Scaling.html">20260903-08 Modeling and Scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260908-10-OpenMP_Intro/20260908-10-OpenMP_Intro.html">20260908-10 OpenMP Intro</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260915-OpenMP_cont/20260915-OpenMP_cont.html">20260915-OpenMP continued</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260917-TMA_perf_lab3/20260917-TMA_perf_lab3.html">20260917 - Perf and Topdown Microarchitecture Analysis (Lab 3)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260925-OpenMP_Tasks/20260925-OpenMP_Tasks.html">20260925 OpenMP Memory Semantics and Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20260929_Parallel_Hardware.html">20260929 Parallel Computing Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261006-Distributed_Memory_Parallelism.html">20261006 - Distributed-Memory Parallelism</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-mpi/20261015-Intro_to_MPI.html">20261015 Intro to MPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro-mpi/20261020-MPI_Continued.html">20261020 MPI Intro Cont.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261022-Advanced_MPI.html">20261022 Advanced MPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261029-Linear_Algebra.html">20261029 - Linear Algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261103-Intro_to_Accelerators.html">20261103 - Intro to Accelerators (e.g. GPUs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261105-Intro_to_GPUs.html">20261105 - Intro to GPUs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261112-Parallel_Distribution.html">20261112 - Parallel Distribution</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">20261117 - Linear Systems</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../homework.html">Homework</a><input aria-label="Toggle navigation of Homework" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/notebooks/20261117-Linear_Systems.ipynb.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="20261117---Linear-Systems">
+<h1>20261117 - Linear Systems<a class="headerlink" href="#20261117---Linear-Systems" title="Link to this heading">¶</a></h1>
+<p>Very often, we need to solve linear system of equations, in the form of the matrix problem</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[Ax = b\]</div>
+</div>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(x \in \mathbb{R}^n\)</span> is the solution vector</p></li>
+<li><p><span class="math notranslate nohighlight">\(A \in \mathbb{R}^{n \times n}\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(b \in \mathbb{R}^n\)</span> is some RHS forcing term</p></li>
+</ul>
+<p>The solution is described as</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[x = A^{-1}b\]</div>
+</div>
+<p>There are many different ways to solve for these problems:</p>
+<ul class="simple">
+<li><p>Directly compute <span class="math notranslate nohighlight">\(A^{-1}\)</span>, then do matrix multiplication</p></li>
+<li><p>Perform direct solve of <span class="math notranslate nohighlight">\(x\)</span> without explicitly forming <span class="math notranslate nohighlight">\(A\)</span></p></li>
+<li><p>Find a close approximation of the solution <span class="math notranslate nohighlight">\(x\)</span> via an interative method</p></li>
+</ul>
+<section id="Direct-Compute-Inverse">
+<h2>Direct Compute Inverse<a class="headerlink" href="#Direct-Compute-Inverse" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Explicitly compute the inverse <span class="math notranslate nohighlight">\(A^{-1}\)</span></p></li>
+<li><p>Then do matrix-vector product <span class="math notranslate nohighlight">\(x = A^{-1}b\)</span></p></li>
+<li><p>Simple!</p></li>
+</ul>
+<ul class="simple">
+<li><p>Big important (unfortunate) fact:</p></li>
+</ul>
+<p><strong>A sparse matrix will (in general) have a dense inverse</strong></p>
+<ul class="simple">
+<li><p>A few minor exceptions to this, but generally is the case</p></li>
+<li><p>Often, when it’s not the case, directly computing and applying <span class="math notranslate nohighlight">\(A^{-1}\)</span> is not</p></li>
+</ul>
+</section>
+<section id="Direct-Solve">
+<h2>Direct Solve<a class="headerlink" href="#Direct-Solve" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>While still having “direct” in the name, we never explicitly compute or store <span class="math notranslate nohighlight">\(A^{-1}\)</span></p></li>
+<li><p>Instead, we directly solve for <span class="math notranslate nohighlight">\(x\)</span></p></li>
+</ul>
+<section id="Gaussian-Elimination">
+<h3>Gaussian Elimination<a class="headerlink" href="#Gaussian-Elimination" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Gaussian elimination is the simplest example of a direct solve</p>
+<ul>
+<li><p>Basically the technique you learned in high school for solving a system of equations</p>
+<ul>
+<li><p>Substitute equations together to simplify them until you find the value of one variable</p></li>
+<li><p>The substitute those values back in to find the solution</p></li>
+</ul>
+</li>
+<li><p>Add and subtract rows selectively to zero out (eliminate) components of the matrix</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>Gaussian elimination is generally numerically unstable</p>
+<ul>
+<li><p>As you eliminate terms, the matrix slowly morphs away from it’s original state due to numerical precision</p></li>
+<li><p>For large matrices (or matrices with large condition number), this adds up quickly</p></li>
+</ul>
+</li>
+</ul>
+<p>Example:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}Ax = b
+\quad \Rightarrow \quad
+\left[ \begin{array}{cc}
+0.00300 &amp; 59.14 \\
+5.291 &amp; -6.130 \\
+\end{array} \right]
+\left[ \begin{array}{cc|c}
+ x_1 \\
+x_2 \\
+\end{array} \right]
+=\
+\left[ \begin{array}{cc|c}
+ 59.17 \\
+46.78 \\
+\end{array} \right]\end{split}\]</div>
+</div>
+<p>The exact solution is</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}\left[ \begin{array}{cc|c}
+ 10 \\
+1 \\
+\end{array} \right]\end{split}\]</div>
+</div>
+<p>but straight Gaussian elimination with 4 digits of precision (about the same as FP16) will result in</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}\left[ \begin{array}{cc|c}
+ 9873 \\
+4 \\
+\end{array} \right]\end{split}\]</div>
+</div>
+<p>The solution is to do <a class="reference external" href="https://en.wikipedia.org/wiki/Pivot_element">pivoting</a>, where we rearrange the rows of the system as we solve it to have more similar-sized diagonals.</p>
+<ul class="simple">
+<li><p>So chaging the previous example to</p></li>
+</ul>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}Ax = b
+\quad \Rightarrow \quad
+\left[ \begin{array}{cc}
+5.291 &amp; -6.130 \\
+0.00300 &amp; 59.14 \\
+\end{array} \right]
+\left[ \begin{array}{cc|c}
+ x_1 \\
+x_2 \\
+\end{array} \right]
+= \
+\left[ \begin{array}{cc|c}
+46.78 \\
+ 59.17 \\
+\end{array} \right]\end{split}\]</div>
+</div>
+<p>results in the correct answer in 4-digit arithmetic</p>
+</section>
+<section id="Factorization-Methods">
+<h3>Factorization Methods<a class="headerlink" href="#Factorization-Methods" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>These are the most popular methods for doing a direct solve</p></li>
+<li><p>These decompose <span class="math notranslate nohighlight">\(A\)</span> in the product of two other matrices</p></li>
+<li><p>Examples</p>
+<ul>
+<li><p>LU: <span class="math notranslate nohighlight">\(A = LU\)</span>, where <span class="math notranslate nohighlight">\(L\)</span> is lower triangular and <span class="math notranslate nohighlight">\(U\)</span> is upper triangular</p></li>
+<li><p>QR: <span class="math notranslate nohighlight">\(A = QR\)</span>, where <span class="math notranslate nohighlight">\(Q\)</span> has orthonormal columns and <span class="math notranslate nohighlight">\(R\)</span> is upper triangular</p></li>
+<li><p>Cholesky: <span class="math notranslate nohighlight">\(A = LL*\)</span>, where <span class="math notranslate nohighlight">\(L\)</span> is lower triangular</p></li>
+</ul>
+</li>
+<li><p>We’ll focus on LU</p></li>
+</ul>
+<p>LU factorization is just a rearrangement of Gaussian elimination</p>
+<ul class="simple">
+<li><p>Effectively a way for mathmeticians to talk about Gaussian elimination process without having to talk about specific algorithms</p></li>
+</ul>
+<p>Once you decompose <span class="math notranslate nohighlight">\(PA = LU\)</span>, where <span class="math notranslate nohighlight">\(P\)</span> represents the pivoting applied to the matrix, then you can solve the system in two steps:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[Ly = Pb\]</div>
+</div>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[Ux = y\]</div>
+</div>
+<p>Both steps for solving the lower and upper triangular problem are trivial (the row with one entry gives the exact solution, then you back substitute to get the rest)</p>
+<p>Costs:</p>
+<ul class="simple">
+<li><p>Forming <span class="math notranslate nohighlight">\(L\)</span> and <span class="math notranslate nohighlight">\(U\)</span> takes approximately <span class="math notranslate nohighlight">\(\mathcal{O}(2/3 n^3\)</span> operations for dense <span class="math notranslate nohighlight">\(A\)</span></p></li>
+<li><p>Solving the linear system takes <span class="math notranslate nohighlight">\(\mathcal{O}(2 n^2\)</span></p></li>
+<li><p>The cost of forming <span class="math notranslate nohighlight">\(L\)</span> and <span class="math notranslate nohighlight">\(U\)</span> are (asympototically) the same as forming <span class="math notranslate nohighlight">\(L\)</span> and <span class="math notranslate nohighlight">\(U\)</span></p></li>
+<li><p>Then we can solve the same linear system for different RHS <span class="math notranslate nohighlight">\(b\)</span></p></li>
+</ul>
+<ul class="simple">
+<li><p>In practice, solving using LU is significantly faster than forming <span class="math notranslate nohighlight">\(L\)</span> and <span class="math notranslate nohighlight">\(U\)</span>, so it’s often done rather than straight Gaussian elimination</p></li>
+</ul>
+</section>
+<section id="Factorization-for-Large-Sparse-systems">
+<h3>Factorization for Large Sparse systems<a class="headerlink" href="#Factorization-for-Large-Sparse-systems" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>For large sparse systems, <span class="math notranslate nohighlight">\(L\)</span> and <span class="math notranslate nohighlight">\(U\)</span> (or any factorization) will not necessarily be sparse.</p>
+<ul>
+<li><p>Often times, they are quite dense.</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>Choice of initial ordering matters for how sparse the resulting matrices are</p></li>
+<li><p>Example of Cholesky factorization:</p></li>
+</ul>
+<p><img alt="fillin" src="../_images/factorization_fillin_GolubValLoan.png" /></p>
+<ul class="simple">
+<li><p>Fill-in determined by the sparsity pattern alone</p></li>
+<li><p>Reducing fill-in was the actual purpose of Cuthill-McKee reordering</p></li>
+</ul>
+<ul class="simple">
+<li><p>Large systems still need pivoting to maintain numerical stability</p></li>
+<li><p>Pivoting affects sparsity of <span class="math notranslate nohighlight">\(L\)</span> and <span class="math notranslate nohighlight">\(U\)</span>, thus have contention</p></li>
+</ul>
+<ul class="simple">
+<li><p>Regardless of what methodology you have, direct solve on large sparse systems is very expensive and often not necessary.</p>
+<ul>
+<li><p>Only useful for specific matrix structures where we know how to reduce fill-in easily</p></li>
+<li><p>e.g. banded matrices</p></li>
+</ul>
+</li>
+<li><p>We’ll shift to the most popular way of handling this: iterative methods</p></li>
+</ul>
+</section>
+</section>
+<section id="Iterative-Methods">
+<h2>Iterative Methods<a class="headerlink" href="#Iterative-Methods" title="Link to this heading">¶</a></h2>
+<p>These methods attempt to find</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[x_k \approx x^*\]</div>
+</div>
+<p>where</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[x^* = A^{-1}b\]</div>
+</div>
+<p>The residual of the <span class="math notranslate nohighlight">\(k\)</span>th approximation is:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[r_k = b - A x_k\]</div>
+</div>
+<ul class="simple">
+<li><p>Iterative methods keep generating new <span class="math notranslate nohighlight">\(x_k\)</span> until the residual is deemed “good enough”</p>
+<ul>
+<li><p>Note that the residual is <em>not</em> the error, but a stand-in for it</p></li>
+</ul>
+</li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="n">norm</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tolerance</span><span class="p">:</span>
+    <span class="n">x_new</span> <span class="o">=</span> <span class="n">compute_new_x</span><span class="p">(</span><span class="n">x_old</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
+    <span class="n">evalutate_residual</span><span class="p">(</span><span class="n">x_new</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+    <span class="n">x_old</span> <span class="o">=</span> <span class="n">x_new</span>
+</pre></div>
+</div>
+<section id="Richardson-iteration">
+<h3>Richardson iteration<a class="headerlink" href="#Richardson-iteration" title="Link to this heading">¶</a></h3>
+<p>The simplest iterative method is <a class="reference external" href="https://en.wikipedia.org/wiki/Modified_Richardson_iteration">Richardson’s method</a>, which solves <span class="math notranslate nohighlight">\(A x = b\)</span> by the iteration</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[x_{k+1} = x_k + \omega (b - A x_k)\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(\omega &gt; 0\)</span> is a damping parameter and <span class="math notranslate nohighlight">\(x_0\)</span> is an initial guess (possibly the zero vector).</p>
+<p>If <span class="math notranslate nohighlight">\(b = A x_*\)</span>, this iteration is equivalent to</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[x_{k+1} - x_* = (x_k - x_*) - \omega A (x_k - x_*) = (I - \omega A) (x_k - x_*) .\]</div>
+</div>
+<p>It is convenient for convergence analysis to identify the “error” <span class="math notranslate nohighlight">\(e_k = x_k - x_*\)</span>, in which this becomes</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[e_{k+1} = (I - \omega A) e_k\]</div>
+</div>
+<p>or</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[e_k = (I - \omega A)^k e_0\]</div>
+</div>
+<p>in terms of the initial error. Evidently powers of the <em>iteration matrix</em> <span class="math notranslate nohighlight">\(I - \omega A\)</span> tell the whole story.</p>
+</section>
+<section id="Krylov-subspace-Methods">
+<h3>Krylov-subspace Methods<a class="headerlink" href="#Krylov-subspace-Methods" title="Link to this heading">¶</a></h3>
+<p>These build approximations of <span class="math notranslate nohighlight">\(x\)</span> as linear combinations of</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\{r_0, Ar_o, A^2r_0, \dots\}\]</div>
+</div>
+<p>This is the Krylov subspace.</p>
+<ul class="simple">
+<li><p>Krylov subspace methods constitute the most popular iterative linear solvers out there</p>
+<ul>
+<li><p>Congugate Gradient (CG), GMRES, BiCGStab</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>Each method has different matrix compatabilities and algorithmic advantages/disadvantages</p>
+<ul>
+<li><p>CG is by far the simplest algorithmically, only works for symmetric positive-definite matrices</p></li>
+<li><p>GMRES most popular generic matrix solver, but BiCGStab also handles that</p></li>
+<li><p>GMRES uses less vectors per iteration, but requires orthogonalization (which has an extra global reduce step, e.g. synchronization)</p></li>
+<li><p>BiCGStab doesn’t require orthogonalization, but stores double the number of vectors</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Pipelining">
+<h3>Pipelining<a class="headerlink" href="#Pipelining" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="n">norm</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tolerance</span><span class="p">:</span>
+    <span class="n">compute_new_x</span><span class="p">(</span><span class="n">x_old</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
+    <span class="n">evalutate_residual</span><span class="p">(</span><span class="n">x_old</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>All ranks ahve to wait for norm to be computed (global syncronization)</p></li>
+<li><p>Often, this test fails, so we do more iterations</p></li>
+</ul>
+<ul class="simple">
+<li><p>So we’re waiting around for an answer that nearly always means we need to do more iterations</p></li>
+<li><p>Solution: Do the next iteration anyways!</p>
+<ul>
+<li><p>e.g. communication-computation overlap, but algorithmically</p></li>
+<li><p>While we wait for the norm to be communicated, we compute the next iteration anyways</p></li>
+<li><p>If the previous norm meets the stopping criteria, we use the already-computed iteration anyways</p></li>
+</ul>
+</li>
+<li><p>This is known as <em>pipelining</em></p>
+<ul>
+<li><p>Applicable to nearly every iterative method</p></li>
+<li><p>Grealty improves strong scalability</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Iterative-solvers-big-picture">
+<h3>Iterative solvers big picture<a class="headerlink" href="#Iterative-solvers-big-picture" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Regardless of what specific method you use, iterative solvers (nearly) have one big thing in common:</p></li>
+</ul>
+<p><strong>They only require matrix-vector products and vector algebra</strong></p>
+<ul class="simple">
+<li><p>This makes them <em>very</em> ameanable to parallelizable programs</p>
+<ul>
+<li><p>We’ve been going over parallelized vector operations for nearly the entire course for a reason</p></li>
+</ul>
+</li>
+<li><p>Only needing matrix-vector products also means we don’t even need to have a matrix, so-called “matrix-free” methods</p>
+<ul>
+<li><p>A “matrix” is just a finite-dimensional representation of a linear operator</p></li>
+<li><p>If we have a function which computes the linear operator directly, then we don’t need a matrix at all</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple">
+<li><p>Matrix-free is important from a arithmetic intensity standpoint</p>
+<ul>
+<li><p>Sparse matrix-vector product is around 0.2 FLOPs/byte</p></li>
+<li><p>Matrix-Free for “high” order FEM is around 6 FLOPs/byte (optimally)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../homework.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Homework</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="20261112-Parallel_Distribution.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">20261112 - Parallel Distribution</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, James Wright
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">20261117 - Linear Systems</a><ul>
+<li><a class="reference internal" href="#Direct-Compute-Inverse">Direct Compute Inverse</a></li>
+<li><a class="reference internal" href="#Direct-Solve">Direct Solve</a><ul>
+<li><a class="reference internal" href="#Gaussian-Elimination">Gaussian Elimination</a></li>
+<li><a class="reference internal" href="#Factorization-Methods">Factorization Methods</a></li>
+<li><a class="reference internal" href="#Factorization-for-Large-Sparse-systems">Factorization for Large Sparse systems</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Iterative-Methods">Iterative Methods</a><ul>
+<li><a class="reference internal" href="#Richardson-iteration">Richardson iteration</a></li>
+<li><a class="reference internal" href="#Krylov-subspace-Methods">Krylov-subspace Methods</a></li>
+<li><a class="reference internal" href="#Pipelining">Pipelining</a></li>
+<li><a class="reference internal" href="#Iterative-solvers-big-picture">Iterative solvers big picture</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    </body>
+</html>
