@@ -28,3 +28,4 @@ Introduction
    notebooks/20261105-Intro_to_GPUs.ipynb
    notebooks/20261112-Parallel_Distribution.ipynb
    notebooks/20261117-Linear_Systems.ipynb
+   notebooks/20261119-Preconditioning.ipynb

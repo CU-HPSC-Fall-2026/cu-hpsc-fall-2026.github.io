@@ -214,6 +214,7 @@
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">20261105 - Intro to GPUs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="20261112-Parallel_Distribution.html">20261112 - Parallel Distribution</a></li>
 <li class="toctree-l2"><a class="reference internal" href="20261117-Linear_Systems.html">20261117 - Linear Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="20261119-Preconditioning.html">20261119 - Preconditioning</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../homework.html">Homework</a><input aria-label="Toggle navigation of Homework" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
@@ -469,11 +470,11 @@
 <li><p>no synchronization across blocks within a kernel;</p></li>
 <li><p>embarassingly parallel only, although caches can be reused.</p></li>
 </ul>
-<p><img alt="25b7693e77aa4d5a9e7b2cc9ec5114cd" class="no-scaled-link" src="../_images/grid-of-thread-blocks.png" width="400" /></p>
+<p><img alt="6d6b31938d3f4be683913c3cbd9c2f2b" class="no-scaled-link" src="../_images/grid-of-thread-blocks.png" width="400" /></p>
 <center><p>Nvidia.com: 2d grid and threads</p>
 </center><section id="Memory">
 <h3>Memory<a class="headerlink" href="#Memory" title="Link to this heading">¶</a></h3>
-<p><img alt="1af11ffaaf6c44bea53dd0f11238f2a8" class="no-scaled-link" src="../_images/hardware-model.png" width="400" /></p>
+<p><img alt="34fa5f30416b4c9d9b55395da719bb02" class="no-scaled-link" src="../_images/hardware-model.png" width="400" /></p>
 <center><p>Nvidia.com: model of memory connections</p>
 </center><ul class="simple">
 <li><p>Registers</p></li>
@@ -609,7 +610,7 @@
 <section id="Bank-Distribution:">
 <h4>Bank Distribution:<a class="headerlink" href="#Bank-Distribution:" title="Link to this heading">¶</a></h4>
 <p>Similar, but different from global-memory coalescence. Shared memory is divided into <strong>banks</strong> (typically 32), where each bank can be accessed simultaneously.</p>
-<p><img alt="83d5efad0338408b8fdca2359ee6ea60" class="no-scaled-link" src="../_images/six-examples-of-shared-memory-accesses.png" width="450" /></p>
+<p><img alt="7682e4c4216c4809866df67cb5e73f76" class="no-scaled-link" src="../_images/six-examples-of-shared-memory-accesses.png" width="450" /></p>
 <center><p>Nvidia.com: A) conflict-free, B) conflict depth 2, C) conflict-free, D) conflict-free, E) conflict-free, F) conflict-free</p>
 </center><p><em>My impression is that most programmers rely on the compiler to sensibly structure bank accesses for temporary variables, but occasionally breaking into the “CUDA assembly” language ``PTX`` will yeild significant performance improvements.</em></p>
 <p>The combination of coalescence and shared banks can cause an interesting interplay for certain problems. Consider:</p>

@@ -1,0 +1,758 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "099703e0-55d0-488c-9a1a-3302ec25f765",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "# 20261119 - Preconditioning"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "addff50c-26f5-4dc1-8fab-b66cbf8eeee2",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Final presentation\n",
+    "\n",
+    "We'll do them all on Thursday December 3rd\n",
+    "- I'll have a sign up sheet for order\n",
+    "- Should be 3 minute\n",
+    "    - Need to take less than 5 minutes per presentation to fit into the class time\n",
+    "    - 2 minutes as \n",
+    "- Quickly cover\n",
+    "    - What you did do?\n",
+    "    - How did the contribution go? (any major issues)\n",
+    "    - What did you learn in the process?"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "43409d85-4163-4d16-aa39-cc13d1daa0b3",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Preconditioning Motivation\n",
+    "\n",
+    "- Iterative solvers for linear systems will often struggle to find good approximations for many problems.\n",
+    "    - They'll always get to the exact solution (numerical precision permitting)\n",
+    "    - Not always as fast as we might want\n",
+    "- To assist them, we use *preconditioners* to modify the matrix/problem to make it easier for them.\n",
+    "\n",
+    "- Many of the illustrations come from [*An Introduction to the Conjugate Gradient Method Without the Agonizing Pain* by Shewchuck](http://www.cs.cmu.edu/%7Equake-papers/painless-conjugate-gradient.pdf), which is an excellent intuitive guide to how CG (and Krylov subspace solvers in general) work.\n",
+    "    - These illustrations only apply for symmetric positive definite matrices\n",
+    "    - But the intuition is applicable to more general matrices"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8ffcbfa2-ae2e-44d0-8fb0-2c44de56f38b",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Solving as Minimization Problem\n",
+    "- One way of looking at iterative linear solvers is to see them trying to solve a minimization problem\n",
+    "\n",
+    "$$x^* = \\text{arg}\\min_{x} (b - Ax) \\quad \\Rightarrow \\quad \\text{arg}\\min_{x} r$$"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "83dfdbd5-7ea4-47a8-9355-31d368e9555f",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Minimization problems can often be thought of trying to find the lowest point on some surface\n",
+    "\n",
+    "![eigen ellipsoid](../img/ellipsoid_eigenvector_shewchuck.png)\n",
+    "\n",
+    "- The eigenvectors of $A$ represent axes of the ellipsoid\n",
+    "- The magnitude of the respective eigenvalues set the radius on each axes\n",
+    "- Note that the narrowness of the ellipsoid is due to the *ratio* of eigenvalues, not the magnitudes themselves\n",
+    "    - This magnitude is known as the *condition number* of the matrix\n",
+    "    - For this ellipsoid, the condition number is 3.5"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "114fb729-fea3-4eea-9a33-735927a44649",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "If we attempted to apply gradient descient (which is basically Richardson's iteration, but a specific form of $\\omega$), then each iteration would look like this\n",
+    "\n",
+    "![gradient descent ellipsoid](../img/gradient_descent_shewchuck.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b9bad625-05d1-405d-ba6f-301e442f562b",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- The iterations just bounce back and forth between the walls of the \"canyon\"\n",
+    "- It makes consistent progress towards the exact solution, just not as fast as we want"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9fff7aa6-5de3-482e-b5d9-482c8cfb1fdc",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Reminder, this is with a condition number of 3.5\n",
+    "- Condition number of unconditioned \"real\" problems can be in excess of $10^20$\n",
+    "    - E.g. a **really** narrow canyon"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4bd03dec-acaf-4266-9c2d-01c208db4f57",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- The goal of preconditioning is to make these canyons more forgiving.\n",
+    "- For example, if we made all the eigenvalues the same size, we'd get the exact solution in a single step\n",
+    "\n",
+    "![gradient descent circle](../img/gradient_descent_circle_shewchuck.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "eb04e7f8-d2b3-4fdb-b306-ad429d835125",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "**Main point:** You can have the nicest, most efficient iterative method in the world, but if you're preconditioning sucks, it'll be very slow (or not work at all)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "99bfb398-e2bb-46d4-9d92-a00ae6efcf01",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Preconditioning\n",
+    "\n",
+    "Preconditioning is the act of creating an \"affordable\" operation \"$P^{-1}$\" such that $P^{-1} A$ (or $A P^{-1}$) is is well-conditoned or otherwise has a \"nice\" spectrum.  We then solve the system\n",
+    "\n",
+    "$$ P^{-1} A x = P^{-1} b \\quad \\text{or}\\quad A P^{-1} \\underbrace{(P x)}_y = b $$\n",
+    "\n",
+    "(which are \"left\" and \"right\" preconditioning, respectively).\n",
+    "\n",
+    "* The preconditioner must be applied on each iteration.\n",
+    "* It is *not* merely about finding a good initial guess."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9069b4d2-ab0e-401c-9297-e0d499e47200",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "There are two parts that make a good preconditioner, often at odds with each other\n",
+    "- We want $P^{-1}$ to be \"good\"\n",
+    "- We want $P^{-1}$ to be cheap to create and to apply"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1799865b-bfae-41a5-88ae-544cc6ce17e5",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "For \"goodness\", the best would be that $P^{-1} = A^{-1}$\n",
+    "- This obviously directly solves the problem\n",
+    "- But, as previously discussed, getting that is really expensive"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "14f97855-8044-4481-9331-eb879ebfec65",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "The trick for preconditioning is to find $P^-1$ which gets close to $A^{-1}$, but is actually inexpensive to use\n",
+    "- Note that \"close to $A^{-1}$\" is quite hand wavy; there are cases where what is intuitively \"closer\" actually results in worse performance for the iterative solver\n",
+    "- Selecting/building preconditioners which are effective and efficient is a bit of an art"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d2c22d3e-70e4-41f4-a946-e1e7e595eabe",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Classical methods\n",
+    "\n",
+    "### Jacobi\n",
+    "The simplest possible preconditioner is Jacobi:\n",
+    "$$ P_{\\text{Jacobi}}^{-1} = D^{-1} $$\n",
+    "where $D$ is the diagonal of $A$.\n",
+    "\n",
+    "- Pros:\n",
+    "    - It is *very* cheap to build and apply. \n",
+    "    - Often can get the diagonal of a matrix-free method without too much difficulty\n",
+    "    - Very parallel scalable\n",
+    "        - For row/column based distribution, each rank holds it's own diagonal, therefore no communication necessary\n",
+    "- Cons:\n",
+    "    - Not as \"good\" as other methods for improving iterative solver performance"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a3d6146a-b1e2-4a18-b5dc-ea122598622a",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Gauss-Seidel\n",
+    "Gauss-Seidel is\n",
+    "$$ P_{GS}^{-1} = (L+D)^{-1} $$\n",
+    "where $L$ is the (strictly) lower triangular part of $A$.  \n",
+    "\n",
+    "The upper triangular part may be used instead, or a symmetric form\n",
+    "$$ P_{SGS}^{-1} = (L+U)^{-1} A \\Big( I - (L+D)^{-1} \\Big) . $$\n",
+    "\n",
+    "- Pros:\n",
+    "    - Usually gets better iterative solver performance\n",
+    "    - Computing inverse of lower triangular matrix quite straight forward\n",
+    "- Cons:\n",
+    "    - Significantly more expensive than Jacobi for creating and applying\n",
+    "    - Not sparse (inverse of sparse matrix is generally not sparse)\n",
+    "    "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0f85381b-929d-4e8b-af66-88b3754d64ba",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Incomplete Factorization\n",
+    "Primary issue with factorization for large problems was **sparsity/fill-in**\n",
+    "- We have some control over the sparsity of the factored matrices\n",
+    "- But still usually somewhat dense\n",
+    "- Also sparsity concerns may directly conflict with stability concerns"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "14ed7628-dbe9-4f77-8e4c-7bd49054c6b4",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "Observation: Many of the components of the factorization are small and *probably* insignificant\n",
+    "- What if we just stored part of the factorization?\n",
+    "- This is the idea behind incomplete factorization (e.g. ILU and incomplete Cholesky)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3518ceca-05e8-4130-a333-016b038df90d",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "Open question: How do we select which components to keep or throw away?\n",
+    "- Two popular solutions\n",
+    "    - Select the sparsity pattern ahead of time and only fill in those values\n",
+    "    - Compute all values, but only keep ones which exceed some threshold (small) value\n",
+    "\n",
+    "- For high performance computing, the first is the most popular one\n",
+    "    - Don't need to compute all the values\n",
+    "    - Get tight control of the sparsity and necessary communication"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "337f24e7-ba6d-4544-bf41-5c838a1bc0f5",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "How do we specify the sparsity pattern to use?\n",
+    "- Often this is chosen to match the sparsity pattern of the original matrix $A$, or some multplication factor of $A$\n",
+    "    - This is often denoted as ILU($k$), where the sparsity pattern matches the sparsity of $A^{k+1}$\n",
+    "    - So ILU(0) (most popular choice) means we just use the same sparsity pattern as $A$"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d572ac3f-1280-4097-bbdc-f36ffe22ecd2",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Pros:\n",
+    "    - Generally quite good preconditioner (we're doing a direct approximation of $A^{-1}$)\n",
+    "    - Cheaper to apply than Gauss-Seidel (more sparse matrix to apply)\n",
+    "- Cons:\n",
+    "    - The approximation is ad-hoc\n",
+    "        - This is especially true for the pre-selected-sparsity variant\n",
+    "        - Performance can be inconsistent as a result (even when trying to solve similar problems)\n",
+    "    - Still expensive to create and apply\n",
+    "        - It effectively doubles the matrix-vector products necessary to solve the system\n",
+    "        - Note though that the application is cheaper than the creation"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9a7b4b91-6c73-4bd7-a114-c65d04aa5cab",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Problem-Specific\n",
+    "- If you can exploit knowledge about your specific problem to create a preconditioner, it's often good to do so\n",
+    "    - You'll explicitly target the intricacies of the problem\n",
+    "    - Can narrow the expense of the preconditioning to only the area that it's needed\n",
+    "- Example: Compressible fluids flow\n",
+    "    - At low mach numbers, the speed of sound is much faster than the speed of the fluid flow\n",
+    "    - This often results in high condition numbers\n",
+    "        - The eigenvalues associated with the acoustics are much larger than those associated with the fluid velocity\n",
+    "    - A preconditioner design could seek to (nearly) exactly compute the acoustics with a simplified problem\n",
+    "        - e.g. solve for the pressure and temperature while freezing the fluid velocity\n",
+    "    - Said preconditioner has many advantanges\n",
+    "        - This problem is much smaller to solve (cuts the size of the preconditioner problem by at least 3/5)\n",
+    "        - By reducing to just the pressure, we can exploit the behavior of just that system\n",
+    "            - Pressure equations can be formulated as a Poisson equation, which has many efficient solving methods not applicable to the full fluid flow equations\n",
+    "        - We explicitly reduce the largest eigenvalues of the system (which we know are associated with the acoustics)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5a22027f-029e-43db-a0b0-999d4fa618bd",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Multigrid methods\n",
+    "\n",
+    "I don't have enough time to describe them well, but they should 100% be mentioned\n",
+    "- Basic idea:\n",
+    "    - Let's call the original problem the \"fine\" problem\n",
+    "    - Say we define a \"coarse\" problem, which is similar to the \"fine\" problem, but much smaller (and thus cheaper to solve)\n",
+    "    - And say we have a way of transfering solutions/vectors from the \"fine\"->\"coarse\" problem and vice versa\n",
+    "    -  **What if used the inverse of the \"coarse\" problem as a preconditioner for the \"fine\" problem?**\n",
+    "\n",
+    "$$A_\\text{fine} \\approx S A_\\text{coarse} S^{-1}$$o\n",
+    "where\n",
+    "- $S$ are projection operators from the coarse to fine space\n",
+    "- Size of $$A_\\text{coarse}$$ is much smaller than the size of $$A_\\text{fine}$$"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "41309b18-eb41-4626-bdc6-2aeb1dccd2fc",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "Details make multigrid methods less of a universal approach, but can be incredibly effective for some problems \n",
+    "- For example, parabolic PDEs (e.g. the heat equation) work really well with multigrid methods"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ff9067e2-95b4-4d04-9d33-61242b65c667",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Domain Decomposition\n",
+    "- In parallel, we've already decomposed our problem across multiple ranks.\n",
+    "- This decomposition was done with problem behavior in mind\n",
+    "- What if we used that to form preconditioners?\n",
+    "    - Effectively form parallel-aware preconditioners which help to minimize communication"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "645f0d9a-33f2-487c-9bf3-c2cbe7799f21",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Mathematical Definition\n",
+    "- The mathematical definition is very generalizable and corresponds to selecting subspaces of the matrix/linear operator\n",
+    "- For our purposes, think of these subspaces as the partitioning of the problem"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7e9354be-6651-43f5-929e-e6965f0840cf",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "Given a linear operator $A : V \\to V$, suppose we have a collection of prolongation operators $S_i : V_i \\to V$.  \n",
+    "- The columns of $S_i$ are \"basis functions\" for the subspace $V_i$.\n",
+    "- The Galerkin operator $A_i = S_i^T A S_i$ is the action of the original operator $A$ in the subspace.\n",
+    "\n",
+    "The additive Schwartz preconditioner is then defined as\n",
+    "\n",
+    "$$ P^{-1} = \\sum_{i=0} S_i P_i^{-1} S_i^T. $$\n",
+    "\n",
+    "- $P_i^{-1}$ represents a preconditioner applied just the subspace $V_i$\n",
+    "- We then combine the effect of all the subspace preconditioners into a single action"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6dc6fa79-afda-4587-b932-9f7a7675e144",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "fragment"
+    },
+    "tags": []
+   },
+   "source": [
+    "- This provides a general framework for many preconditioning methods\n",
+    "- Notably, if we define the subspaces to be at partitions, this means the bulk of the work computing and applying $P^{-1}$ is communication independent"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f72934e7-0588-46bf-9964-8321ac90cd27",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Examples\n",
+    "- The most common example of additive Schwartz is **Block Jacobi**\n",
+    "- It corresponds to\n",
+    "$$\n",
+    "\\begin{split}\n",
+    "A_\\text{bJac} = \\left( \\begin{array}{cccc}\n",
+    "  A_{11} & 0 & \\ldots & 0 \\\\\n",
+    "  0 & A_{22} & \\ddots & \\vdots \\\\\n",
+    "  \\vdots & \\ddots & \\ddots & 0 \\\\\n",
+    "  0 & \\cdots & 0 & A_{mm}\n",
+    "  \\end{array} \\right),\n",
+    "\\end{split}\n",
+    "$$\n",
+    "\n",
+    "where each block $A_{ii}$ is the diagonal block owned by a subdomain."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fe8616f0-5b14-4af3-a539-ea56f722c01d",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- Then we can apply some preconditioner to each block forming to get\n",
+    "\n",
+    "$$\n",
+    "\\begin{split}\n",
+    "P^{-1}_\\text{bJac} = \\left( \\begin{array}{cccc}\n",
+    "  P_{11}^{-1} & 0 & \\ldots & 0 \\\\\n",
+    "  0 & P_{22}^{-1} & \\ddots & \\vdots \\\\\n",
+    "  \\vdots & \\ddots & \\ddots & 0 \\\\\n",
+    "  0 & \\cdots & 0 & P_{mm}^{-1}\n",
+    "  \\end{array} \\right),\n",
+    "\\end{split}\n",
+    "$$\n",
+    "\n",
+    "- We have infinitely many choices of how to create $P^{-1}_{ii}$ from each $A_{ii}$\n",
+    "    - Classic preconditioning methods, like Gauss-Seidel\n",
+    "    - Incomplete factorization, ILU or Cholesky\n",
+    "    - Full-blown factorization methods\n",
+    "        - They're only being applied to a small partition of the total problem, so may be worth the expense"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "af9cced1-7ca9-4258-9b34-86aadc656626",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "- **Overlapping Schwarz** corresponds to overlapping subdomains\n",
+    "    - e.g. we expand the local partition to include more unknowns owned by a different rank\n",
+    "- Many discretization schemes already need to store part of other rank's data\n",
+    "- This allows us to use that extra data we already have to make the preconditioner better"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e2f4ad6c-8484-449d-b716-ead772554b8e",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Convergence theory\n",
+    "The formal convergence is beyond the scope of this course, but the following estimates are useful.  \n",
+    "- We let $h$ be the element diameter,\n",
+    "- $H$ be the subdomain diameter, and\n",
+    "- $\\delta$ be the overlap,\n",
+    "- Each normalized such that the global domain diameter is 1.\n",
+    "\n",
+    "We express the convergence in terms of the condition number $\\kappa$ for the preconditioned operator.\n",
+    "\n",
+    "* (Block) Jacobi: $\\delta=0$, $\\kappa \\sim H^{-2} H/h = (Hh)^{-1}$\n",
+    "* Overlapping Schwarz: $\\kappa \\sim H^{-2} H/\\delta = (H \\delta)^{-1}$\n",
+    "* 2-level overlapping Schwarz: $\\kappa \\sim H/\\delta$"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "32b4c654-50e8-4d26-9a80-2637b47c5eae",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "#### Parallel Schwartz Preconditioning Note\n",
+    "- If we specifically define the subpartition of the additive Schwartz method as the parallel partition, we get an interesting phenomemnon\n",
+    "- Our preconditioner (the linear algebra object) is now a function of the parallel implementation\n",
+    "- Thus, how we partition our problem in parallel has a direct consequence on the behavior of the solvers"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "37ef29b1-ac49-41c7-ad99-70ae329ceb32",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "Example:\n",
+    "- We generally expect the number of interations of a solver to not be a function of the parallel partition\n",
+    "    - If it isn't, there's probably a bug, or some other effect\n",
+    "- If we're doing a strong scaling study with additive Schwartz based on parallel partition, we'll notice that the iteration count increases with processor count\n",
+    "    - The size of each partition goes down\n",
+    "    - The size of the local preconditioner goes down\n",
+    "    - Less of the original matrix $A$ is being \"covered\" by the diagonal portions\n",
+    "    - Less coverage correlates with worse preconditioner\n",
+    "    - Worse preconditioner means more iterations\n",
+    "- On the opposite side, the preconditioner building and application may get faster\n",
+    "    - Less \"coverage\" means less overall unknowns, less computation, less fill-in, etc."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "89c22075-b14e-44b3-b50e-d404af492164",
+   "metadata": {
+    "deletable": true,
+    "editable": true,
+    "slideshow": {
+     "slide_type": "slide"
+    },
+    "tags": []
+   },
+   "source": [
+    "Also has consequences when comparing GPUs to CPUs, for example\n",
+    "- GPUs usually have \"fatter\" parallel partitions than CPUs\n",
+    "- These \"fatter\" partitions (in my experience) make the preconditioner **much** slower to compute and apply"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.14.10"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
